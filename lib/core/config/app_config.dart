@@ -6,6 +6,8 @@ class AppConfig {
   final String rpcUrl;
   final String explorerBaseUrl;
   final int chainId;
+  final String nativeSymbol;
+  final int nativeDecimals;
 
   const AppConfig({
     required this.flavor,
@@ -13,7 +15,12 @@ class AppConfig {
     required this.rpcUrl,
     required this.explorerBaseUrl,
     required this.chainId,
+    required this.nativeSymbol,
+    required this.nativeDecimals,
   });
+
+  String get addressExplorerPath => '$explorerBaseUrl/address';
+  String get txExplorerPath => '$explorerBaseUrl/tx';
 
   static const current = AppConfig(
     flavor: AppFlavor.dev,
@@ -21,5 +28,7 @@ class AppConfig {
     rpcUrl: 'https://rpc.testnet.scavium.network',
     explorerBaseUrl: 'https://explorer.testnet.scavium.network',
     chainId: 13371,
+    nativeSymbol: 'SCAV',
+    nativeDecimals: 18,
   );
 }

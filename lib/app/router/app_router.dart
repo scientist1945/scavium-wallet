@@ -13,6 +13,8 @@ import 'package:scavium_wallet/features/splash/presentation/splash_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/backup_mnemonic_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/create_wallet_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/import_wallet_screen.dart';
+import 'package:scavium_wallet/features/blockchain/presentation/receive_screen.dart';
+import 'package:scavium_wallet/features/blockchain/presentation/send_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final storage = LocalStorageService();
@@ -53,6 +55,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.settings,
         builder: (_, __) => const SettingsScreen(),
+      ),
+      GoRoute(path: RouteNames.send, builder: (_, __) => const SendScreen()),
+      GoRoute(
+        path: RouteNames.receive,
+        builder: (_, __) => const ReceiveScreen(),
       ),
     ],
     redirect: (context, state) async {

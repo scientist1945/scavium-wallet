@@ -9,4 +9,6 @@ abstract final class RouteNames {
   static const lock = '/lock';
   static const home = '/home';
   static const settings = '/settings';
+  static const send = '/send';
+  static const receive = '/receive';
 }

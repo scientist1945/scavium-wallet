@@ -238,4 +238,9 @@ class WalletRepositoryImpl implements WalletRepository {
         .where((e) => e.isNotEmpty)
         .join(' ');
   }
+
+  @override
+  EthPrivateKey credentialsFromMnemonic(String mnemonic) {
+    return _credentialsFromMnemonic(_normalizeMnemonic(mnemonic));
+  }
 }
