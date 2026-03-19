@@ -3,6 +3,15 @@ import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
 import 'package:scavium_wallet/core/constants/storage_keys.dart';
 import 'package:scavium_wallet/core/services/local_storage_service.dart';
+import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
+import 'package:scavium_wallet/features/assets/domain/token_info.dart';
+import 'package:scavium_wallet/features/assets/presentation/add_token_screen.dart';
+import 'package:scavium_wallet/features/assets/presentation/asset_detail_screen.dart';
+import 'package:scavium_wallet/features/assets/presentation/assets_screen.dart';
+import 'package:scavium_wallet/features/assets/presentation/history_screen.dart';
+import 'package:scavium_wallet/features/assets/presentation/send_token_screen.dart';
+import 'package:scavium_wallet/features/blockchain/presentation/receive_screen.dart';
+import 'package:scavium_wallet/features/blockchain/presentation/send_screen.dart';
 import 'package:scavium_wallet/features/home/presentation/home_screen.dart';
 import 'package:scavium_wallet/features/lock/presentation/lock_screen.dart';
 import 'package:scavium_wallet/features/onboarding/presentation/onboarding_screen.dart';
@@ -13,8 +22,6 @@ import 'package:scavium_wallet/features/splash/presentation/splash_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/backup_mnemonic_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/create_wallet_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/import_wallet_screen.dart';
-import 'package:scavium_wallet/features/blockchain/presentation/receive_screen.dart';
-import 'package:scavium_wallet/features/blockchain/presentation/send_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final storage = LocalStorageService();
@@ -60,6 +67,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.receive,
         builder: (_, __) => const ReceiveScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.assets,
+        builder: (_, __) => const AssetsScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.addToken,
+        builder: (_, __) => const AddTokenScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.history,
+        builder: (_, __) => const HistoryScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.assetDetail,
+        builder:
+            (_, state) => AssetDetailScreen(asset: state.extra as AssetItem),
+      ),
+      GoRoute(
+        path: RouteNames.sendToken,
+        builder: (_, state) => SendTokenScreen(token: state.extra as TokenInfo),
       ),
     ],
     redirect: (context, state) async {

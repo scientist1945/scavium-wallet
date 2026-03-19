@@ -2,43 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
 import 'package:scavium_wallet/core/config/app_config.dart';
-import 'package:scavium_wallet/features/blockchain/application/native_balance_controller.dart';
+import 'package:scavium_wallet/features/assets/application/tx_history_controller.dart';
+import 'package:scavium_wallet/features/assets/application/assets_controller.dart';
 import 'package:scavium_wallet/features/blockchain/application/network_info_controller.dart';
 import 'package:scavium_wallet/features/blockchain/data/scavium_rpc_service.dart';
 import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_card.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:web3dart/web3dart.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  String _formatBalanceBigInt(BigInt wei) {
-    final asDouble = wei / BigInt.from(1000000000000000000);
-    return asDouble.toString();
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final walletState = ref.watch(walletControllerProvider);
-    final balanceState = ref.watch(nativeBalanceControllerProvider);
+    final assetsState = ref.watch(assetsControllerProvider);
     final networkState = ref.watch(networkInfoControllerProvider);
+    final historyState = ref.watch(txHistoryControllerProvider);
     final profile = walletState.valueOrNull;
     final rpcService = ref.read(scaviumRpcServiceProvider);
 
     final address = profile?.account.address ?? '-';
+    final nativeAsset = assetsState.valueOrNull?.firstOrNull;
 
     return ScaviumScaffold(
       appBar: AppBar(
         title: const Text('SCAVIUM Wallet'),
         actions: [
           IconButton(
-            onPressed: () async {
-              ref.invalidate(nativeBalanceControllerProvider);
+            onPressed: () {
+              ref.invalidate(assetsControllerProvider);
               ref.invalidate(networkInfoControllerProvider);
+              ref.invalidate(txHistoryControllerProvider);
             },
             icon: const Icon(Icons.refresh),
           ),
@@ -57,31 +55,14 @@ class HomeScreen extends ConsumerWidget {
               children: [
                 const Text('Total Balance'),
                 const SizedBox(height: 10),
-                balanceState.when(
-                  data:
-                      (balance) => Text(
-                        '${balance.getValueInUnit(EtherUnit.ether).toStringAsFixed(6)} ${AppConfig.current.nativeSymbol}',
-                        style: const TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                  loading:
-                      () => const Text(
-                        'Loading...',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                  error:
-                      (e, _) => Text(
-                        'Error loading balance',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                Text(
+                  nativeAsset == null
+                      ? 'Loading...'
+                      : '${nativeAsset.displayBalance} ${AppConfig.current.nativeSymbol}',
+                  style: const TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text('Account: ${profile?.account.name ?? '-'}'),
@@ -143,6 +124,16 @@ class HomeScreen extends ConsumerWidget {
                       onTap: () => context.push(RouteNames.receive),
                     ),
                     _QuickAction(
+                      title: 'Assets',
+                      icon: Icons.account_balance_wallet_outlined,
+                      onTap: () => context.push(RouteNames.assets),
+                    ),
+                    _QuickAction(
+                      title: 'History',
+                      icon: Icons.receipt_long,
+                      onTap: () => context.push(RouteNames.history),
+                    ),
+                    _QuickAction(
                       title: 'Copy',
                       icon: Icons.copy_outlined,
                       onTap: () async {
@@ -168,6 +159,42 @@ class HomeScreen extends ConsumerWidget {
                       },
                     ),
                   ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          ScaviumCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Recent activity',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 12),
+                historyState.when(
+                  data: (items) {
+                    if (items.isEmpty) {
+                      return const Text('No transactions yet');
+                    }
+                    final recent = items.take(3).toList();
+                    return Column(
+                      children:
+                          recent
+                              .map(
+                                (e) => ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text('${e.amountDisplay} ${e.symbol}'),
+                                  subtitle: Text(e.toAddress),
+                                  trailing: Text(e.status.name),
+                                ),
+                              )
+                              .toList(),
+                    );
+                  },
+                  loading: () => const Text('Loading history...'),
+                  error: (e, _) => const Text('Error loading history'),
                 ),
               ],
             ),

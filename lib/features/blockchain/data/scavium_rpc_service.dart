@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:scavium_wallet/core/config/app_config.dart';
+import 'package:scavium_wallet/features/assets/domain/token_info.dart';
 import 'package:scavium_wallet/features/blockchain/domain/network_info.dart';
 import 'package:scavium_wallet/features/blockchain/domain/transaction_send_result.dart';
 import 'package:scavium_wallet/features/wallet/data/wallet_repository_impl.dart';
@@ -25,6 +26,17 @@ class ScaviumRpcService {
   final WalletRepository walletRepository;
 
   ScaviumRpcService({required this.client, required this.walletRepository});
+
+  static const String _erc20Abi = '''
+[
+  {"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"type":"function","stateMutability":"view"},
+  {"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"type":"function","stateMutability":"view"},
+  {"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"type":"function","stateMutability":"view"},
+  {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"type":"function","stateMutability":"view"},
+  {"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"type":"function","stateMutability":"view"},
+  {"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"type":"function","stateMutability":"nonpayable"}
+]
+''';
 
   Web3Client _web3() {
     return Web3Client(AppConfig.current.rpcUrl, client);
@@ -100,24 +112,175 @@ class ScaviumRpcService {
     try {
       final credentials = await getCredentials();
       final to = EthereumAddress.fromHex(toAddress);
-      final chainId = AppConfig.current.chainId;
-
       final txHash = await web3.sendTransaction(
         credentials,
         Transaction(to: to, value: amount),
-        chainId: chainId,
+        chainId: AppConfig.current.chainId,
         fetchChainIdFromNetworkId: false,
       );
 
-      final confirmed = await waitForReceipt(txHash);
+      final receipt = await waitForReceipt(txHash);
 
-      return TransactionSendResult(txHash: txHash, confirmed: confirmed);
+      return TransactionSendResult(txHash: txHash, confirmed: receipt == true);
     } finally {
       web3.dispose();
     }
   }
 
-  Future<bool> waitForReceipt(
+  DeployedContract _erc20Contract(String contractAddress) {
+    final contract = DeployedContract(
+      ContractAbi.fromJson(_erc20Abi, 'ERC20'),
+      EthereumAddress.fromHex(contractAddress),
+    );
+    return contract;
+  }
+
+  Future<TokenInfo> loadTokenMetadata(String contractAddress) async {
+    final web3 = _web3();
+    try {
+      final contract = _erc20Contract(contractAddress);
+
+      final nameFn = contract.function('name');
+      final symbolFn = contract.function('symbol');
+      final decimalsFn = contract.function('decimals');
+
+      String name = '';
+      String symbol = '';
+      int decimals = 18;
+
+      try {
+        final nameRes = await web3.call(
+          contract: contract,
+          function: nameFn,
+          params: const [],
+        );
+        name = (nameRes.first as String).trim();
+      } catch (_) {
+        name = 'Unknown Token';
+      }
+
+      try {
+        final symbolRes = await web3.call(
+          contract: contract,
+          function: symbolFn,
+          params: const [],
+        );
+        symbol = (symbolRes.first as String).trim();
+      } catch (_) {
+        symbol = 'TOKEN';
+      }
+
+      try {
+        final decimalsRes = await web3.call(
+          contract: contract,
+          function: decimalsFn,
+          params: const [],
+        );
+        final raw = decimalsRes.first;
+        if (raw is int) {
+          decimals = raw;
+        } else if (raw is BigInt) {
+          decimals = raw.toInt();
+        }
+      } catch (_) {
+        decimals = 18;
+      }
+
+      return TokenInfo(
+        contractAddress: EthereumAddress.fromHex(contractAddress).hexEip55,
+        name: name.isEmpty ? 'Unknown Token' : name,
+        symbol: symbol.isEmpty ? 'TOKEN' : symbol,
+        decimals: decimals,
+      );
+    } finally {
+      web3.dispose();
+    }
+  }
+
+  Future<BigInt> getErc20Balance(String contractAddress) async {
+    final web3 = _web3();
+    try {
+      final owner = await getCurrentAddress();
+      final contract = _erc20Contract(contractAddress);
+      final fn = contract.function('balanceOf');
+
+      final result = await web3.call(
+        contract: contract,
+        function: fn,
+        params: [owner],
+      );
+
+      return result.first as BigInt;
+    } finally {
+      web3.dispose();
+    }
+  }
+
+  Future<BigInt> estimateGasForErc20Transfer({
+    required String contractAddress,
+    required String toAddress,
+    required BigInt amountRaw,
+  }) async {
+    final web3 = _web3();
+    try {
+      final sender = await getCurrentAddress();
+      final contract = _erc20Contract(contractAddress);
+      final fn = contract.function('transfer');
+      final data = fn.encodeCall([
+        EthereumAddress.fromHex(toAddress),
+        amountRaw,
+      ]);
+
+      return web3.estimateGas(
+        sender: sender,
+        to: EthereumAddress.fromHex(contractAddress),
+        data: data,
+      );
+    } finally {
+      web3.dispose();
+    }
+  }
+
+  Future<TransactionSendResult> sendErc20Transaction({
+    required String contractAddress,
+    required String toAddress,
+    required BigInt amountRaw,
+  }) async {
+    final web3 = _web3();
+    try {
+      final credentials = await getCredentials();
+      final contract = _erc20Contract(contractAddress);
+      final fn = contract.function('transfer');
+
+      final txHash = await web3.sendTransaction(
+        credentials,
+        Transaction.callContract(
+          contract: contract,
+          function: fn,
+          parameters: [EthereumAddress.fromHex(toAddress), amountRaw],
+        ),
+        chainId: AppConfig.current.chainId,
+        fetchChainIdFromNetworkId: false,
+      );
+
+      final receipt = await waitForReceipt(txHash);
+
+      return TransactionSendResult(txHash: txHash, confirmed: receipt == true);
+    } finally {
+      web3.dispose();
+    }
+  }
+
+  Future<TransactionReceipt?> getReceipt(String txHash) async {
+    final web3 = _web3();
+    try {
+      return web3.getTransactionReceipt(txHash);
+    } finally {
+      web3.dispose();
+    }
+  }
+
+  Future<bool?> waitForReceipt(
     String txHash, {
     int maxAttempts = 20,
     Duration delay = const Duration(seconds: 3),
@@ -127,11 +290,11 @@ class ScaviumRpcService {
       for (var i = 0; i < maxAttempts; i++) {
         final receipt = await web3.getTransactionReceipt(txHash);
         if (receipt != null) {
-          return true;
+          return receipt.status ?? true;
         }
         await Future<void>.delayed(delay);
       }
-      return false;
+      return null;
     } finally {
       web3.dispose();
     }

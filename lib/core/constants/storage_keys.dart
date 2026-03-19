@@ -11,4 +11,7 @@ abstract final class StorageKeys {
   static const walletAddress = 'wallet_address';
   static const walletAccountName = 'wallet_account_name';
   static const biometricEnabled = 'biometric_enabled';
+
+  static const tokenRegistryJson = 'token_registry_json';
+  static const txHistoryJson = 'tx_history_json';
 }

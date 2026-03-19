@@ -11,4 +11,10 @@ abstract final class RouteNames {
   static const settings = '/settings';
   static const send = '/send';
   static const receive = '/receive';
+
+  static const assets = '/assets';
+  static const addToken = '/add-token';
+  static const assetDetail = '/asset-detail';
+  static const sendToken = '/send-token';
+  static const history = '/history';
 }
