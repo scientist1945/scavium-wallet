@@ -25,7 +25,7 @@ class AppConfig {
   static const current = AppConfig(
     flavor: AppFlavor.dev,
     appName: 'SCAVIUM Wallet',
-    rpcUrl: 'https://rpc.testnet.scavium.network',
+    rpcUrl: 'https://rpc.testnet.scavium.network:18545',
     explorerBaseUrl: 'https://explorer.testnet.scavium.network',
     chainId: 13371,
     nativeSymbol: 'SCAV',

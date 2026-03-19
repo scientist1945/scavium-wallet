@@ -13,6 +13,7 @@ import 'package:scavium_wallet/features/assets/presentation/send_token_screen.da
 import 'package:scavium_wallet/features/blockchain/presentation/receive_screen.dart';
 import 'package:scavium_wallet/features/blockchain/presentation/send_screen.dart';
 import 'package:scavium_wallet/features/home/presentation/home_screen.dart';
+import 'package:scavium_wallet/features/lock/application/app_lock_state_controller.dart';
 import 'package:scavium_wallet/features/lock/presentation/lock_screen.dart';
 import 'package:scavium_wallet/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:scavium_wallet/features/onboarding/presentation/wallet_entry_screen.dart';
@@ -22,6 +23,7 @@ import 'package:scavium_wallet/features/splash/presentation/splash_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/backup_mnemonic_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/create_wallet_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/import_wallet_screen.dart';
+import 'package:scavium_wallet/features/wallet/presentation/confirm_mnemonic_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final storage = LocalStorageService();
@@ -89,25 +91,48 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: RouteNames.sendToken,
         builder: (_, state) => SendTokenScreen(token: state.extra as TokenInfo),
       ),
+      GoRoute(
+        path: RouteNames.confirmMnemonic,
+        builder: (_, __) => const ConfirmMnemonicScreen(),
+      ),
     ],
     redirect: (context, state) async {
+      final storage = LocalStorageService();
       final onboardingCompleted = await storage.getBool(
         StorageKeys.onboardingCompleted,
       );
       final walletCreated = await storage.getBool(StorageKeys.walletCreated);
-
       final current = state.matchedLocation;
 
-      if (!onboardingCompleted &&
-          current != RouteNames.splash &&
-          current != RouteNames.onboarding &&
-          current != RouteNames.welcome &&
-          current != RouteNames.walletEntry) {
+      final isLocked = ref.read(appLockStateControllerProvider);
+
+      final isPublicRoute =
+          current == RouteNames.splash ||
+          current == RouteNames.onboarding ||
+          current == RouteNames.welcome ||
+          current == RouteNames.walletEntry ||
+          current == RouteNames.createWallet ||
+          current == RouteNames.importWallet ||
+          current == RouteNames.backupMnemonic ||
+          current == RouteNames.confirmMnemonic;
+
+      if (!onboardingCompleted && !isPublicRoute) {
         return RouteNames.onboarding;
       }
 
       if (onboardingCompleted && !walletCreated && current == RouteNames.home) {
         return RouteNames.walletEntry;
+      }
+
+      if (walletCreated &&
+          isLocked &&
+          current != RouteNames.lock &&
+          current != RouteNames.splash) {
+        return RouteNames.lock;
+      }
+
+      if (walletCreated && !isLocked && current == RouteNames.lock) {
+        return RouteNames.home;
       }
 
       return null;

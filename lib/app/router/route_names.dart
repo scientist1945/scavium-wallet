@@ -6,6 +6,7 @@ abstract final class RouteNames {
   static const createWallet = '/create-wallet';
   static const importWallet = '/import-wallet';
   static const backupMnemonic = '/backup-mnemonic';
+  static const confirmMnemonic = '/confirm-mnemonic';
   static const lock = '/lock';
   static const home = '/home';
   static const settings = '/settings';

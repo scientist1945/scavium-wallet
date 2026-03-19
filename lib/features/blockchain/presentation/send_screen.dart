@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:scavium_wallet/core/config/app_config.dart';
+import 'package:scavium_wallet/core/security/screenshot_guard.dart';
+import 'package:scavium_wallet/core/utils/evm_address.dart';
+import 'package:scavium_wallet/core/utils/evm_amounts.dart';
+import 'package:scavium_wallet/features/assets/application/assets_controller.dart';
 import 'package:scavium_wallet/features/blockchain/application/send_transaction_controller.dart';
+import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_primary_button.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
 import 'package:scavium_wallet/shared/widgets/section_title.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SendScreen extends ConsumerStatefulWidget {
   const SendScreen({super.key});
@@ -20,36 +25,62 @@ class _SendScreenState extends ConsumerState<SendScreen> {
   String? _error;
 
   @override
+  void initState() {
+    super.initState();
+    ScreenshotGuard.enableProtection();
+  }
+
+  @override
   void dispose() {
     _toCtrl.dispose();
     _amountCtrl.dispose();
+    ScreenshotGuard.disableProtection();
     super.dispose();
-  }
-
-  bool _isValidEvmAddress(String value) {
-    final exp = RegExp(r'^0x[a-fA-F0-9]{40}$');
-    return exp.hasMatch(value.trim());
   }
 
   Future<void> _send() async {
     setState(() => _error = null);
 
-    if (!_isValidEvmAddress(_toCtrl.text.trim())) {
+    final to = _toCtrl.text.trim();
+    final amountText = _amountCtrl.text.trim();
+
+    if (!EvmAddressUtils.isValidAddress(to)) {
       setState(() => _error = 'Dirección inválida');
       return;
     }
 
-    if ((_amountCtrl.text.trim()).isEmpty) {
+    if (!EvmAmounts.isPositiveDecimal(amountText)) {
       setState(() => _error = 'Monto inválido');
+      return;
+    }
+
+    if (EvmAmounts.hasTooManyDecimals(amountText, 18)) {
+      setState(() => _error = 'Demasiados decimales');
+      return;
+    }
+
+    final currentAddress =
+        ref.read(walletControllerProvider).valueOrNull?.account.address;
+    if (currentAddress != null &&
+        currentAddress.toLowerCase() == to.toLowerCase()) {
+      setState(() => _error = 'No podés enviarte fondos a vos mismo');
+      return;
+    }
+
+    final assets = ref.read(assetsControllerProvider).valueOrNull;
+    final nativeAsset =
+        (assets != null && assets.isNotEmpty) ? assets.first : null;
+    final balance = double.tryParse(nativeAsset?.displayBalance ?? '0') ?? 0;
+    final amount = double.tryParse(amountText.replaceAll(',', '.')) ?? 0;
+
+    if (amount > balance) {
+      setState(() => _error = 'Saldo insuficiente');
       return;
     }
 
     await ref
         .read(sendTransactionControllerProvider.notifier)
-        .sendNative(
-          toAddress: _toCtrl.text.trim(),
-          amountText: _amountCtrl.text.trim(),
-        );
+        .sendNative(toAddress: to, amountText: amountText);
 
     final state = ref.read(sendTransactionControllerProvider);
 
@@ -59,9 +90,7 @@ class _SendScreenState extends ConsumerState<SendScreen> {
     }
 
     final txHash = state.valueOrNull?.txHash;
-    if (txHash == null) return;
-
-    if (!mounted) return;
+    if (txHash == null || !mounted) return;
 
     showDialog<void>(
       context: context,

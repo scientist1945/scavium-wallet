@@ -2,17 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/core/security/screenshot_guard.dart';
 import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_card.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_primary_button.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
 import 'package:scavium_wallet/shared/widgets/section_title.dart';
 
-class BackupMnemonicScreen extends ConsumerWidget {
+class BackupMnemonicScreen extends ConsumerStatefulWidget {
   const BackupMnemonicScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BackupMnemonicScreen> createState() =>
+      _BackupMnemonicScreenState();
+}
+
+class _BackupMnemonicScreenState extends ConsumerState<BackupMnemonicScreen> {
+  @override
+  void initState() {
+    super.initState();
+    ScreenshotGuard.enableProtection();
+  }
+
+  @override
+  void dispose() {
+    ScreenshotGuard.disableProtection();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return FutureBuilder<String?>(
       future: ref.read(walletControllerProvider.notifier).readMnemonic(),
       builder: (context, snapshot) {
@@ -54,7 +73,7 @@ class BackupMnemonicScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               ScaviumPrimaryButton(
                 text: 'I saved it',
-                onPressed: () => context.go(RouteNames.home),
+                onPressed: () => context.go(RouteNames.confirmMnemonic),
               ),
             ],
           ),

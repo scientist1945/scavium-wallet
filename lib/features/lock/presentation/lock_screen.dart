@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/core/security/screenshot_guard.dart';
+import 'package:scavium_wallet/features/lock/application/app_lock_state_controller.dart';
 import 'package:scavium_wallet/features/lock/application/lock_controller.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_primary_button.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
@@ -21,12 +23,21 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   bool _bioLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    ScreenshotGuard.enableProtection();
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
+    ScreenshotGuard.disableProtection();
     super.dispose();
   }
 
   Future<void> _unlock() async {
+    setState(() => _error = null);
+
     final ok = await ref
         .read(lockControllerProvider.notifier)
         .validatePin(_controller.text);
@@ -34,6 +45,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
     if (!mounted) return;
 
     if (ok) {
+      ref.read(appLockStateControllerProvider.notifier).unlock();
       context.go(RouteNames.home);
     } else {
       setState(() {
@@ -58,6 +70,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
     });
 
     if (ok) {
+      ref.read(appLockStateControllerProvider.notifier).unlock();
       context.go(RouteNames.home);
     } else {
       setState(() {

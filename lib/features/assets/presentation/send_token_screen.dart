@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:scavium_wallet/features/blockchain/application/send_token_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:scavium_wallet/core/config/app_config.dart';
+import 'package:scavium_wallet/core/security/screenshot_guard.dart';
+import 'package:scavium_wallet/core/utils/evm_address.dart';
+import 'package:scavium_wallet/core/utils/evm_amounts.dart';
+import 'package:scavium_wallet/features/assets/application/assets_controller.dart';
 import 'package:scavium_wallet/features/assets/domain/token_info.dart';
+import 'package:scavium_wallet/features/blockchain/application/send_token_controller.dart';
+import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_primary_button.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
 import 'package:scavium_wallet/shared/widgets/section_title.dart';
@@ -23,36 +28,71 @@ class _SendTokenScreenState extends ConsumerState<SendTokenScreen> {
   String? _error;
 
   @override
+  void initState() {
+    super.initState();
+    ScreenshotGuard.enableProtection();
+  }
+
+  @override
   void dispose() {
     _toCtrl.dispose();
     _amountCtrl.dispose();
+    ScreenshotGuard.disableProtection();
     super.dispose();
-  }
-
-  bool _isValidAddress(String value) {
-    return RegExp(r'^0x[a-fA-F0-9]{40}$').hasMatch(value.trim());
   }
 
   Future<void> _send() async {
     setState(() => _error = null);
 
-    if (!_isValidAddress(_toCtrl.text.trim())) {
+    final to = _toCtrl.text.trim();
+    final amountText = _amountCtrl.text.trim();
+
+    if (!EvmAddressUtils.isValidAddress(to)) {
       setState(() => _error = 'Dirección inválida');
       return;
     }
 
-    if (_amountCtrl.text.trim().isEmpty) {
+    if (!EvmAmounts.isPositiveDecimal(amountText)) {
       setState(() => _error = 'Monto inválido');
+      return;
+    }
+
+    if (EvmAmounts.hasTooManyDecimals(amountText, widget.token.decimals)) {
+      setState(() => _error = 'Demasiados decimales');
+      return;
+    }
+
+    final currentAddress =
+        ref.read(walletControllerProvider).valueOrNull?.account.address;
+    if (currentAddress != null &&
+        currentAddress.toLowerCase() == to.toLowerCase()) {
+      setState(() => _error = 'No podés enviarte fondos a vos mismo');
+      return;
+    }
+
+    final assets = ref.read(assetsControllerProvider).valueOrNull ?? [];
+    final tokenAsset =
+        assets
+            .where((e) {
+              return (e.contractAddress ?? '').toLowerCase() ==
+                  widget.token.contractAddress.toLowerCase();
+            })
+            .cast<dynamic>()
+            .toList();
+
+    final balanceString =
+        tokenAsset.isNotEmpty ? tokenAsset.first.displayBalance : '0';
+    final balance = double.tryParse(balanceString.replaceAll(',', '.')) ?? 0;
+    final amount = double.tryParse(amountText.replaceAll(',', '.')) ?? 0;
+
+    if (amount > balance) {
+      setState(() => _error = 'Saldo insuficiente');
       return;
     }
 
     await ref
         .read(sendTokenControllerProvider.notifier)
-        .sendToken(
-          token: widget.token,
-          toAddress: _toCtrl.text.trim(),
-          amountText: _amountCtrl.text.trim(),
-        );
+        .sendToken(token: widget.token, toAddress: to, amountText: amountText);
 
     final state = ref.read(sendTokenControllerProvider);
     if (state.hasError) {
