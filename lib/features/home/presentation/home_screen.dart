@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
 import 'package:scavium_wallet/core/config/app_config.dart';
+import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_card.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final walletState = ref.watch(walletControllerProvider);
+    final profile = walletState.valueOrNull;
+
     return ScaviumScaffold(
       appBar: AppBar(
         title: const Text('SCAVIUM Wallet'),
@@ -27,14 +32,18 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Total Balance', style: TextStyle(fontSize: 14)),
+                const Text('Total Balance'),
                 const SizedBox(height: 10),
                 const Text(
                   '0.0000 SCAV',
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 10),
-                Text('Network: ${AppConfig.current.appName}'),
+                Text('Address: ${profile?.account.address ?? '-'}'),
+                const SizedBox(height: 6),
+                Text('Account: ${profile?.account.name ?? '-'}'),
+                const SizedBox(height: 6),
+                Text('ChainId: ${AppConfig.current.chainId}'),
               ],
             ),
           ),
@@ -57,26 +66,6 @@ class HomeScreen extends StatelessWidget {
                     _QuickAction(title: 'History', icon: Icons.receipt_long),
                     _QuickAction(title: 'Accounts', icon: Icons.wallet),
                   ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          const ScaviumCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Assets',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                ),
-                SizedBox(height: 16),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(child: Text('S')),
-                  title: Text('SCAVIUM'),
-                  subtitle: Text('Native token'),
-                  trailing: Text('0.0000'),
                 ),
               ],
             ),

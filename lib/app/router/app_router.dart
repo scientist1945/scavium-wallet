@@ -10,6 +10,9 @@ import 'package:scavium_wallet/features/onboarding/presentation/wallet_entry_scr
 import 'package:scavium_wallet/features/onboarding/presentation/welcome_screen.dart';
 import 'package:scavium_wallet/features/settings/presentation/settings_screen.dart';
 import 'package:scavium_wallet/features/splash/presentation/splash_screen.dart';
+import 'package:scavium_wallet/features/wallet/presentation/backup_mnemonic_screen.dart';
+import 'package:scavium_wallet/features/wallet/presentation/create_wallet_screen.dart';
+import 'package:scavium_wallet/features/wallet/presentation/import_wallet_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final storage = LocalStorageService();
@@ -32,6 +35,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.walletEntry,
         builder: (_, __) => const WalletEntryScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.createWallet,
+        builder: (_, __) => const CreateWalletScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.importWallet,
+        builder: (_, __) => const ImportWalletScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.backupMnemonic,
+        builder: (_, __) => const BackupMnemonicScreen(),
       ),
       GoRoute(path: RouteNames.lock, builder: (_, __) => const LockScreen()),
       GoRoute(path: RouteNames.home, builder: (_, __) => const HomeScreen()),

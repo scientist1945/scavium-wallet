@@ -1,0 +1,1 @@
+enum ImportedWalletType { mnemonic, privateKey }

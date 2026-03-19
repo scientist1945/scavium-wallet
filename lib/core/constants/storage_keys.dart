@@ -4,4 +4,11 @@ abstract final class StorageKeys {
   static const lockEnabled = 'lock_enabled';
   static const hideBalances = 'hide_balances';
   static const appPin = 'app_pin';
+
+  static const walletType = 'wallet_type';
+  static const walletMnemonic = 'wallet_mnemonic';
+  static const walletPrivateKey = 'wallet_private_key';
+  static const walletAddress = 'wallet_address';
+  static const walletAccountName = 'wallet_account_name';
+  static const biometricEnabled = 'biometric_enabled';
 }

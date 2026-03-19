@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:scavium_wallet/features/lock/application/lock_controller.dart';
+import 'package:go_router/go_router.dart';
+import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_card.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
 
@@ -9,35 +11,25 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lockState = ref.watch(lockControllerProvider);
-
     return ScaviumScaffold(
       appBar: AppBar(title: const Text('Settings')),
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           ScaviumCard(
-            child: Column(
-              children: [
-                SwitchListTile(
-                  value: lockState.valueOrNull ?? false,
-                  onChanged: (value) async {
-                    if (value) {
-                      await ref
-                          .read(lockControllerProvider.notifier)
-                          .enableLock();
-                    } else {
-                      await ref
-                          .read(lockControllerProvider.notifier)
-                          .disableLock();
-                    }
-                  },
-                  title: const Text('Enable local lock'),
-                  subtitle: const Text(
-                    'Phase 1 uses a basic PIN placeholder to wire the security flow.',
-                  ),
-                ),
-              ],
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Reset wallet'),
+              subtitle: const Text(
+                'Delete locally stored wallet data from this device.',
+              ),
+              trailing: const Icon(Icons.delete_outline),
+              onTap: () async {
+                await ref.read(walletControllerProvider.notifier).resetWallet();
+                if (context.mounted) {
+                  context.go(RouteNames.walletEntry);
+                }
+              },
             ),
           ),
           const SizedBox(height: 16),
@@ -52,7 +44,7 @@ class SettingsScreen extends ConsumerWidget {
                 SizedBox(height: 12),
                 Text('SCAVIUM Wallet'),
                 SizedBox(height: 4),
-                Text('Version 0.1.0'),
+                Text('Version 0.2.0'),
               ],
             ),
           ),
