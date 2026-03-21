@@ -73,37 +73,33 @@ IDI_APP_ICON            ICON                    "resources\\app_icon.ico"
 #endif
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION VERSION_AS_NUMBER
- PRODUCTVERSION VERSION_AS_NUMBER
- FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
-#ifdef _DEBUG
- FILEFLAGS VS_FF_DEBUG
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS VOS__WINDOWS32
- FILETYPE VFT_APP
- FILESUBTYPE 0x0L
-BEGIN
+    FILEVERSION VERSION_AS_NUMBER
+    PRODUCTVERSION VERSION_AS_NUMBER
+    FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+    FILEFLAGS 0x0L
+    FILEOS VOS__WINDOWS32
+    FILETYPE VFT_APP
+    FILESUBTYPE 0x0L
+{
     BLOCK "StringFileInfo"
-    BEGIN
+    {
         BLOCK "040904e4"
-        BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "scavium_wallet" "\0"
-            VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "scavium_wallet" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "scavium_wallet.exe" "\0"
-            VALUE "ProductName", "scavium_wallet" "\0"
-            VALUE "ProductVersion", VERSION_AS_STRING "\0"
-        END
-    END
+        {
+            VALUE "CompanyName", "SCAVO Technologies"
+            VALUE "FileDescription", "SCAVIUM Wallet"
+            VALUE "FileVersion", VERSION_AS_STRING
+            VALUE "InternalName", "scavium_wallet"
+            VALUE "LegalCopyright", "Copyright (C) 2026 SCAVO Technologies. All rights reserved."
+            VALUE "OriginalFilename", "scavium_wallet.exe"
+            VALUE "ProductName", "SCAVIUM Wallet"
+            VALUE "ProductVersion", VERSION_AS_STRING
+        }
+    }
     BLOCK "VarFileInfo"
-    BEGIN
+    {
         VALUE "Translation", 0x409, 1252
-    END
-END
+    }
+}
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

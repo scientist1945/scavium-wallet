@@ -551,3 +551,124 @@ At the end of Phase 6.3:
 ### Next Phase
 
 Phase 6.4 — Windows Packaging & Desktop Branding
+
+---
+
+
+## Phase 6.4 — Windows Packaging & Desktop Branding
+
+### Objective
+
+Prepare the Windows desktop target for production distribution by aligning executable identity, application metadata, and visual branding with SCAVIUM standards.
+
+---
+
+### Scope
+
+This subphase includes:
+
+- executable naming strategy
+- Windows metadata configuration
+- application icon replacement
+- desktop branding alignment
+- release build validation
+
+No wallet functionality or architecture changes are introduced.
+
+---
+
+### Executable Naming
+
+The Windows build kept a technical executable filename for CMake compatibility:
+
+- `scavium_wallet.exe`
+
+User-facing branding was applied through Windows file metadata and icon resources rather than through a spaced executable filename.
+
+This preserves build stability while keeping the application identity aligned with SCAVIUM branding in Windows Explorer and system dialogs.
+
+---
+
+### Application Metadata
+
+Windows application metadata was updated via the `Runner.rc` resource file.
+
+Updated fields include:
+
+- CompanyName
+- FileDescription
+- FileVersion
+- ProductName
+- ProductVersion
+- OriginalFilename
+- LegalCopyright
+
+Brand-visible values were aligned with:
+
+- `SCAVIUM Wallet`
+
+The technical original filename remains:
+
+- `scavium_wallet.exe`
+
+This ensures proper identification in Windows Explorer and system dialogs while preserving build compatibility.
+
+---
+
+### Icon Replacement
+
+The default Flutter application icon was replaced with the SCAVIUM branding icon.
+
+The icon file:
+
+- `windows/runner/resources/app_icon.ico`
+
+was generated from the official SCAVIUM SVG asset to preserve visual quality.
+
+The icon includes multiple resolutions:
+
+- 16x16
+- 32x32
+- 48x48
+- 256x256
+
+---
+
+### Build Validation
+
+The Windows release build pipeline was executed successfully:
+
+- `fvm flutter build windows --release`
+
+Output directory:
+
+- `build/windows/x64/runner/Release/`
+
+Generated executable:
+
+- `build/windows/x64/runner/Release/scavium_wallet.exe`
+
+Runtime validation confirmed:
+
+- executable generation
+- metadata propagation
+- icon replacement
+- successful application launch
+
+---
+
+### Result
+
+At the end of Phase 6.4:
+
+- Windows executable generation is stable
+- application metadata is aligned with SCAVIUM branding
+- application icon is replaced
+- default Flutter placeholders are removed
+- Windows build is production-ready
+
+---
+
+### Next Phase
+
+Phase 6.2 — iOS Packaging & App Store Readiness
