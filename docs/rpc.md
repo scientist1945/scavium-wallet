@@ -1,46 +1,78 @@
-# SCAVIUM Wallet — RPC Layer
+# SCAVIUM Wallet — RPC System
 
-## 🧭 Context
+## 🧭 Overview
 
-This document describes the RPC layer as implemented up to Phase 5.4.
-
-(Phase 5.5 introduces HTTPS and multi-RPC improvements.)
+The RPC system is designed to be **resilient, observable and production-ready**.
 
 ---
 
-## 🔗 Current Implementation
+## 🔗 Multi-RPC
 
-- JSON-RPC over HTTP
-- Single endpoint configuration
-- Direct communication with Besu node
+Configured in:
 
----
+AppConfig.rpcUrls
 
-## 🧱 Architecture
-
-Wallet → HTTP → Besu
+Supports multiple endpoints.
 
 ---
 
-## 📡 Methods Used
+## 🔁 Failover
 
-- eth_chainId  
-- eth_blockNumber  
-- eth_gasPrice  
-- eth_getBalance  
-- eth_sendRawTransaction  
-- eth_getTransactionReceipt  
+- READ operations:
+  - rotate across nodes
+- WRITE operations:
+  - use active node only
 
 ---
 
-## ⚠️ Limitations
+## ⏱️ Cooldown
 
-- no failover
-- no load balancing
-- no TLS (pre-5.5)
+- Failed nodes enter cooldown (e.g., 60 seconds)
+- Stored in local storage
+- Prevents repeated failures
 
 ---
 
-## 🚀 Conclusion
+## 💾 Persistence
 
-The RPC layer is functional and stable, forming the base for Phase 5.5 improvements.
+- active RPC index
+- cooldown state
+
+---
+
+## 📊 Observability
+
+Exposed via:
+
+rpc_status_controller
+
+Displayed in:
+
+- Home screen
+- RPC diagnostics screen
+
+---
+
+## 🧠 Error Handling
+
+Retryable errors:
+
+- network issues
+- timeouts
+- TLS errors
+- malformed responses
+
+Non-retryable:
+
+- invalid arguments
+- contract errors
+
+---
+
+## 🎯 Result
+
+The RPC system ensures:
+
+- high availability
+- graceful degradation
+- user transparency

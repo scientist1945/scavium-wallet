@@ -1,129 +1,96 @@
 # SCAVIUM Wallet — Deep Architecture
 
-## 🧭 Context
+## 🧠 Overview
 
-This document describes the **internal architectural model after Phase 5 (up to 5.4)**.
-
-It includes design decisions and trade-offs made across:
-
-- Phase 2 — Wallet core
-- Phase 3 — Blockchain integration
-- Phase 5 — Stability and lifecycle
+This document describes the internal flow of data and control across the system.
 
 ---
 
-## 🧠 Core Design Principles
+## 🔄 Data Flow
 
-- separation of concerns
-- predictable state management
-- UI decoupled from business logic
-- minimal side effects
-
----
-
-## 🧱 Layer Responsibilities
-
-### Presentation
-
-- Flutter widgets
-- no business logic
-- reacts to state
+UI → Controller → Service → RPC → Blockchain  
+                                 ↓  
+                             Response  
+                                 ↓  
+                        Controller → UI
 
 ---
 
-### Application
+## 🧩 Controllers
 
-- controllers (Riverpod)
-- orchestrates logic
-- triggers RPC calls
+Controllers are the core orchestrators.
 
----
+Examples:
 
-### Domain
-
-- pure models
-- no external dependencies
-
----
-
-### Data
-
-- repositories
-- RPC services
-- storage interaction
-
----
-
-## 🔗 Blockchain Layer
-
-Centralized in:
-
-scavium_rpc_service.dart
+- send_transaction_controller
+- native_send_preview_controller
+- assets_controller
+- rpc_status_controller
 
 Responsibilities:
 
-- RPC communication
-- gas estimation
-- transaction execution
-- receipt retrieval
+- validate inputs
+- call services
+- manage loading/error states
+- update UI
 
 ---
 
-## 🔄 State Invalidation Strategy
+## 🔗 Service Layer
 
-Instead of manual state mutation:
+Main service:
 
-ref.invalidate(provider)
+scavium_rpc_service.dart
 
-### Benefits
+Handles:
 
-- guarantees fresh data
-- avoids stale state
-- simplifies logic
-
----
-
-## 🔒 Lifecycle Model
-
-Managed via:
-
-- AppLifecycleGuard
-- appLockStateController
-
-### Behavior
-
-- lock on background
-- unlock restores state
-- router reacts automatically
+- RPC execution
+- retry logic
+- failover
+- cooldown
+- persistence
 
 ---
 
-## ⚖️ Trade-offs
+## 📦 Domain Models
 
-### Pros
+Located in:
 
-- clean separation
-- scalable architecture
-- easy debugging
+features/*/domain/
 
-### Cons
+Examples:
 
-- more boilerplate
-- requires strict discipline
-- higher initial complexity
-
----
-
-## 📊 Result
-
-A robust architecture that supports:
-
-- real-time updates
-- secure wallet behavior
-- extensibility for future features
+- NetworkInfo
+- TokenInfo
+- TransactionSendResult
+- NativeSendPreview
 
 ---
 
-## 🚀 Conclusion
+## 🧾 Storage Layer
 
-The system is designed for **long-term evolution and production stability**.
+Uses:
+
+- secure storage (keys)
+- local storage (state, rpc, flags)
+
+---
+
+## 🔁 Reactive Updates
+
+Controllers invalidate each other when needed:
+
+Example:
+
+- send → refresh assets + history
+- home → refresh network + rpc + balances
+
+---
+
+## 🧠 Key Design Decision
+
+All blockchain interaction is centralized through a **single RPC service**, ensuring:
+
+- consistency
+- observability
+- control over failures

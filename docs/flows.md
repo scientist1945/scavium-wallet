@@ -1,129 +1,44 @@
-# SCAVIUM Wallet — Deep Architecture
+# SCAVIUM Wallet — Core Flows
 
-## 🧭 Context
+## 💸 Send Transaction Flow
 
-This document describes the **internal architectural model after Phase 5 (up to 5.4)**.
-
-It includes design decisions and trade-offs made across:
-
-- Phase 2 — Wallet core
-- Phase 3 — Blockchain integration
-- Phase 5 — Stability and lifecycle
-
----
-
-## 🧠 Core Design Principles
-
-- separation of concerns
-- predictable state management
-- UI decoupled from business logic
-- minimal side effects
+1. User enters address and amount
+2. Input validation
+3. Preview generation (gas + fee)
+4. Confirmation dialog
+5. Transaction execution
+6. Save to local history
+7. Refresh assets and history
 
 ---
 
-## 🧱 Layer Responsibilities
+## 🔁 Auto-refresh Flow
 
-### Presentation
-
-- Flutter widgets
-- no business logic
-- reacts to state
-
----
-
-### Application
-
-- controllers (Riverpod)
-- orchestrates logic
-- triggers RPC calls
+1. Timer triggers refresh
+2. Check if app is locked
+3. Invalidate:
+   - network
+   - assets
+   - history
+   - rpc status
+4. UI updates automatically
 
 ---
 
-### Domain
+## 🔒 Lock Flow
 
-- pure models
-- no external dependencies
-
----
-
-### Data
-
-- repositories
-- RPC services
-- storage interaction
+1. App goes to background
+2. Lifecycle guard triggers lock
+3. Router redirects to lock screen
+4. Unlock restores state
 
 ---
 
-## 🔗 Blockchain Layer
+## 🔗 RPC Failover Flow
 
-Centralized in:
-
-scavium_rpc_service.dart
-
-Responsibilities:
-
-- RPC communication
-- gas estimation
-- transaction execution
-- receipt retrieval
-
----
-
-## 🔄 State Invalidation Strategy
-
-Instead of manual state mutation:
-
-ref.invalidate(provider)
-
-### Benefits
-
-- guarantees fresh data
-- avoids stale state
-- simplifies logic
-
----
-
-## 🔒 Lifecycle Model
-
-Managed via:
-
-- AppLifecycleGuard
-- appLockStateController
-
-### Behavior
-
-- lock on background
-- unlock restores state
-- router reacts automatically
-
----
-
-## ⚖️ Trade-offs
-
-### Pros
-
-- clean separation
-- scalable architecture
-- easy debugging
-
-### Cons
-
-- more boilerplate
-- requires strict discipline
-- higher initial complexity
-
----
-
-## 📊 Result
-
-A robust architecture that supports:
-
-- real-time updates
-- secure wallet behavior
-- extensibility for future features
-
----
-
-## 🚀 Conclusion
-
-The system is designed for **long-term evolution and production stability**.
+1. RPC request fails
+2. Check if error is retryable
+3. Mark node as failed (cooldown)
+4. Switch to next available node
+5. Retry request
+6. Update active node

@@ -1,124 +1,102 @@
 # SCAVIUM Wallet — Architecture
 
-## 🧭 Context
+## 🧭 Overview
 
-This document describes the **current architecture after Phase 5 (Core Wallet Implementation, up to 5.4)**.
+SCAVIUM Wallet follows a **modular, feature-driven architecture** designed for:
 
-It reflects the consolidated system resulting from:
+- scalability
+- maintainability
+- clear separation of concerns
+- production-grade reliability
 
-- Phase 1 — Foundation
-- Phase 2 — Wallet Core
-- Phase 3 — Blockchain Integration
-- Phase 4 — Assets & Tokens
-- Phase 5 — Stability, UX, and lifecycle integration
+The system is structured around **Flutter + Riverpod + Web3dart**.
 
 ---
 
-## 🏗️ Overview
+## 🏗️ Core Stack
 
-The application follows a **feature-based modular architecture**, built with:
-
-- Flutter + Dart
-- Riverpod (AsyncNotifier / Notifier)
+- Flutter (UI)
+- Dart (logic)
+- Riverpod (state management)
 - Web3dart (EVM interaction)
-- GoRouter (reactive navigation)
+- GoRouter (navigation)
 
 ---
 
-## 📁 Structure
+## 🧱 Architectural Principles
 
-Each feature is isolated and structured into:
+- Feature-based modularization
+- Clear separation: UI / Application / Domain / Data
+- Stateless UI + reactive state
+- Controlled side-effects via controllers
+- RPC abstraction layer
 
-- application/ → controllers and logic  
-- domain/ → models  
-- data/ → repositories and services  
-- presentation/ → UI  
+---
 
-### Main features
+## 📂 Feature Structure
 
 features/
-  wallet/
   blockchain/
+  wallet/
   assets/
   home/
   lock/
-  onboarding/
   settings/
 
----
+Each feature contains:
 
-## 🔁 Data Flow
-
-All interactions follow a consistent pattern:
-
-UI → Controller → Repository → RPC → Blockchain → Response → State → UI
-
----
-
-## ⚙️ State Management
-
-Riverpod is used as the central state layer.
-
-### Patterns
-
-- AsyncNotifier → async operations (RPC, balances, history)
-- Notifier → synchronous state (lock state, UI triggers)
+- application (controllers)
+- domain (models)
+- data (repositories/services)
+- presentation (UI)
 
 ---
 
-## 🔀 Navigation
+## 🔁 State Management
 
-Navigation is handled using GoRouter.
+All state is managed using **Riverpod AsyncNotifier**:
 
-### Key behaviors
+- async-safe
+- predictable lifecycle
+- reactive UI updates
 
-- route-based navigation
-- reactive redirects
-- lock-aware routing
-- onboarding flow control
+Controllers:
 
----
-
-## 🔄 Auto-refresh Model
-
-Implemented in:
-
-home_auto_refresh_controller.dart
-
-### Behavior
-
-- periodic timer (15 seconds)
-- invalidates core providers:
-  - network info
-  - assets
-  - transaction history
-
-### Conditions
-
-- disabled when locked
-- restarted after unlock
+- handle business logic
+- orchestrate RPC calls
+- update UI state
 
 ---
 
-## 🔒 Security Integration
+## 🔗 RPC Layer
 
-- private keys stored securely
+The RPC system is abstracted via:
+
+scavium_rpc_service.dart
+
+Responsibilities:
+
+- multi-endpoint support
+- failover handling
+- cooldown logic
+- request routing (read vs write)
+
+---
+
+## 🔒 Security Layer
+
+Includes:
+
 - lifecycle-based locking
-- no key exposure outside device
+- secure storage for keys
+- biometric integration (optional)
 
 ---
 
-## 📊 Result
+## 🎯 Result
 
-The architecture provides:
+The architecture enables:
 
-- scalability
-- modularity
-- predictable state flow
-- production-ready structure
-
----
-
-## 🚀 Conclusion
-
-Phase 5 establishes a **stable and extensible architecture** ready for production evolution.
+- safe transaction execution
+- resilient network communication
+- extensibility for future features (DEX, multi-account, etc)

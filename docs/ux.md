@@ -1,40 +1,50 @@
-# SCAVIUM Wallet — Security
+# SCAVIUM Wallet — UX Principles
 
-## 🧭 Context
+## 🎯 Goals
 
-Security mechanisms have been progressively introduced from Phase 2 to Phase 5.
-
----
-
-## 🔐 Key Storage
-
-- stored locally
-- secured via platform storage
-- never transmitted
+- clarity
+- safety
+- predictability
+- responsiveness
 
 ---
 
-## 🔒 Lock System
+## 💸 Transaction UX
 
-- PIN-based lock
-- lifecycle-triggered
-
----
-
-## 📱 Lifecycle Protection
-
-- app locks on background
-- prevents unauthorized access
+- preview before sending
+- clear fee display
+- confirmation dialog
 
 ---
 
-## ⚠️ Current Scope
+## 🔁 Feedback
 
-- basic security model
-- no biometric authentication yet
+- loading indicators
+- error messages
+- success confirmation
 
 ---
 
-## 🚀 Conclusion
+## 🔒 Security UX
 
-Security provides a **solid baseline for self-custody wallets**.
+- automatic lock
+- no sensitive data exposure
+- clear warnings
+
+---
+
+## 📊 RPC Transparency
+
+User can see:
+
+- active node
+- failover events
+- diagnostics
+
+---
+
+## 🧠 Philosophy
+
+The wallet should:
+
+> make blockchain complexity invisible, without hiding critical information

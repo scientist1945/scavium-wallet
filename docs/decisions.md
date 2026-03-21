@@ -1,81 +1,57 @@
-# SCAVIUM Wallet — Application Flows
+# SCAVIUM Wallet — Technical Decisions
 
-## 🧭 Context
+## 🧠 Key Decisions
 
-These flows represent the **final behavior of the wallet after Phase 5 (up to 5.4)**.
+### 1. Riverpod over other state managers
+Chosen for:
 
-Earlier phases introduced partial flows, which are now fully consolidated.
-
----
-
-## 💸 Transaction Flow
-
-### Native transaction
-
-1. User inputs address and amount  
-2. Input validation  
-3. Preview generation  
-4. User confirmation  
-5. Transaction execution  
-6. History persistence  
-7. State refresh  
+- predictability
+- async support
+- scalability
 
 ---
 
-## 🔍 Preview Flow
+### 2. Feature-based architecture
+Allows:
 
-Handled by:
-
-native_send_preview_controller.dart
-
-Includes:
-
-- gas estimation
-- fee calculation
-- total cost
+- modular development
+- clear boundaries
+- easier maintenance
 
 ---
 
-## 🔁 Auto-refresh Flow
+### 3. Single RPC abstraction
+All blockchain calls go through:
 
-1. Timer triggers  
-2. Check lock state  
-3. Invalidate providers  
-4. UI rebuild  
+scavium_rpc_service
 
----
+Benefits:
 
-## 🔒 Lifecycle Flow
-
-1. App goes to background  
-2. AppLifecycleGuard triggers lock  
-3. Router redirects to LockScreen  
-4. User unlocks  
-5. Router returns to Home  
-6. Auto-refresh restarts  
+- centralized control
+- easier debugging
+- failover support
 
 ---
 
-## 📊 History Flow
+### 4. Read vs Write separation
 
-1. Transaction sent  
-2. Saved locally  
-3. Marked as pending  
-4. Receipt polling  
-5. Updated to confirmed/failed  
+- READ: safe to retry
+- WRITE: must be deterministic
 
 ---
 
-## 📊 Result
+### 5. Local transaction history
 
-Flows are:
+Chosen for:
 
-- predictable
-- resilient
-- user-safe
+- independence from external indexers
+- faster UI feedback
 
 ---
 
-## 🚀 Conclusion
+### 6. Lifecycle-driven security
 
-All core flows are **fully operational and stable**.
+Lock based on app state:
+
+- prevents exposure
+- no reliance on timers only

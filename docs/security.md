@@ -1,46 +1,59 @@
-# SCAVIUM Wallet — RPC Layer
+# SCAVIUM Wallet — Security
 
-## 🧭 Context
+## 🧭 Overview
 
-This document describes the RPC layer as implemented up to Phase 5.4.
-
-(Phase 5.5 introduces HTTPS and multi-RPC improvements.)
+Security is a core aspect of SCAVIUM Wallet.
 
 ---
 
-## 🔗 Current Implementation
+## 🔐 Key Principles
 
-- JSON-RPC over HTTP
-- Single endpoint configuration
-- Direct communication with Besu node
-
----
-
-## 🧱 Architecture
-
-Wallet → HTTP → Besu
+- Self-custody
+- No private data leaves the device
+- Minimal exposure of sensitive information
 
 ---
 
-## 📡 Methods Used
+## 🔑 Key Management
 
-- eth_chainId  
-- eth_blockNumber  
-- eth_gasPrice  
-- eth_getBalance  
-- eth_sendRawTransaction  
-- eth_getTransactionReceipt  
+- Stored in secure storage
+- Never logged
+- Never transmitted externally
 
 ---
 
-## ⚠️ Limitations
+## 🔒 Lock System
 
-- no failover
-- no load balancing
-- no TLS (pre-5.5)
+- Triggered by lifecycle events
+- Prevents unauthorized access
+- Integrated with navigation
 
 ---
 
-## 🚀 Conclusion
+## 💸 Transaction Safety
 
-The RPC layer is functional and stable, forming the base for Phase 5.5 improvements.
+- Preview before execution
+- Explicit confirmation
+- Controlled RPC execution
+
+---
+
+## 🔗 RPC Security
+
+- HTTPS only
+- Controlled failover
+- Error normalization
+
+---
+
+## ⚠️ Current Limitations
+
+- No hardware wallet support
+- No multi-device sync
+- No advanced threat detection
+
+---
+
+## 🎯 Goal
+
+Provide a secure environment for managing digital assets while maintaining usability.

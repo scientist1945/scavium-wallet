@@ -1,37 +1,52 @@
-# SCAVIUM Wallet — UX
+# SCAVIUM Wallet — Release
 
-## 🧭 Context
+## 🧭 Overview
 
-UX improvements were consolidated in Phase 5.4.
-
----
-
-## 🎨 Principles
-
-- clarity
-- simplicity
-- consistency
+This document describes the release process for SCAVIUM Wallet.
 
 ---
 
-## 🔧 Improvements
+## 📦 Current State
 
-- loading states
-- snackbars
-- confirm dialogs
-- empty states
-- pull-to-refresh
+The wallet is ready for release preparation after Phase 5.
 
 ---
 
-## 🔀 Navigation
+## 🏗️ Release Steps (Phase 6)
 
-- predictable routing
-- minimal friction
-- quick access to actions
+1. Configure app metadata
+2. Define branding (icons, splash)
+3. Configure build targets
+4. Setup signing (Android / iOS)
+5. Generate production builds
+6. Prepare store assets
+7. Publish to stores
 
 ---
 
-## 🚀 Conclusion
+## 🔐 Signing
 
-UX is optimized for **clarity and usability**.
+- Android keystore required
+- iOS certificates required
+
+---
+
+## 📱 Targets
+
+- Android
+- iOS
+- Web (optional)
+
+---
+
+## 🧠 Notes
+
+- Ensure RPC endpoints are production-ready
+- Disable debug logs
+- Validate transaction flows
+
+---
+
+## 🎯 Goal
+
+Deliver a stable, secure and production-ready build.
