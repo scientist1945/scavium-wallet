@@ -259,3 +259,295 @@ At the end of this subphase:
 ## Next Phase
 
 Phase 6.1 — Android Packaging & Play Store Readiness
+
+---
+
+## Phase 6.1 — Android Packaging & Play Store Readiness
+
+### Objective
+
+Prepare the Android target for production release by finalizing platform branding, native launch configuration, package identity, release signing, and distributable build generation.
+
+This subphase does not introduce any wallet logic changes. All work is limited to packaging, branding, release configuration, and build pipeline stabilization.
+
+---
+
+### Scope
+
+Phase 6.1 includes:
+
+- Android package identity finalization
+- launcher/app icon replacement
+- native splash integration
+- release signing configuration
+- Android build tooling alignment
+- generation of production-ready release artifacts
+
+It explicitly excludes:
+
+- wallet feature changes
+- navigation changes
+- RPC logic changes
+- state management changes
+- business logic refactors
+
+---
+
+### Package Identity
+
+Android package identity was finalized using the production namespace:
+
+- `com.geryon.scavium_wallet`
+
+The Android entry point was aligned accordingly, including the `MainActivity.kt` package path and declaration.
+
+---
+
+### App Label
+
+The visible Android application label was updated to:
+
+- `SCAVIUM Wallet`
+
+This replaces the default Flutter template label and aligns the installed app identity with the SCAVIUM product branding.
+
+---
+
+### Branding Integration
+
+Android branding was updated using the official SCAVIUM branding kit.
+
+Applied branding areas include:
+
+- launcher icons
+- adaptive icon assets
+- native launch screen resources
+
+The Android target no longer uses the default Flutter placeholder branding.
+
+---
+
+### Native Splash
+
+The Android launch experience was aligned with the SCAVIUM Wallet branding using native Android launch resources.
+
+During implementation, an intermediate attempt was made to use Android 12+ splash theme attributes such as `postSplashScreenTheme`. This approach was removed in favor of the standard Flutter-native Android launch theme structure to maintain compatibility and reduce release risk.
+
+Final Android splash behavior uses:
+
+- `LaunchTheme`
+- `NormalTheme`
+- `launch_background.xml`
+
+This preserves a branded native launch screen without introducing unnecessary platform-specific complexity.
+
+---
+
+### Screenshot Protection Implementation
+
+The previous Android screenshot protection dependency based on `flutter_windowmanager` was removed due to Android Gradle Plugin compatibility issues.
+
+The project preserved the existing Dart-level API:
+
+- `ScreenshotGuard.enableProtection()`
+- `ScreenshotGuard.disableProtection()`
+
+Internally, the implementation was replaced with a native Android `MethodChannel` bridge that applies and clears:
+
+- `WindowManager.LayoutParams.FLAG_SECURE`
+
+This change removed a legacy dependency without changing the application architecture or security flow.
+
+---
+
+### Android Tooling Alignment
+
+To satisfy current Android dependency requirements and allow release builds to complete successfully, the Android build tooling was updated.
+
+Final Android tooling baseline:
+
+- Android Gradle Plugin: `8.9.1`
+- Gradle Wrapper: `8.11.1`
+- Kotlin Android Plugin: `2.1.0`
+- JDK: `17`
+
+This update was required to resolve release build failures caused by dependency metadata compatibility constraints.
+
+---
+
+### Release Signing
+
+A dedicated Android release keystore was generated and configured.
+
+Release signing details:
+
+- keystore type: PKCS12
+- alias: `scavium`
+
+The project now signs release artifacts using a dedicated release signing configuration instead of the default debug signing setup.
+
+Sensitive signing files were intentionally kept outside version control.
+
+---
+
+### Signing Verification
+
+Release signing configuration was validated using Gradle signing reports.
+
+The release variant resolved correctly to the configured SCAVIUM release keystore and exposed stable certificate fingerprints for store registration and release tracking.
+
+---
+
+### Build Artifacts
+
+The Android release pipeline successfully generated both primary production artifacts.
+
+Generated artifacts:
+
+- `build/app/outputs/bundle/release/app-release.aab`
+- `build/app/outputs/flutter-apk/app-release.apk`
+
+The Android App Bundle is the primary artifact intended for Google Play Console upload.
+
+The APK artifact is intended for direct installation, local validation, and manual QA.
+
+---
+
+### Repository Safety
+
+Signing-related files were excluded from version control.
+
+Protected files include:
+
+- `android/key.properties`
+- `android/keystores/`
+- `*.jks`
+- `*.keystore`
+
+This ensures release signing material is not committed into the repository.
+
+---
+
+### Result
+
+At the end of Phase 6.1:
+
+- Android package identity is finalized
+- Android branding is applied
+- native splash is stabilized
+- screenshot protection remains functional
+- release signing is configured and validated
+- release build generation is successful
+- Android artifacts are ready for internal validation and Play Store preparation
+
+---
+
+### Next Phase
+
+Phase 6.3 — Web Packaging & Production Branding
+
+---
+
+## Phase 6.3 — Web Packaging & Production Branding
+
+### Objective
+
+Prepare the Web target for production by replacing default Flutter template metadata and assets with SCAVIUM branding and ensuring a consistent Progressive Web App (PWA) configuration.
+
+---
+
+### Scope
+
+This subphase includes:
+
+- HTML metadata update
+- PWA manifest configuration
+- favicon and icon replacement
+- branding alignment with SCAVIUM identity
+- production web build validation
+
+No wallet logic or application behavior changes are introduced.
+
+---
+
+### HTML Metadata
+
+The default Flutter template metadata was replaced.
+
+Updated elements include:
+
+- application title
+- meta description
+- Apple web app configuration
+- favicon references
+
+Final application title:
+
+- SCAVIUM Wallet
+
+---
+
+### Manifest Configuration
+
+The web manifest was updated to reflect the SCAVIUM Wallet identity.
+
+Key updates:
+
+- `name`: SCAVIUM Wallet
+- `short_name`: SCAVIUM
+- `description`: self-custody wallet description
+- background and theme colors aligned to dark UI
+
+Default Flutter template values were removed.
+
+---
+
+### Icon Replacement
+
+Default Flutter icons were replaced with SCAVIUM branding assets.
+
+Generated icons:
+
+- `icon-192.png`
+- `icon-512.png`
+
+All icons were derived from the official SCAVIUM SVG asset (`icon/scavium-icon.svg`).
+
+---
+
+### Favicon
+
+Default Flutter favicon was replaced with SCAVIUM favicon assets.
+
+This ensures consistent browser tab identity across environments.
+
+---
+
+### Build Validation
+
+The web build pipeline was executed successfully:
+
+- `fvm flutter build web --release`
+
+Output directory:
+
+- `build/web/`
+
+The application loads correctly with updated branding and metadata.
+
+---
+
+### Result
+
+At the end of Phase 6.3:
+
+- Web branding is aligned with SCAVIUM identity
+- PWA metadata is correctly configured
+- default Flutter placeholders are removed
+- web build is production-ready and aligned with SCAVIUM branding
+
+---
+
+### Next Phase
+
+Phase 6.4 — Windows Packaging & Desktop Branding
