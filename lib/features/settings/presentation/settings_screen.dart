@@ -23,6 +23,18 @@ class SettingsScreen extends ConsumerWidget {
           ScaviumCard(
             child: ListTile(
               contentPadding: EdgeInsets.zero,
+              title: const Text('RPC diagnostics'),
+              subtitle: const Text(
+                'Inspect active RPC node, ping endpoints and switch the active node manually.',
+              ),
+              trailing: const Icon(Icons.router_outlined),
+              onTap: () => context.push(RouteNames.rpcDiagnostics),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ScaviumCard(
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
               title: const Text('Reset wallet'),
               subtitle: const Text(
                 'Delete locally stored wallet, token list and local transaction history.',

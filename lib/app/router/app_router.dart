@@ -11,6 +11,7 @@ import 'package:scavium_wallet/features/assets/presentation/assets_screen.dart';
 import 'package:scavium_wallet/features/assets/presentation/history_screen.dart';
 import 'package:scavium_wallet/features/assets/presentation/send_token_screen.dart';
 import 'package:scavium_wallet/features/blockchain/presentation/receive_screen.dart';
+import 'package:scavium_wallet/features/blockchain/presentation/rpc_diagnostics_screen.dart';
 import 'package:scavium_wallet/features/blockchain/presentation/send_screen.dart';
 import 'package:scavium_wallet/features/home/presentation/home_screen.dart';
 import 'package:scavium_wallet/features/lock/application/app_lock_state_controller.dart';
@@ -35,6 +36,7 @@ final routerRefreshNotifierProvider = Provider<RouterRefreshNotifier>((ref) {
 
   return notifier;
 });
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   final storage = LocalStorageService();
 
@@ -105,6 +107,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.confirmMnemonic,
         builder: (_, __) => const ConfirmMnemonicScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.rpcDiagnostics,
+        builder: (_, __) => const RpcDiagnosticsScreen(),
       ),
     ],
     redirect: (context, state) async {

@@ -18,4 +18,6 @@ abstract final class RouteNames {
   static const assetDetail = '/asset-detail';
   static const sendToken = '/send-token';
   static const history = '/history';
+
+  static const rpcDiagnostics = '/rpc-diagnostics';
 }

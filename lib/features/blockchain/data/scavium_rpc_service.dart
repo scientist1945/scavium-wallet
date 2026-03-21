@@ -10,6 +10,7 @@ import 'package:scavium_wallet/features/blockchain/domain/transaction_send_resul
 import 'package:scavium_wallet/features/wallet/data/wallet_repository_impl.dart';
 import 'package:scavium_wallet/features/wallet/domain/wallet_repository.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:scavium_wallet/features/blockchain/domain/scavium_rpc_status.dart';
 
 final httpClientProvider = Provider<http.Client>((ref) {
   final client = http.Client();
@@ -444,5 +445,68 @@ class ScaviumRpcService {
     }
 
     return raw;
+  }
+
+  ScaviumRpcStatus getRpcStatus() {
+    final rpcUrls = _validatedRpcUrls();
+
+    if (_activeRpcIndex < 0 || _activeRpcIndex >= rpcUrls.length) {
+      _activeRpcIndex = 0;
+    }
+
+    return ScaviumRpcStatus(
+      activeIndex: _activeRpcIndex,
+      activeRpcUrl: rpcUrls[_activeRpcIndex],
+      rpcUrls: List<String>.unmodifiable(rpcUrls),
+    );
+  }
+
+  Future<void> setActiveRpcByIndex(int index) async {
+    final rpcUrls = _validatedRpcUrls();
+
+    if (index < 0 || index >= rpcUrls.length) {
+      throw ArgumentError('Índice RPC inválido: $index');
+    }
+
+    final web3 = _web3ForUrl(rpcUrls[index]);
+
+    try {
+      await web3.getChainId();
+      _setActiveRpcIndex(index);
+    } finally {
+      web3.dispose();
+    }
+  }
+
+  Future<bool> pingActiveRpc() async {
+    final web3 = _web3ForUrl(activeRpcUrl);
+
+    try {
+      await web3.getChainId();
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      web3.dispose();
+    }
+  }
+
+  Future<bool> pingRpcByIndex(int index) async {
+    final rpcUrls = _validatedRpcUrls();
+
+    if (index < 0 || index >= rpcUrls.length) {
+      return false;
+    }
+
+    final web3 = _web3ForUrl(rpcUrls[index]);
+
+    try {
+      await web3.getChainId();
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      web3.dispose();
+    }
   }
 }
