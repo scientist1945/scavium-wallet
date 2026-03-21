@@ -1,17 +1,81 @@
-# Technical Decisions
+# SCAVIUM Wallet — Application Flows
 
-## Why Riverpod
-- better control over async
-- no context dependency
+## 🧭 Context
 
-## Why invalidate()
-- guarantees UI refresh
-- avoids stale AsyncData
+These flows represent the **final behavior of the wallet after Phase 5 (up to 5.4)**.
 
-## Why local history
-- no indexer dependency
-- faster UX
+Earlier phases introduced partial flows, which are now fully consolidated.
 
-## Known limitations
-- no incoming tx history
-- no multi-account
+---
+
+## 💸 Transaction Flow
+
+### Native transaction
+
+1. User inputs address and amount  
+2. Input validation  
+3. Preview generation  
+4. User confirmation  
+5. Transaction execution  
+6. History persistence  
+7. State refresh  
+
+---
+
+## 🔍 Preview Flow
+
+Handled by:
+
+native_send_preview_controller.dart
+
+Includes:
+
+- gas estimation
+- fee calculation
+- total cost
+
+---
+
+## 🔁 Auto-refresh Flow
+
+1. Timer triggers  
+2. Check lock state  
+3. Invalidate providers  
+4. UI rebuild  
+
+---
+
+## 🔒 Lifecycle Flow
+
+1. App goes to background  
+2. AppLifecycleGuard triggers lock  
+3. Router redirects to LockScreen  
+4. User unlocks  
+5. Router returns to Home  
+6. Auto-refresh restarts  
+
+---
+
+## 📊 History Flow
+
+1. Transaction sent  
+2. Saved locally  
+3. Marked as pending  
+4. Receipt polling  
+5. Updated to confirmed/failed  
+
+---
+
+## 📊 Result
+
+Flows are:
+
+- predictable
+- resilient
+- user-safe
+
+---
+
+## 🚀 Conclusion
+
+All core flows are **fully operational and stable**.
