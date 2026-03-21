@@ -672,3 +672,36 @@ At the end of Phase 6.4:
 ### Next Phase
 
 Phase 6.2 — iOS Packaging & App Store Readiness
+
+---
+
+## Phase 6.2 — iOS Packaging & App Store Readiness
+
+### Status
+
+Pending.
+
+---
+
+### Reason
+
+This phase requires a macOS environment with Xcode and Apple Developer signing configuration.
+
+Execution was intentionally deferred to avoid incomplete or unverified setup.
+
+---
+
+### Scope (Planned)
+
+- Bundle identifier configuration
+- App name and branding
+- AppIcon and launch assets
+- Info.plist configuration
+- signing (certificates + provisioning profiles)
+- archive and validation for App Store Connect
+
+---
+
+### Next Step
+
+Execute Phase 6.2 on a macOS environment with Xcode.
