@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300">
+  <polygon points="100,20 180,70 180,170 100,220 20,170 20,70"
+           fill="#F47C20"/>
+  <text x="100" y="160"
+        text-anchor="middle"
+        font-family="Arial"
+        font-size="90"
+        font-weight="bold"
+        fill="white">M</text>
+  <text x="220" y="150"
+        font-family="Arial"
+        font-size="110"
+        font-weight="bold"
+        fill="#3A3A3A">SCAVIUM</text>
+  <text x="220" y="210"
+        font-family="Arial"
+        font-size="40"
+        fill="#F47C20">FAST • LOW GAS</text>
+</svg>
