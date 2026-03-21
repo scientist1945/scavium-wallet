@@ -1,5 +1,12 @@
 # SCAVIUM Wallet
 
-SCAVIUM Wallet is a self-custody EVM-compatible wallet built with Flutter.
+Self-custody EVM-compatible wallet for SCAVIUM (Besu-based).
+
+## Features
+- BIP39/BIP32 wallet
+- Native + ERC-20
+- Auto-refresh
+- Lock screen
+- Transaction history
 
 See /docs for full documentation.
