@@ -445,3 +445,109 @@ At the end of Phase 6.1:
 ### Next Phase
 
 Phase 6.3 — Web Packaging & Production Branding
+
+---
+
+## Phase 6.3 — Web Packaging & Production Branding
+
+### Objective
+
+Prepare the Web target for production by replacing default Flutter template metadata and assets with SCAVIUM branding and ensuring a consistent Progressive Web App (PWA) configuration.
+
+---
+
+### Scope
+
+This subphase includes:
+
+- HTML metadata update
+- PWA manifest configuration
+- favicon and icon replacement
+- branding alignment with SCAVIUM identity
+- production web build validation
+
+No wallet logic or application behavior changes are introduced.
+
+---
+
+### HTML Metadata
+
+The default Flutter template metadata was replaced.
+
+Updated elements include:
+
+- application title
+- meta description
+- Apple web app configuration
+- favicon references
+
+Final application title:
+
+- SCAVIUM Wallet
+
+---
+
+### Manifest Configuration
+
+The web manifest was updated to reflect the SCAVIUM Wallet identity.
+
+Key updates:
+
+- `name`: SCAVIUM Wallet
+- `short_name`: SCAVIUM
+- `description`: self-custody wallet description
+- background and theme colors aligned to dark UI
+
+Default Flutter template values were removed.
+
+---
+
+### Icon Replacement
+
+Default Flutter icons were replaced with SCAVIUM branding assets.
+
+Generated icons:
+
+- `icon-192.png`
+- `icon-512.png`
+
+All icons were derived from the official SCAVIUM SVG asset (`icon/scavium-icon.svg`).
+
+---
+
+### Favicon
+
+Default Flutter favicon was replaced with SCAVIUM favicon assets.
+
+This ensures consistent browser tab identity across environments.
+
+---
+
+### Build Validation
+
+The web build pipeline was executed successfully:
+
+- `fvm flutter build web --release`
+
+Output directory:
+
+- `build/web/`
+
+The application loads correctly with updated branding and metadata.
+
+---
+
+### Result
+
+At the end of Phase 6.3:
+
+- Web branding is aligned with SCAVIUM identity
+- PWA metadata is correctly configured
+- default Flutter placeholders are removed
+- web build is production-ready and aligned with SCAVIUM branding
+
+---
+
+### Next Phase
+
+Phase 6.4 — Windows Packaging & Desktop Branding
