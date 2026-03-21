@@ -947,3 +947,99 @@ At the end of Phase 6.6:
 ### Next Phase
 
 Phase 6.7 — Store Deployment
+
+---
+
+## Phase 6.7 — Store Deployment
+
+### Objective
+
+Deploy SCAVIUM Wallet through Google Play using a staged rollout strategy to ensure stability and controlled exposure.
+
+---
+
+### Strategy
+
+Deployment follows a progressive rollout model:
+
+- Internal testing
+- Closed testing
+- Production release
+
+This minimizes risk and allows iterative stabilization.
+
+---
+
+### Internal Testing
+
+The application was deployed via Google Play Internal Testing.
+
+Purpose:
+
+- validate installation flow
+- detect runtime issues
+- identify regressions
+- verify signing and distribution
+
+Artifacts used:
+
+- Android App Bundle (`.aab`)
+
+Testers include:
+
+- development team
+- technical users
+
+The application is currently installed and actively tested by real users.
+
+---
+
+### Iteration Cycle
+
+During internal testing:
+
+- issues are identified and reproduced
+- fixes are applied incrementally
+- build number is increased (`+BUILD`)
+- new release candidates are uploaded
+
+Example progression:
+
+- `0.2.1+3` → `0.2.1+4` → `0.2.1+5`
+
+---
+
+### Closed Testing (Planned)
+
+Once internal testing stabilizes:
+
+- the application will be promoted to Closed Testing
+- a broader user group will be introduced
+- real-world usage scenarios will be validated
+
+---
+
+### Production Release (Planned)
+
+Production deployment will be executed only when:
+
+- no blocking issues remain
+- Android regressions are resolved
+- core wallet flows are fully validated
+- release candidate is stable
+
+---
+
+### Result
+
+At the current state:
+
+- SCAVIUM Wallet is distributed via Internal Testing
+- real user feedback is being collected
+- stabilization phase is active
+
+---
+
+### Next Phase
+
+Phase 7 — Stabilization & Bug Fixing
