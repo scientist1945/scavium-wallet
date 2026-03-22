@@ -17,4 +17,10 @@
 - Phase 5 — Core Wallet  
   phase5_scavium_wallet.md
 
+- Phase 6 — Packaging, Branding, Release, and Store Deployment  
+  phase6_scavium_wallet.md
+
+- Phase 7 — Stabilization, Bug Fixing, and Release Candidate Hardening  
+  phase7_scavium_wallet.md
+
 ---

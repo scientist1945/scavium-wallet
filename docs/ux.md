@@ -30,6 +30,46 @@
 - automatic lock
 - no sensitive data exposure
 - clear warnings
+- support secure and low-friction unlock methods
+
+---
+
+## 🔐 Unlock UX
+
+The unlock experience must remain:
+
+- reliable
+- fast
+- predictable
+- consistent with device capabilities
+
+Biometric unlock should behave as an optional enhancement over the lock flow, not as a source of instability.
+
+Phase 7.1 specifically focused on restoring Android biometric reliability within the existing unlock experience.
+
+---
+
+## 👛 Wallet Safety UX
+
+The wallet flow must not imply successful persistence when the required secure state is missing or inconsistent.
+
+For that reason, Phase 7.2 hardened:
+
+- backup confirmation gating
+- startup wallet validation
+- persistence correctness assumptions
+
+The result is a more defensive UX that prefers safe fallback over silent inconsistency.
+
+---
+
+## 🎨 Branding UX
+
+Visible branding should remain consistent between packaged assets and runtime UI.
+
+For that reason, Phase 7.3 corrected the shared in-app logo widget so that splash and related views display the official SCAVIUM asset instead of a placeholder-style letter.
+
+This improves the first impression and overall visual coherence of the wallet experience.
 
 ---
 

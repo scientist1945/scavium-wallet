@@ -36,6 +36,7 @@ class _BackupMnemonicScreenState extends ConsumerState<BackupMnemonicScreen> {
       future: ref.read(walletControllerProvider.notifier).readMnemonic(),
       builder: (context, snapshot) {
         final mnemonic = snapshot.data;
+        final hasMnemonic = mnemonic != null && mnemonic.trim().isNotEmpty;
 
         return ScaviumScaffold(
           appBar: AppBar(title: const Text('Backup phrase')),
@@ -50,8 +51,10 @@ class _BackupMnemonicScreenState extends ConsumerState<BackupMnemonicScreen> {
               const SizedBox(height: 20),
               ScaviumCard(
                 child:
-                    mnemonic == null
-                        ? const Text('No mnemonic available for this wallet.')
+                    !hasMnemonic
+                        ? const Text(
+                          'No mnemonic available for this wallet. The wallet backup cannot be confirmed.',
+                        )
                         : Wrap(
                           spacing: 8,
                           runSpacing: 8,
@@ -73,7 +76,10 @@ class _BackupMnemonicScreenState extends ConsumerState<BackupMnemonicScreen> {
               const SizedBox(height: 24),
               ScaviumPrimaryButton(
                 text: 'I saved it',
-                onPressed: () => context.go(RouteNames.confirmMnemonic),
+                onPressed:
+                    hasMnemonic
+                        ? () => context.go(RouteNames.confirmMnemonic)
+                        : null,
               ),
             ],
           ),

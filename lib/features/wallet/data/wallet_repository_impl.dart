@@ -65,28 +65,62 @@ class WalletRepositoryImpl implements WalletRepository {
     final credentials = _credentialsFromMnemonic(normalized);
     final address = await credentials.extractAddress();
 
-    await secureStorage.write(StorageKeys.walletMnemonic, normalized);
-    await secureStorage.delete(StorageKeys.walletPrivateKey);
-    await secureStorage.write(
-      StorageKeys.walletType,
-      ImportedWalletType.mnemonic.name,
-    );
-    await secureStorage.write(StorageKeys.walletAddress, address.hexEip55);
-    await secureStorage.write(StorageKeys.walletAccountName, accountName);
+    try {
+      await secureStorage.writeAndVerify(
+        StorageKeys.walletMnemonic,
+        normalized,
+      );
+      await secureStorage.writeAndVerify(
+        StorageKeys.walletType,
+        ImportedWalletType.mnemonic.name,
+      );
+      await secureStorage.writeAndVerify(
+        StorageKeys.walletAddress,
+        address.hexEip55,
+      );
+      await secureStorage.writeAndVerify(
+        StorageKeys.walletAccountName,
+        accountName,
+      );
 
-    await localStorage.setBool(StorageKeys.walletCreated, true);
+      await secureStorage.delete(StorageKeys.walletPrivateKey);
 
-    return WalletProfile(
-      type: ImportedWalletType.mnemonic,
-      hasMnemonic: true,
-      biometricEnabled: await isBiometricEnabled(),
-      account: WalletAccount(
-        name: accountName,
-        address: address.hexEip55,
-        accountIndex: 0,
-        isImportedByPrivateKey: false,
-      ),
-    );
+      await _setWalletCreated(true);
+
+      final persistedMnemonic = await secureStorage.read(
+        StorageKeys.walletMnemonic,
+      );
+      final persistedType = await secureStorage.read(StorageKeys.walletType);
+      final persistedAddress = await secureStorage.read(
+        StorageKeys.walletAddress,
+      );
+      final persistedAccountName = await secureStorage.read(
+        StorageKeys.walletAccountName,
+      );
+
+      if (persistedMnemonic == null ||
+          persistedMnemonic.isEmpty ||
+          persistedType != ImportedWalletType.mnemonic.name ||
+          persistedAddress != address.hexEip55 ||
+          persistedAccountName != accountName) {
+        throw Exception('No se pudo persistir la wallet creada desde mnemonic');
+      }
+
+      return WalletProfile(
+        type: ImportedWalletType.mnemonic,
+        hasMnemonic: true,
+        biometricEnabled: await isBiometricEnabled(),
+        account: WalletAccount(
+          name: accountName,
+          address: address.hexEip55,
+          accountIndex: 0,
+          isImportedByPrivateKey: false,
+        ),
+      );
+    } catch (_) {
+      await _clearWalletAvailabilityFlags();
+      rethrow;
+    }
   }
 
   @override
@@ -103,28 +137,64 @@ class WalletRepositoryImpl implements WalletRepository {
     final credentials = EthPrivateKey.fromHex(normalized);
     final address = await credentials.extractAddress();
 
-    await secureStorage.delete(StorageKeys.walletMnemonic);
-    await secureStorage.write(StorageKeys.walletPrivateKey, normalized);
-    await secureStorage.write(
-      StorageKeys.walletType,
-      ImportedWalletType.privateKey.name,
-    );
-    await secureStorage.write(StorageKeys.walletAddress, address.hexEip55);
-    await secureStorage.write(StorageKeys.walletAccountName, accountName);
+    try {
+      await secureStorage.writeAndVerify(
+        StorageKeys.walletPrivateKey,
+        normalized,
+      );
+      await secureStorage.writeAndVerify(
+        StorageKeys.walletType,
+        ImportedWalletType.privateKey.name,
+      );
+      await secureStorage.writeAndVerify(
+        StorageKeys.walletAddress,
+        address.hexEip55,
+      );
+      await secureStorage.writeAndVerify(
+        StorageKeys.walletAccountName,
+        accountName,
+      );
 
-    await localStorage.setBool(StorageKeys.walletCreated, true);
+      await secureStorage.delete(StorageKeys.walletMnemonic);
 
-    return WalletProfile(
-      type: ImportedWalletType.privateKey,
-      hasMnemonic: false,
-      biometricEnabled: await isBiometricEnabled(),
-      account: WalletAccount(
-        name: accountName,
-        address: address.hexEip55,
-        accountIndex: 0,
-        isImportedByPrivateKey: true,
-      ),
-    );
+      await _setWalletCreated(true);
+
+      final persistedPrivateKey = await secureStorage.read(
+        StorageKeys.walletPrivateKey,
+      );
+      final persistedType = await secureStorage.read(StorageKeys.walletType);
+      final persistedAddress = await secureStorage.read(
+        StorageKeys.walletAddress,
+      );
+      final persistedAccountName = await secureStorage.read(
+        StorageKeys.walletAccountName,
+      );
+
+      if (persistedPrivateKey == null ||
+          persistedPrivateKey.isEmpty ||
+          persistedType != ImportedWalletType.privateKey.name ||
+          persistedAddress != address.hexEip55 ||
+          persistedAccountName != accountName) {
+        throw Exception(
+          'No se pudo persistir la wallet importada desde private key',
+        );
+      }
+
+      return WalletProfile(
+        type: ImportedWalletType.privateKey,
+        hasMnemonic: false,
+        biometricEnabled: await isBiometricEnabled(),
+        account: WalletAccount(
+          name: accountName,
+          address: address.hexEip55,
+          accountIndex: 0,
+          isImportedByPrivateKey: true,
+        ),
+      );
+    } catch (_) {
+      await _clearWalletAvailabilityFlags();
+      rethrow;
+    }
   }
 
   @override
@@ -134,6 +204,7 @@ class WalletRepositoryImpl implements WalletRepository {
     final accountName = await secureStorage.read(StorageKeys.walletAccountName);
 
     if (walletType == null || address == null || accountName == null) {
+      await _clearWalletAvailabilityFlags();
       return null;
     }
 
@@ -142,17 +213,42 @@ class WalletRepositoryImpl implements WalletRepository {
       orElse: () => ImportedWalletType.mnemonic,
     );
 
-    final mnemonic = await secureStorage.read(StorageKeys.walletMnemonic);
+    if (type == ImportedWalletType.mnemonic) {
+      final mnemonic = await secureStorage.read(StorageKeys.walletMnemonic);
+
+      if (mnemonic == null || mnemonic.isEmpty) {
+        await _clearWalletAvailabilityFlags();
+        return null;
+      }
+
+      return WalletProfile(
+        type: type,
+        hasMnemonic: true,
+        biometricEnabled: await isBiometricEnabled(),
+        account: WalletAccount(
+          name: accountName,
+          address: address,
+          accountIndex: 0,
+          isImportedByPrivateKey: false,
+        ),
+      );
+    }
+
+    final privateKey = await secureStorage.read(StorageKeys.walletPrivateKey);
+    if (privateKey == null || privateKey.isEmpty) {
+      await _clearWalletAvailabilityFlags();
+      return null;
+    }
 
     return WalletProfile(
       type: type,
-      hasMnemonic: mnemonic != null && mnemonic.isNotEmpty,
+      hasMnemonic: false,
       biometricEnabled: await isBiometricEnabled(),
       account: WalletAccount(
         name: accountName,
         address: address,
         accountIndex: 0,
-        isImportedByPrivateKey: type == ImportedWalletType.privateKey,
+        isImportedByPrivateKey: true,
       ),
     );
   }
@@ -169,8 +265,13 @@ class WalletRepositoryImpl implements WalletRepository {
 
   @override
   Future<void> savePin(String pin) async {
-    await secureStorage.write(StorageKeys.appPin, pin);
+    await secureStorage.writeAndVerify(StorageKeys.appPin, pin);
     await localStorage.setBool(StorageKeys.lockEnabled, true);
+
+    final enabled = await localStorage.getBool(StorageKeys.lockEnabled);
+    if (!enabled) {
+      throw Exception('No se pudo persistir el lock PIN');
+    }
   }
 
   @override
@@ -182,6 +283,15 @@ class WalletRepositoryImpl implements WalletRepository {
   @override
   Future<void> enableBiometric(bool enabled) async {
     await localStorage.setBool(StorageKeys.biometricEnabled, enabled);
+
+    final persisted = await localStorage.getBool(
+      StorageKeys.biometricEnabled,
+      defaultValue: false,
+    );
+
+    if (persisted != enabled) {
+      throw Exception('No se pudo persistir el estado de biometría');
+    }
   }
 
   @override
@@ -198,6 +308,24 @@ class WalletRepositoryImpl implements WalletRepository {
     await secureStorage.delete(StorageKeys.walletAccountName);
     await secureStorage.delete(StorageKeys.appPin);
 
+    await localStorage.setBool(StorageKeys.walletCreated, false);
+    await localStorage.setBool(StorageKeys.biometricEnabled, false);
+    await localStorage.setBool(StorageKeys.lockEnabled, false);
+  }
+
+  Future<void> _setWalletCreated(bool value) async {
+    await localStorage.setBool(StorageKeys.walletCreated, value);
+    final persisted = await localStorage.getBool(
+      StorageKeys.walletCreated,
+      defaultValue: false,
+    );
+
+    if (persisted != value) {
+      throw Exception('No se pudo persistir el estado walletCreated');
+    }
+  }
+
+  Future<void> _clearWalletAvailabilityFlags() async {
     await localStorage.setBool(StorageKeys.walletCreated, false);
     await localStorage.setBool(StorageKeys.biometricEnabled, false);
     await localStorage.setBool(StorageKeys.lockEnabled, false);

@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
 import 'package:scavium_wallet/core/constants/storage_keys.dart';
 import 'package:scavium_wallet/core/services/local_storage_service.dart';
+import 'package:scavium_wallet/core/services/secure_storage_service.dart';
+import 'package:scavium_wallet/features/wallet/data/wallet_repository_impl.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_logo.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
 
@@ -27,7 +29,14 @@ class _SplashScreenState extends State<SplashScreen> {
     final onboardingCompleted = await storage.getBool(
       StorageKeys.onboardingCompleted,
     );
-    final walletCreated = await storage.getBool(StorageKeys.walletCreated);
+
+    final repo = WalletRepositoryImpl(
+      secureStorage: SecureStorageService(),
+      localStorage: storage,
+    );
+
+    final profile = await repo.loadWalletProfile();
+    final walletCreated = profile != null;
 
     await Future<void>.delayed(const Duration(milliseconds: 1200));
 

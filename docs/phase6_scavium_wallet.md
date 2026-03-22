@@ -551,3 +551,495 @@ At the end of Phase 6.3:
 ### Next Phase
 
 Phase 6.4 — Windows Packaging & Desktop Branding
+
+---
+
+
+## Phase 6.4 — Windows Packaging & Desktop Branding
+
+### Objective
+
+Prepare the Windows desktop target for production distribution by aligning executable identity, application metadata, and visual branding with SCAVIUM standards.
+
+---
+
+### Scope
+
+This subphase includes:
+
+- executable naming strategy
+- Windows metadata configuration
+- application icon replacement
+- desktop branding alignment
+- release build validation
+
+No wallet functionality or architecture changes are introduced.
+
+---
+
+### Executable Naming
+
+The Windows build kept a technical executable filename for CMake compatibility:
+
+- `scavium_wallet.exe`
+
+User-facing branding was applied through Windows file metadata and icon resources rather than through a spaced executable filename.
+
+This preserves build stability while keeping the application identity aligned with SCAVIUM branding in Windows Explorer and system dialogs.
+
+---
+
+### Application Metadata
+
+Windows application metadata was updated via the `Runner.rc` resource file.
+
+Updated fields include:
+
+- CompanyName
+- FileDescription
+- FileVersion
+- ProductName
+- ProductVersion
+- OriginalFilename
+- LegalCopyright
+
+Brand-visible values were aligned with:
+
+- `SCAVIUM Wallet`
+
+The technical original filename remains:
+
+- `scavium_wallet.exe`
+
+This ensures proper identification in Windows Explorer and system dialogs while preserving build compatibility.
+
+---
+
+### Icon Replacement
+
+The default Flutter application icon was replaced with the SCAVIUM branding icon.
+
+The icon file:
+
+- `windows/runner/resources/app_icon.ico`
+
+was generated from the official SCAVIUM SVG asset to preserve visual quality.
+
+The icon includes multiple resolutions:
+
+- 16x16
+- 32x32
+- 48x48
+- 256x256
+
+---
+
+### Build Validation
+
+The Windows release build pipeline was executed successfully:
+
+- `fvm flutter build windows --release`
+
+Output directory:
+
+- `build/windows/x64/runner/Release/`
+
+Generated executable:
+
+- `build/windows/x64/runner/Release/scavium_wallet.exe`
+
+Runtime validation confirmed:
+
+- executable generation
+- metadata propagation
+- icon replacement
+- successful application launch
+
+---
+
+### Result
+
+At the end of Phase 6.4:
+
+- Windows executable generation is stable
+- application metadata is aligned with SCAVIUM branding
+- application icon is replaced
+- default Flutter placeholders are removed
+- Windows build is production-ready
+
+---
+
+### Next Phase
+
+Phase 6.2 — iOS Packaging & App Store Readiness
+
+---
+
+## Phase 6.2 — iOS Packaging & App Store Readiness
+
+### Status
+
+Deferred.
+
+---
+
+### Reason
+
+This phase requires a macOS environment with Xcode and Apple Developer signing configuration.
+
+Execution was intentionally deferred to avoid incomplete or unverified setup.
+
+---
+
+### Scope (Planned)
+
+- Bundle identifier configuration
+- App name and branding
+- AppIcon and launch assets
+- Info.plist configuration
+- signing (certificates + provisioning profiles)
+- archive and validation for App Store Connect
+
+---
+
+### Next Step
+
+Execute Phase 6.2 on a macOS environment with Xcode.
+
+---
+
+## Phase 6.6 — Release Preparation
+
+### Objective
+
+Prepare SCAVIUM Wallet for controlled release by defining versioning rules, artifact conventions, validation criteria, release checkpoints, and operational readiness requirements.
+
+This phase does not introduce feature changes. It formalizes the release process around the already completed packaging and branding work.
+
+---
+
+### Scope
+
+This subphase includes:
+
+- versioning strategy
+- build artifact naming conventions
+- release candidate criteria
+- pre-release validation checklist
+- release checklist
+- platform readiness summary
+- deferred platform tracking
+
+It excludes:
+
+- new wallet functionality
+- architecture changes
+- platform redesign
+- store listing content finalization
+
+---
+
+### Release Baseline
+
+At the beginning of Phase 6.6, the project status is:
+
+- Phase 6.5 completed
+- Phase 6.1 completed
+- Phase 6.3 completed
+- Phase 6.4 completed
+- Phase 6.2 deferred pending macOS/Xcode environment
+
+This means Android, Web, and Windows packaging are operational, while iOS remains intentionally pending.
+
+---
+
+### Target Environment
+
+The current release preparation is targeting:
+
+- `Testnet`
+
+This release is intended for controlled distribution and validation before any production deployment.
+
+---
+
+### Versioning Strategy
+
+Current release candidate version:
+
+- `0.2.1+3`
+
+Versioning follows:
+
+- `MAJOR.MINOR.PATCH+BUILD`
+
+Version intent:
+
+- `MAJOR`: major product milestones
+- `MINOR`: feature phase increments
+- `PATCH`: fixes and stabilization
+- `BUILD`: build iteration number
+
+---
+
+### Release Candidate Status
+
+Current build status:
+
+- **Release Candidate (RC1)**
+
+Validation status:
+
+- user-level testing executed
+- core flows exercised by real users
+- minor regressions identified (Android)
+
+The current release is **not considered final** and requires stabilization.
+
+---
+
+### Known Issues
+
+At the time of Phase 6.6:
+
+- some Android behaviors previously working have regressed
+- issues are non-blocking but require correction before production release
+
+These issues must be resolved before advancing to production deployment.
+
+---
+
+### Artifact Conventions
+
+Generated artifacts:
+
+- Android App Bundle:
+  - `build/app/outputs/bundle/release/app-release.aab`
+- Android APK:
+  - `build/app/outputs/flutter-apk/app-release.apk`
+- Web build:
+  - `build/web/`
+- Windows release executable:
+  - `build/windows/x64/runner/Release/scavium_wallet.exe`
+
+Suggested archive naming:
+
+- `scavium-wallet-testnet-v0.2.1+3-android.aab`
+- `scavium-wallet-testnet-v0.2.1+3-android.apk`
+- `scavium-wallet-testnet-v0.2.1+3-web.zip`
+- `scavium-wallet-testnet-v0.2.1+3-windows.zip`
+
+---
+
+### Release Freeze Rule
+
+Once a release candidate is declared:
+
+Allowed changes:
+
+- bug fixes
+- crash fixes
+- regression fixes
+- packaging corrections
+- signing corrections
+
+Not allowed:
+
+- new features
+- architectural changes
+- UI redesign
+
+---
+
+### Pre-Release Validation Checklist
+
+- [x] Flutter version validated
+- [x] version updated to `0.2.1+3`
+- [x] branding assets finalized
+- [x] Android AAB build successful
+- [x] Android APK build successful
+- [x] Web build successful
+- [x] Windows build successful
+- [x] Android signing validated
+- [x] placeholders removed
+- [x] app naming consistent
+- [x] initial user testing performed
+- [ ] Android regressions resolved
+- [ ] final smoke test executed post-fix
+
+---
+
+### Smoke Test Minimum Set
+
+Validated partially:
+
+- [x] wallet creation
+- [x] wallet import
+- [x] unlock flow
+- [x] balance loading
+- [x] transaction flows access
+
+Pending re-validation after fixes:
+
+- [ ] Android-specific regression flows
+- [ ] full transaction cycle verification
+- [ ] session persistence validation
+
+---
+
+### Platform Readiness Summary
+
+#### Android
+
+Status:
+
+- Release Candidate
+
+Notes:
+
+- build stable
+- signing correct
+- regressions pending fix
+
+---
+
+#### Web
+
+Status:
+
+- Release-ready
+
+---
+
+#### Windows
+
+Status:
+
+- Release-ready
+
+---
+
+#### iOS
+
+Status:
+
+- Deferred
+
+Reason:
+
+- requires macOS and Xcode environment
+
+---
+
+### Result
+
+At the end of Phase 6.6:
+
+- release process is defined
+- release candidate (RC1) is established
+- artifacts are generated and traceable
+- testnet distribution is enabled
+- known issues are identified
+- production release is pending stabilization
+
+---
+
+### Next Phase
+
+Phase 6.7 — Store Deployment
+
+---
+
+## Phase 6.7 — Store Deployment
+
+### Objective
+
+Deploy SCAVIUM Wallet through Google Play using a staged rollout strategy to ensure stability and controlled exposure.
+
+---
+
+### Strategy
+
+Deployment follows a progressive rollout model:
+
+- Internal testing
+- Closed testing
+- Production release
+
+This minimizes risk and allows iterative stabilization.
+
+---
+
+### Internal Testing
+
+The application was deployed via Google Play Internal Testing.
+
+Purpose:
+
+- validate installation flow
+- detect runtime issues
+- identify regressions
+- verify signing and distribution
+
+Artifacts used:
+
+- Android App Bundle (`.aab`)
+
+Testers include:
+
+- development team
+- technical users
+
+The application is currently installed and actively tested by real users.
+
+---
+
+### Iteration Cycle
+
+During internal testing:
+
+- issues are identified and reproduced
+- fixes are applied incrementally
+- build number is increased (`+BUILD`)
+- new release candidates are uploaded
+
+Example progression:
+
+- `0.2.1+3` → `0.2.1+4` → `0.2.1+5`
+
+---
+
+### Closed Testing (Planned)
+
+Once internal testing stabilizes:
+
+- the application will be promoted to Closed Testing
+- a broader user group will be introduced
+- real-world usage scenarios will be validated
+
+---
+
+### Production Release (Planned)
+
+Production deployment will be executed only when:
+
+- no blocking issues remain
+- Android regressions are resolved
+- core wallet flows are fully validated
+- release candidate is stable
+
+---
+
+### Result
+
+At the current state:
+
+- SCAVIUM Wallet is distributed via Internal Testing
+- real user feedback is being collected
+- stabilization phase is active
+
+---
+
+### Next Phase
+
+Phase 7 — Stabilization & Bug Fixing
