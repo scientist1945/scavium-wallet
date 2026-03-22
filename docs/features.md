@@ -84,6 +84,10 @@ Phase 7.1 did not introduce a new feature.
 
 It restored Android biometric unlock reliability by fixing a platform integration regression in the existing biometric flow.
 
+Phase 7.2 also did not introduce a new feature.
+
+It hardened wallet persistence behavior, startup validation, and backup gating within the existing wallet model.
+
 ---
 
 ## 🎯 Summary

@@ -65,6 +65,8 @@ Other relevant services include:
 
 These services act as the preferred adaptation surface for release-stage fixes because they isolate runtime and platform details from the UI.
 
+From Phase 7.2 onward, the secure storage service also includes verification behavior for critical persistence paths so that sensitive wallet state is not assumed valid only because a write call was issued.
+
 ---
 
 ## 📦 Domain Models
@@ -97,6 +99,8 @@ Sensitive wallet material continues to belong to secure storage.
 
 Non-sensitive runtime and UI state continues to belong to local storage.
 
+Phase 7.2 hardens this layer by ensuring that startup and availability logic validate real secure state rather than relying only on local flags.
+
 ---
 
 ## 🔒 Lock and Unlock Path
@@ -112,6 +116,18 @@ The security flow is structured as:
 This lock-aware path was preserved during Phase 7.1.
 
 The Android biometric regression was corrected at the Android activity integration layer instead of changing controller ownership or router behavior.
+
+---
+
+## 👛 Wallet Availability Path
+
+The wallet availability path is now more defensive.
+
+The startup logic does not rely only on a wallet-created flag.
+
+Instead, the startup path loads the wallet profile from real persisted state and only considers the wallet valid if all required secret and metadata values are present and consistent.
+
+This avoids false-positive wallet availability under partial restore or failed persistence conditions.
 
 ---
 

@@ -68,6 +68,12 @@ Phase 7.1 specifically validated:
 
 - Android biometric unlock recovery after a production-distributed regression
 
+Phase 7.2 specifically validated:
+
+- hardened wallet persistence behavior
+- startup consistency under real persisted-state checks
+- safer backup progression behavior
+
 ---
 
 ## 🧠 Notes
@@ -77,6 +83,7 @@ Phase 7.1 specifically validated:
 - Validate transaction flows
 - Validate lock/unlock flows on real devices
 - Prefer minimal patches during release stabilization
+- Treat uninstall/reinstall recovery assumptions carefully in self-custody flows
 
 ---
 

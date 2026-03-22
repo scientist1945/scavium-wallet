@@ -48,6 +48,45 @@ Phase 7.1 stabilized the Android-specific part of this flow by correcting the na
 
 ---
 
+## 👛 Wallet Creation / Import Flow
+
+1. User creates or imports wallet
+2. Wallet repository derives or validates secret material
+3. Critical secret values are written to secure storage
+4. Persisted values are verified immediately
+5. Wallet metadata is written and checked
+6. Wallet availability is marked only after secure state is valid
+7. User continues through the existing onboarding/wallet flow
+
+Phase 7.2 hardened this flow to avoid silent success under invalid persistence conditions.
+
+---
+
+## 🧾 Backup Mnemonic Flow
+
+1. User reaches backup screen after mnemonic wallet creation/import path
+2. App loads mnemonic from secure storage
+3. Mnemonic is displayed only if available
+4. Backup confirmation can proceed only when mnemonic exists
+5. Confirmation flow continues under the existing route structure
+
+Phase 7.2 hardened this flow to prevent backup confirmation when mnemonic state is invalid.
+
+---
+
+## 🚀 Startup Wallet Availability Flow
+
+1. App starts on splash screen
+2. Startup flow loads onboarding state
+3. Startup flow loads wallet profile from persisted secure state
+4. App validates whether the wallet is actually available
+5. If wallet is valid, app continues to protected flow
+6. If wallet is invalid or inconsistent, app returns to wallet entry
+
+Phase 7.2 hardened this startup behavior to avoid trusting only local flags.
+
+---
+
 ## 🔗 RPC Failover Flow
 
 1. RPC request fails

@@ -96,6 +96,18 @@ Includes:
 
 ---
 
+## 🧾 Persistence Model
+
+Sensitive wallet material is stored through secure storage.
+
+Non-sensitive application state continues to be stored separately through local storage.
+
+From Phase 7.2 onward, wallet availability is treated as valid only when secure state and local runtime state remain internally consistent.
+
+This keeps the original persistence architecture intact while making the runtime behavior more defensive.
+
+---
+
 ## 🧩 Stabilization Model
 
 From Phase 7 onward, the architecture enters a stabilization-oriented operational mode.
@@ -107,7 +119,10 @@ This means:
 - no structural redesign is introduced during bug-fix phases
 - platform regressions are corrected locally without expanding scope
 
-A concrete example is the Android biometric fix of Phase 7.1, which was solved through a platform-layer correction without altering controllers, routing, or feature ownership.
+Concrete examples include:
+
+- the Android biometric fix of Phase 7.1, solved through a platform-layer correction
+- the wallet persistence hardening of Phase 7.2, solved through service, repository, startup, and Android manifest corrections without changing the overall architecture
 
 ---
 

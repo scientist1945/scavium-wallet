@@ -66,7 +66,10 @@ During Phase 7:
 - prefer service-layer or platform-layer patches when possible
 - validate fixes on real devices when the issue is platform-specific
 
-This rule was applied directly in Phase 7.1 for the Android biometric fix.
+These rules were applied directly in:
+
+- Phase 7.1 for the Android biometric fix
+- Phase 7.2 for wallet persistence hardening and startup-state validation
 
 ---
 

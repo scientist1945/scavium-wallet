@@ -1,84 +1,80 @@
-# SCAVIUM Wallet — Security
+# SCAVIUM Wallet — UX Principles
 
-## 🧭 Overview
+## 🎯 Goals
 
-Security is a core aspect of SCAVIUM Wallet.
-
-The wallet follows a self-custody model and uses layered protections to reduce accidental exposure and unauthorized access.
-
----
-
-## 🔐 Key Principles
-
-- Self-custody
-- No private data leaves the device
-- Minimal exposure of sensitive information
-- Platform protections should complement application protections
+- clarity
+- safety
+- predictability
+- responsiveness
 
 ---
 
-## 🔑 Key Management
+## 💸 Transaction UX
 
-- Stored in secure storage
-- Never logged
-- Never transmitted externally
-
----
-
-## 🔒 Lock System
-
-- Triggered by lifecycle events
-- Prevents unauthorized access
-- Integrated with navigation
-- Supports biometric unlock as an optional access path
+- preview before sending
+- clear fee display
+- confirmation dialog
 
 ---
 
-## 🔐 Biometric Security
+## 🔁 Feedback
 
-Biometrics are used as a convenience and protection layer for local unlock flows.
-
-This mechanism depends on correct native platform integration.
-
-In Phase 7.1, Android biometric support was stabilized by correcting the required Android activity integration for the existing biometric flow.
-
-This was a platform hardening fix, not a security model redesign.
+- loading indicators
+- error messages
+- success confirmation
 
 ---
 
-## 🛡️ Screen Protection
+## 🔒 Security UX
 
-On Android, screenshot protection is enforced through native window security flags exposed through a Flutter `MethodChannel`.
-
-This reduces the risk of casual screen capture of sensitive wallet content.
-
----
-
-## 💸 Transaction Safety
-
-- Preview before execution
-- Explicit confirmation
-- Controlled RPC execution
+- automatic lock
+- no sensitive data exposure
+- clear warnings
+- support secure and low-friction unlock methods
 
 ---
 
-## 🔗 RPC Security
+## 🔐 Unlock UX
 
-- HTTPS only
-- Controlled failover
-- Error normalization
+The unlock experience must remain:
 
----
+- reliable
+- fast
+- predictable
+- consistent with device capabilities
 
-## ⚠️ Current Limitations
+Biometric unlock should behave as an optional enhancement over the lock flow, not as a source of instability.
 
-- No hardware wallet support
-- No multi-device sync
-- No advanced threat detection
-- Secure storage is not a substitute for a user-managed recovery backup
+Phase 7.1 specifically focused on restoring Android biometric reliability within the existing unlock experience.
 
 ---
 
-## 🎯 Goal
+## 👛 Wallet Safety UX
 
-Provide a secure environment for managing digital assets while maintaining usability and release-stage stability.
+The wallet flow must not imply successful persistence when the required secure state is missing or inconsistent.
+
+For that reason, Phase 7.2 hardened:
+
+- backup confirmation gating
+- startup wallet validation
+- persistence correctness assumptions
+
+The result is a more defensive UX that prefers safe fallback over silent inconsistency.
+
+---
+
+## 📊 RPC Transparency
+
+User can see:
+
+- active node
+- failover events
+- diagnostics
+
+---
+
+## 🧠 Philosophy
+
+The wallet should:
+
+> make blockchain complexity invisible, without hiding critical information

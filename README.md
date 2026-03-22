@@ -32,6 +32,7 @@ Current state:
 - Local transaction persistence
 - Screenshot protection on Android via native bridge
 - Android biometric unlock regression addressed in Phase 7.1
+- Wallet persistence and restore-state hardening completed in Phase 7.2
 
 ---
 
@@ -90,6 +91,7 @@ This ensures high availability and consistent user experience even under network
 - Android screenshot protection
 - Optional biometric unlock
 - Controlled transaction execution flow
+- Defensive wallet persistence validation
 
 ---
 
@@ -126,9 +128,10 @@ Phase 7 focuses on:
 - release candidate hardening
 - stability improvements without architecture redesign
 
-Phase 7.1 specifically addressed:
+Phase 7 currently includes:
 
-- Android biometric unlock regression
+- Phase 7.1 → Android biometric unlock stabilization
+- Phase 7.2 → wallet persistence hardening and restore-state stabilization
 
 ---
 
@@ -138,16 +141,17 @@ Phase 7.1 specifically addressed:
 - No multi-account support yet
 - No advanced RPC metrics
 - Secure local storage is not a replacement for user-managed recovery backup
+- Uninstall/reinstall is not a supported wallet recovery strategy
 
 ---
 
 ## 🧱 Next Step
 
-After Phase 7.1, stabilization continues with:
+After Phase 7.2, stabilization continues with:
 
-- wallet persistence verification hardening
-- additional Android/runtime fixes
-- broader internal testing validation
+- additional runtime fixes reported by testers
+- repeated validation across Android devices
+- release candidate refinement
 - preparation of the next release candidate
 
 ---
@@ -156,4 +160,4 @@ After Phase 7.1, stabilization continues with:
 
 SCAVIUM Wallet is now a:
 
-> packaged, store-distributed and stabilization-focused wallet with a solid architecture and a controlled path toward broader release readiness
+> packaged, store-distributed and stabilization-focused wallet with a solid architecture, hardened local persistence behavior, and a controlled path toward broader release readiness

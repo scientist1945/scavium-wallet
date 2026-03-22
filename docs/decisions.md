@@ -89,3 +89,30 @@ Benefits:
 - lower regression risk
 - architecture preserved
 - safer release candidate rollout
+
+---
+
+### 10. Defensive wallet availability validation
+
+Phase 7.2 established that wallet availability must not be inferred only from local flags.
+
+The application must validate real secure wallet state before assuming that a wallet exists and can be opened safely.
+
+Benefits:
+
+- avoids false-positive wallet state
+- reduces startup inconsistency risk
+- keeps storage architecture intact
+- improves release candidate safety
+
+---
+
+### 11. Disable Android app backup to reduce partial restore risk
+
+Phase 7.2 also introduced explicit disabling of Android application backup to reduce the risk of partially restored non-sensitive state without matching secure wallet secrets.
+
+Benefits:
+
+- lower restore inconsistency risk
+- simpler and safer runtime assumptions
+- no architectural redesign required
