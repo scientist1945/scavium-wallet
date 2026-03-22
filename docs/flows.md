@@ -34,6 +34,20 @@
 
 ---
 
+## 🔐 Biometric Unlock Flow
+
+1. User reaches lock screen
+2. User selects biometric unlock
+3. Lock flow delegates to biometric service
+4. Platform biometric prompt is requested
+5. Authentication succeeds or fails
+6. On success, protected navigation is restored
+7. On failure, user remains on the lock screen
+
+Phase 7.1 stabilized the Android-specific part of this flow by correcting the native activity integration required by the biometric plugin.
+
+---
+
 ## 🔗 RPC Failover Flow
 
 1. RPC request fails

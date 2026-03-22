@@ -1,50 +1,84 @@
-# SCAVIUM Wallet — UX Principles
+# SCAVIUM Wallet — Security
 
-## 🎯 Goals
+## 🧭 Overview
 
-- clarity
-- safety
-- predictability
-- responsiveness
+Security is a core aspect of SCAVIUM Wallet.
 
----
-
-## 💸 Transaction UX
-
-- preview before sending
-- clear fee display
-- confirmation dialog
+The wallet follows a self-custody model and uses layered protections to reduce accidental exposure and unauthorized access.
 
 ---
 
-## 🔁 Feedback
+## 🔐 Key Principles
 
-- loading indicators
-- error messages
-- success confirmation
-
----
-
-## 🔒 Security UX
-
-- automatic lock
-- no sensitive data exposure
-- clear warnings
+- Self-custody
+- No private data leaves the device
+- Minimal exposure of sensitive information
+- Platform protections should complement application protections
 
 ---
 
-## 📊 RPC Transparency
+## 🔑 Key Management
 
-User can see:
-
-- active node
-- failover events
-- diagnostics
+- Stored in secure storage
+- Never logged
+- Never transmitted externally
 
 ---
 
-## 🧠 Philosophy
+## 🔒 Lock System
 
-The wallet should:
+- Triggered by lifecycle events
+- Prevents unauthorized access
+- Integrated with navigation
+- Supports biometric unlock as an optional access path
 
-> make blockchain complexity invisible, without hiding critical information
+---
+
+## 🔐 Biometric Security
+
+Biometrics are used as a convenience and protection layer for local unlock flows.
+
+This mechanism depends on correct native platform integration.
+
+In Phase 7.1, Android biometric support was stabilized by correcting the required Android activity integration for the existing biometric flow.
+
+This was a platform hardening fix, not a security model redesign.
+
+---
+
+## 🛡️ Screen Protection
+
+On Android, screenshot protection is enforced through native window security flags exposed through a Flutter `MethodChannel`.
+
+This reduces the risk of casual screen capture of sensitive wallet content.
+
+---
+
+## 💸 Transaction Safety
+
+- Preview before execution
+- Explicit confirmation
+- Controlled RPC execution
+
+---
+
+## 🔗 RPC Security
+
+- HTTPS only
+- Controlled failover
+- Error normalization
+
+---
+
+## ⚠️ Current Limitations
+
+- No hardware wallet support
+- No multi-device sync
+- No advanced threat detection
+- Secure storage is not a substitute for a user-managed recovery backup
+
+---
+
+## 🎯 Goal
+
+Provide a secure environment for managing digital assets while maintaining usability and release-stage stability.

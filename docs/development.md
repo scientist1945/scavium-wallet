@@ -4,6 +4,8 @@
 
 Development follows a structured, phase-based approach to ensure stability and incremental progress.
 
+From Phase 7 onward, development also includes a stabilization discipline oriented to release candidate quality.
+
 ---
 
 ## 🧱 Tech Stack
@@ -28,10 +30,11 @@ lib/
 ## 🔁 Development Flow
 
 1. Define phase scope
-2. Implement feature
+2. Implement feature or corrective fix
 3. Integrate with existing architecture
-4. Test manually
+4. Test manually on real targets
 5. Consolidate phase
+6. document release impact
 
 ---
 
@@ -41,6 +44,7 @@ lib/
 - Maintain naming consistency
 - Prefer extension over refactoring
 - Keep controllers focused
+- During stabilization, prefer minimal and isolated fixes
 
 ---
 
@@ -52,12 +56,27 @@ lib/
 
 ---
 
+## 🔒 Stabilization Rules
+
+During Phase 7:
+
+- do not redesign architecture
+- do not rename existing structures
+- do not introduce new features while fixing regressions
+- prefer service-layer or platform-layer patches when possible
+- validate fixes on real devices when the issue is platform-specific
+
+This rule was applied directly in Phase 7.1 for the Android biometric fix.
+
+---
+
 ## 🧪 Testing Strategy
 
 Currently:
 
 - manual testing
-- real-node validation
+- real-device validation
+- internal tester feedback through Play Store Internal Testing
 
 Future:
 
@@ -68,4 +87,4 @@ Future:
 
 ## 🎯 Goal
 
-Maintain a stable, scalable and predictable codebase.
+Maintain a stable, scalable and predictable codebase while hardening release candidates safely.

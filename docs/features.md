@@ -2,7 +2,9 @@
 
 ## 🧭 Overview
 
-This document lists all implemented features up to Phase 5.
+This document lists all implemented features up to the current stabilization phase.
+
+Phase 7 does not add new feature scope. It hardens and validates the existing product.
 
 ---
 
@@ -45,6 +47,8 @@ This document lists all implemented features up to Phase 5.
 - Automatic lock on background
 - Session protection
 - Secure key handling
+- Optional biometric unlock
+- Android screenshot protection
 
 ---
 
@@ -74,6 +78,14 @@ This document lists all implemented features up to Phase 5.
 
 ---
 
+## 🛠️ Stabilization Notes
+
+Phase 7.1 did not introduce a new feature.
+
+It restored Android biometric unlock reliability by fixing a platform integration regression in the existing biometric flow.
+
+---
+
 ## 🎯 Summary
 
-The wallet supports all core operations required for a functional EVM wallet.
+The wallet supports all core operations required for a functional EVM wallet and is now in a stabilization stage focused on release quality rather than scope expansion.

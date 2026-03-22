@@ -679,7 +679,7 @@ Phase 6.2 — iOS Packaging & App Store Readiness
 
 ### Status
 
-Pending.
+Deferred.
 
 ---
 

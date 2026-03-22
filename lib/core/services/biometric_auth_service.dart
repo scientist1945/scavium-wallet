@@ -14,12 +14,16 @@ class BiometricAuthService {
   Future<bool> authenticate() async {
     try {
       final supported = await isDeviceSupported();
-      if (!supported) return false;
+      final canCheck = await canCheckBiometrics();
+
+      if (!supported || !canCheck) {
+        return false;
+      }
 
       return await _localAuthentication.authenticate(
         localizedReason: 'Authenticate to unlock SCAVIUM Wallet',
         options: const AuthenticationOptions(
-          biometricOnly: false,
+          biometricOnly: true,
           stickyAuth: true,
         ),
       );
