@@ -515,3 +515,224 @@ Phase 7.2 hardens wallet persistence and startup consistency without altering th
 The resulting behavior is safer, more defensive, and better aligned with release candidate requirements for a self-custody wallet.
 
 This subphase establishes the second stabilization milestone of Phase 7 and significantly reduces the risk of false wallet availability assumptions in RC2 / RC3 validation.
+
+---
+
+## Phase 7.3 — In-App Branding Correction for Splash and Shared Logo Usage
+
+### Objective
+
+Correct the in-app branding regression where the Flutter-rendered application splash was displaying a generic letter-based placeholder instead of the official SCAVIUM brand logo.
+
+The goal of this subphase is to align the visible in-app logo usage with the real project branding while preserving the existing UI structure, widget naming, asset organization, and route flow.
+
+This is a branding-correctness and visual consistency fix, not a redesign effort.
+
+### Initial Context
+
+After stabilizing Android biometrics and wallet persistence behavior, another tester-visible issue was identified in the visual layer.
+
+The problem did not affect the native Android launch screen configuration itself.
+
+Instead, it affected the Flutter-rendered splash and any other screens that reused the shared logo widget inside the app.
+
+The reported symptom was that the application was showing a stylized letter:
+
+- `S`
+
+instead of the actual SCAVIUM logo.
+
+This created a visible mismatch between the packaged brand assets and the runtime UI.
+
+### Reported Problem
+
+The issue reported was specifically:
+
+- the splash shown by the app itself was not using the official SCAVIUM logo
+- the logo widget used in the Flutter UI was rendering a placeholder-style branded letter rather than the actual project asset
+
+Because the widget was shared, the inconsistency affected not only the in-app splash but also any other screen using the same reusable component.
+
+### Impact
+
+Although this issue was not functional, it still had meaningful release impact.
+
+Visible effects included:
+
+- inconsistent product branding
+- lower perceived release quality
+- mismatch between app icon / packaged assets and in-app UI
+- avoidable tester-facing polish issue during release candidate validation
+
+Severity:
+
+- low from a runtime perspective
+- medium from a release-quality and branding-coherence perspective
+
+### Investigation Scope
+
+The investigation was intentionally restricted to the smallest safe surface:
+
+- shared logo widget implementation
+- current asset usage inside the widget
+- screens reusing the shared logo widget
+
+The following were explicitly not redesigned:
+
+- splash screen layout
+- onboarding layout
+- asset folder structure
+- widget naming
+- route flow
+- theme structure
+- branding package structure
+
+### Root Cause Analysis
+
+#### Root Cause
+
+The reusable shared logo widget did not render the official SCAVIUM asset.
+
+Instead, it rendered a custom visual placeholder composed in code, centered around a text-based letter mark:
+
+- `S`
+
+This meant the UI was not actually using the branded image assets already available in the project.
+
+Because the widget was shared, every screen depending on that widget inherited the same incorrect branding output.
+
+### Existing Project State
+
+The project already contained the appropriate branding assets and had them declared in `pubspec.yaml`.
+
+That meant the issue was not caused by missing resources, but by the shared widget implementation not using them.
+
+This significantly reduced the risk and scope of the fix.
+
+### Applied Fix
+
+#### Shared Logo Widget Correction
+
+The shared `ScaviumLogo` widget was updated so that it now renders the official square SCAVIUM branding asset instead of the placeholder letter-based composition.
+
+The selected asset path was:
+
+- `assets/branding/icon/scavium-icon.png`
+
+This asset was chosen because it is square and therefore naturally compatible with the existing widget sizing model.
+
+No changes were made to:
+
+- widget name
+- widget public API
+- call sites
+- route flow
+- screen structure
+
+#### Asset Strategy
+
+A horizontal logo asset was already available in the project, but it was not selected for this correction because the shared widget is used in square visual contexts.
+
+Using the square icon asset allowed the fix to remain minimal, visually appropriate, and safe without causing layout drift in the splash or onboarding views.
+
+### Files Affected
+
+#### Shared Presentation Layer
+
+- `lib/shared/widgets/scavium_logo.dart`
+
+No other source files were required for the implementation of the fix.
+
+### Implementation Characteristics
+
+The Phase 7.3 correction was intentionally designed to be:
+
+- minimal
+- branding-correct
+- UI-safe
+- backward-compatible
+- release-friendly
+
+It does not introduce:
+
+- new assets
+- widget renames
+- splash layout redesign
+- onboarding redesign
+- theme changes
+- animation changes
+- brand-system restructuring
+
+### Validation Performed
+
+#### Local Validation
+
+After updating the shared logo widget and rebuilding the app, the in-app splash and shared logo usage were validated locally.
+
+The application correctly displayed the official SCAVIUM visual identity instead of the previous placeholder-style letter.
+
+This confirmed that the branding regression had been resolved.
+
+#### Internal Testing Follow-Up
+
+The corrected build was also made available to testers for continued release candidate validation as part of the broader stabilization cycle.
+
+The purpose of this follow-up is mainly to confirm visual consistency across:
+
+- different device densities
+- different Android versions
+- different splash/onboarding render contexts
+
+### Current Status of Phase 7.3
+
+Phase 7.3 is considered:
+
+- implemented
+- locally validated
+- pending wider tester observation as part of ongoing release candidate testing
+
+This means the implementation work is complete and the regression is considered resolved pending final observational confirmation from the testing group.
+
+### Release Impact
+
+This fix has moderate release impact from a product-quality perspective.
+
+Release impact includes:
+
+- improved in-app branding consistency
+- better alignment between packaged identity and runtime UI
+- cleaner first impression during splash experience
+- improved perceived polish in internal testing builds
+
+### Risks and Remaining Considerations
+
+#### Very Low Remaining Risk
+
+The change affects only a shared presentation widget and does not alter logic, state, navigation, or storage behavior.
+
+That makes the risk profile very low.
+
+#### Remaining Observation Need
+
+As with any shared visual component, tester confirmation remains useful to ensure the branding asset behaves as expected on different screen densities and device sizes.
+
+### What Phase 7.3 Does Not Solve
+
+This subphase does not address:
+
+- native Android splash redesign
+- brand-system expansion
+- animation polish
+- additional marketing screens
+- asset pipeline restructuring
+- broader UI rework
+
+Those remain outside the scope of this targeted stabilization correction.
+
+### Conclusion
+
+Phase 7.3 resolves an in-app branding regression by replacing a placeholder-style shared logo implementation with the official SCAVIUM asset already present in the project.
+
+The fix preserves the existing UI structure, avoids unnecessary scope expansion, and improves release candidate polish without introducing architectural or functional risk.
+
+This subphase establishes the third stabilization milestone of Phase 7 and reinforces visual consistency across the wallet experience.

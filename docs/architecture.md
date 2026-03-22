@@ -108,6 +108,16 @@ This keeps the original persistence architecture intact while making the runtime
 
 ---
 
+## 🎨 Shared Branding Layer
+
+The application also uses shared presentation widgets for visual brand consistency.
+
+From Phase 7.3 onward, the shared logo widget renders the official SCAVIUM asset instead of a placeholder-style letter-based composition.
+
+This preserves the existing widget structure while aligning runtime UI branding with packaged assets.
+
+---
+
 ## 🧩 Stabilization Model
 
 From Phase 7 onward, the architecture enters a stabilization-oriented operational mode.
@@ -123,6 +133,7 @@ Concrete examples include:
 
 - the Android biometric fix of Phase 7.1, solved through a platform-layer correction
 - the wallet persistence hardening of Phase 7.2, solved through service, repository, startup, and Android manifest corrections without changing the overall architecture
+- the branding correction of Phase 7.3, solved through a shared-widget asset correction without altering UI flows
 
 ---
 

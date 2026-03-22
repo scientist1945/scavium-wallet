@@ -70,6 +70,16 @@ It is a correctness and safety improvement, not a new recovery mechanism.
 
 ---
 
+## 🎨 Visual Identity Integrity
+
+While branding is not a cryptographic control, consistent identity presentation still matters for trust and product integrity.
+
+Phase 7.3 improved this aspect by ensuring the shared in-app logo widget uses the official SCAVIUM asset rather than a placeholder-style letter composition.
+
+This does not change the security model, but it improves identity consistency in user-facing flows.
+
+---
+
 ## 💸 Transaction Safety
 
 - Preview before execution

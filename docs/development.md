@@ -70,6 +70,7 @@ These rules were applied directly in:
 
 - Phase 7.1 for the Android biometric fix
 - Phase 7.2 for wallet persistence hardening and startup-state validation
+- Phase 7.3 for the shared-logo branding correction
 
 ---
 

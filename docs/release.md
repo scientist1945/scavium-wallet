@@ -74,6 +74,11 @@ Phase 7.2 specifically validated:
 - startup consistency under real persisted-state checks
 - safer backup progression behavior
 
+Phase 7.3 specifically validated:
+
+- in-app branding consistency for the shared splash/logo widget
+- correct runtime usage of official SCAVIUM visual assets
+
 ---
 
 ## 🧠 Notes
@@ -84,6 +89,7 @@ Phase 7.2 specifically validated:
 - Validate lock/unlock flows on real devices
 - Prefer minimal patches during release stabilization
 - Treat uninstall/reinstall recovery assumptions carefully in self-custody flows
+- Validate visible branding consistency in runtime UI, not only packaged native assets
 
 ---
 

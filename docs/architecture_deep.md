@@ -131,6 +131,16 @@ This avoids false-positive wallet availability under partial restore or failed p
 
 ---
 
+## 🎨 Shared Branding Path
+
+The app uses a shared branding widget to render the project identity in visual entry points such as the in-app splash and other reusable UI contexts.
+
+Phase 7.3 corrected this path by replacing a code-drawn placeholder-style letter with the official square SCAVIUM asset already declared in the project.
+
+This was intentionally handled at the shared widget layer so that all dependent views inherit the branding correction without separate per-screen changes.
+
+---
+
 ## 🔁 Reactive Updates
 
 Controllers invalidate each other when needed.

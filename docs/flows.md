@@ -87,6 +87,17 @@ Phase 7.2 hardened this startup behavior to avoid trusting only local flags.
 
 ---
 
+## 🎨 Shared Branding Flow
+
+1. App enters an in-app branded screen
+2. Screen requests the shared `ScaviumLogo` widget
+3. Widget loads the official square SCAVIUM asset
+4. Logo is rendered consistently in splash and other shared contexts
+
+Phase 7.3 hardened visual consistency by replacing the previous placeholder-style shared logo output.
+
+---
+
 ## 🔗 RPC Failover Flow
 
 1. RPC request fails

@@ -116,3 +116,16 @@ Benefits:
 - lower restore inconsistency risk
 - simpler and safer runtime assumptions
 - no architectural redesign required
+
+---
+
+### 12. Shared logo correction through existing asset reuse
+
+Phase 7.3 resolved the in-app branding inconsistency by updating the shared logo widget to use the existing official SCAVIUM icon asset.
+
+Benefits:
+
+- branding consistency across shared UI entry points
+- no need for per-screen fixes
+- no asset pipeline redesign
+- very low implementation risk

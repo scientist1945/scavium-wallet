@@ -63,6 +63,16 @@ The result is a more defensive UX that prefers safe fallback over silent inconsi
 
 ---
 
+## 🎨 Branding UX
+
+Visible branding should remain consistent between packaged assets and runtime UI.
+
+For that reason, Phase 7.3 corrected the shared in-app logo widget so that splash and related views display the official SCAVIUM asset instead of a placeholder-style letter.
+
+This improves the first impression and overall visual coherence of the wallet experience.
+
+---
+
 ## 📊 RPC Transparency
 
 User can see:
