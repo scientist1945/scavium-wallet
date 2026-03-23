@@ -83,6 +83,28 @@ This reduces release friction and makes RC iteration more predictable for intern
 
 ---
 
+## ♻️ Backup and Recovery UX
+
+Phase 7.5 introduced a practical recovery UX built around explicit user responsibility.
+
+Key UX principles in this area are:
+
+- never imply that uninstall/reinstall alone is recovery
+- clearly explain that both file and password are required
+- separate export and restore according to user context
+- use platform-appropriate file interaction on desktop and mobile
+- keep restore available before wallet session entry
+- keep export available once the wallet is already active
+
+This results in:
+
+- clearer expectations
+- lower recovery confusion
+- less accidental overconfidence in device-local persistence
+- better alignment with self-custody reality
+
+---
+
 ## 📊 RPC Transparency
 
 User can see:

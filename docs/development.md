@@ -73,6 +73,7 @@ These rules were applied directly in:
 - Phase 7.2 for wallet persistence hardening and startup-state validation
 - Phase 7.3 for the shared-logo branding correction
 - Phase 7.4 for build and versioning automation hardening
+- Phase 7.5 for encrypted user backup and restore flow
 
 ---
 
@@ -120,6 +121,39 @@ No version bump:
 
 ---
 
+## ♻️ Backup and Restore Development
+
+The encrypted backup and restore implementation introduced in Phase 7.5 is structured around:
+
+### Core services
+
+- `backup_crypto_service.dart`
+- `backup_file_service.dart`
+
+### Wallet domain models
+
+- `wallet_backup_payload.dart`
+- `encrypted_wallet_backup.dart`
+
+### Controller
+
+- `wallet_backup_controller.dart`
+
+### Presentation
+
+- export backup screen in settings
+- restore backup screen in wallet/onboarding flow
+
+### Development rules for this area
+
+- do not export unencrypted secrets
+- do not bypass the main wallet repository on restore
+- keep the encrypted backup format versioned
+- validate payload and encrypted structure before restore
+- keep user warnings explicit and non-optional
+
+---
+
 ## 🧪 Testing Strategy
 
 Currently:
@@ -128,6 +162,7 @@ Currently:
 - real-device validation
 - internal tester feedback through Play Store Internal Testing
 - local validation of build automation scenarios
+- local validation of encrypted backup export/restore scenarios
 
 Future:
 
@@ -139,4 +174,4 @@ Future:
 
 ## 🎯 Goal
 
-Maintain a stable, scalable and predictable codebase while hardening release candidates safely and making release operations more repeatable.
+Maintain a stable, scalable and predictable codebase while hardening release candidates safely, making release operations more repeatable, and reducing operational wallet-loss risk for users.

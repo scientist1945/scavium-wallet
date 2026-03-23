@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/features/wallet/presentation/restore_backup_screen.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_card.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_primary_button.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
@@ -24,6 +25,8 @@ class WalletEntryScreen extends StatelessWidget {
                   'Create a new EVM wallet for SCAVIUM or restore an existing one.',
             ),
             const SizedBox(height: 24),
+
+            /// CREATE
             ScaviumCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +47,10 @@ class WalletEntryScreen extends StatelessWidget {
                 ],
               ),
             ),
+
             const SizedBox(height: 16),
+
+            /// IMPORT
             ScaviumCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,6 +67,36 @@ class WalletEntryScreen extends StatelessWidget {
                   ScaviumSecondaryButton(
                     text: 'Import wallet',
                     onPressed: () => context.push(RouteNames.importWallet),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            /// RESTORE BACKUP (NUEVO)
+            ScaviumCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Restore from encrypted backup',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Restore your wallet using a password-protected backup file.',
+                  ),
+                  const SizedBox(height: 16),
+                  ScaviumSecondaryButton(
+                    text: 'Restore backup',
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const RestoreBackupScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

@@ -94,6 +94,34 @@ This is release-process hardening rather than runtime security redesign.
 
 ---
 
+## ♻️ Encrypted Backup Security
+
+Phase 7.5 introduced encrypted user-managed backups.
+
+Key properties of this model:
+
+- backup data is encrypted before export
+- access requires both the file and the password
+- the app does not keep a remote recovery copy
+- the user remains in control of both custody and backup storage
+
+The encrypted backup model improves operational recovery without changing the self-custody philosophy.
+
+It is not a substitute for security hygiene.
+
+If the user stores:
+
+- the file insecurely
+- the password next to the file
+
+then wallet compromise remains possible.
+
+Likewise, if the user loses both the file and the password, the backup cannot be recovered.
+
+That is an intentional self-custody consequence.
+
+---
+
 ## 💸 Transaction Safety
 
 - Preview before execution
@@ -115,12 +143,13 @@ This is release-process hardening rather than runtime security redesign.
 - No hardware wallet support
 - No multi-device sync
 - No advanced threat detection
-- Secure storage is not a substitute for a user-managed recovery backup
-- Uninstall/reinstall is not a supported recovery strategy
+- Secure storage is not a substitute for user-managed recovery
+- Uninstall/reinstall is not a supported recovery strategy by itself
 - Store publication is not yet automated
+- Encrypted backup recovery depends on file + password retention
 
 ---
 
 ## 🎯 Goal
 
-Provide a secure environment for managing digital assets while maintaining usability, operational correctness, and release-stage stability.
+Provide a secure environment for managing digital assets while maintaining usability, operational correctness, and a realistic self-custody recovery model.
