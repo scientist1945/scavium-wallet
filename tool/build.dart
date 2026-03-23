@@ -289,13 +289,73 @@ Future<void> buildWindows(VersionInfo version) async {
   success('Windows build created');
 }
 
+void syncMsixVersion({
+  required File pubspecFile,
+  required VersionInfo version,
+}) {
+  final content = pubspecFile.readAsStringSync();
+
+  final msixVersion = '${version.buildName}.${version.buildNumber}';
+
+  final hasMsixConfig = RegExp(
+    r'^\s*msix_config\s*:\s*$',
+    multiLine: true,
+  ).hasMatch(content);
+
+  if (!hasMsixConfig) {
+    fail('msix_config section not found in pubspec.yaml');
+  }
+
+  final msixVersionRegex = RegExp(
+    r'^(\s*msix_version\s*:\s*)(\d+\.\d+\.\d+\.\d+)\s*$',
+    multiLine: true,
+  );
+
+  String updatedContent;
+
+  if (msixVersionRegex.hasMatch(content)) {
+    updatedContent = content.replaceFirst(
+      msixVersionRegex,
+      '  msix_version: $msixVersion',
+    );
+  } else {
+    final msixConfigLineRegex = RegExp(
+      r'^(\s*msix_config\s*:\s*$)',
+      multiLine: true,
+    );
+
+    updatedContent = content.replaceFirst(
+      msixConfigLineRegex,
+      'msix_config:\n  msix_version: $msixVersion',
+    );
+  }
+
+  if (updatedContent != content) {
+    pubspecFile.writeAsStringSync(updatedContent);
+    success('Updated msix_config.msix_version to $msixVersion');
+  } else {
+    info('msix_config.msix_version already set to $msixVersion');
+  }
+}
+
 Future<void> buildWindowsMsix(VersionInfo version) async {
   logSection('Windows MSIX');
 
+  final pubspecFile = File('pubspec.yaml');
+  if (!pubspecFile.existsSync()) {
+    fail('pubspec.yaml not found in project root');
+  }
+
+  syncMsixVersion(pubspecFile: pubspecFile, version: version);
+
   await buildWindows(version);
 
-  final pubspecText = File('pubspec.yaml').readAsStringSync();
-  final hasMsixConfig = RegExp(r'(?m)^msix_config:\s*$').hasMatch(pubspecText);
+  final pubspecText = pubspecFile.readAsStringSync();
+
+  final hasMsixConfig = RegExp(
+    r'^\s*msix_config\s*:',
+    multiLine: true,
+  ).hasMatch(pubspecText);
 
   if (!hasMsixConfig) {
     fail('msix_config section not found in pubspec.yaml');
@@ -303,7 +363,105 @@ Future<void> buildWindowsMsix(VersionInfo version) async {
 
   await runCommand('dart', ['run', 'msix:create']);
 
-  success('Windows MSIX created');
+  // Optional extra signing only if env vars are configured.
+  await trySignMsix();
+
+  // Always verify final artifact signature.
+  await verifyMsixSignature();
+
+  success('Windows MSIX created and verified');
+}
+
+Future<void> verifyMsixSignature() async {
+  final msixFile = findLatestMsixFile();
+
+  if (msixFile == null || !msixFile.existsSync()) {
+    fail('MSIX file not found for signature verification');
+  }
+
+  info('Verifying MSIX signature: ${msixFile.path}');
+
+  final result = await Process.run('signtool', [
+    'verify',
+    '/pa',
+    '/v',
+    msixFile.path,
+  ], runInShell: true);
+
+  final stdoutText = (result.stdout ?? '').toString().trim();
+  final stderrText = (result.stderr ?? '').toString().trim();
+
+  if (stdoutText.isNotEmpty) {
+    stdout.writeln(stdoutText);
+  }
+  if (stderrText.isNotEmpty) {
+    stderr.writeln(stderrText);
+  }
+
+  if (result.exitCode != 0) {
+    fail('MSIX signature verification failed');
+  }
+
+  success('MSIX signature verified successfully');
+}
+
+File? findLatestMsixFile() {
+  final buildDir = Directory('build/windows');
+
+  if (!buildDir.existsSync()) {
+    return null;
+  }
+
+  final msixFiles =
+      buildDir
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((f) => f.path.toLowerCase().endsWith('.msix'))
+          .toList();
+
+  if (msixFiles.isEmpty) {
+    return null;
+  }
+
+  msixFiles.sort((a, b) {
+    final aModified = a.statSync().modified;
+    final bModified = b.statSync().modified;
+    return bModified.compareTo(aModified);
+  });
+
+  return msixFiles.first;
+}
+
+Future<void> trySignMsix() async {
+  final certPath = Platform.environment['SCAVIUM_CERT_PATH'];
+  final certPassword = Platform.environment['SCAVIUM_CERT_PASSWORD'];
+
+  if (certPath == null || certPassword == null) {
+    info('Skipping extra signtool signing (env certificate not configured)');
+    return;
+  }
+
+  final msixFile = findLatestMsixFile();
+
+  if (msixFile == null || !msixFile.existsSync()) {
+    warn('MSIX file not found for signing');
+    return;
+  }
+
+  info('Signing MSIX with signtool: ${msixFile.path}');
+
+  await runCommand('signtool', [
+    'sign',
+    '/fd',
+    'SHA256',
+    '/f',
+    certPath,
+    '/p',
+    certPassword,
+    msixFile.path,
+  ]);
+
+  success('MSIX signed successfully with signtool');
 }
 
 Future<void> runCommand(String command, List<String> arguments) async {

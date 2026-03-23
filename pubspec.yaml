@@ -2,7 +2,7 @@ name: scavium_wallet
 description: SCAVIUM Wallet - self-custody wallet for the SCAVIUM network
 publish_to: "none"
 
-version: 0.2.1+6
+version: 0.2.1+12
 environment:
   sdk: ^3.7.2
 
@@ -36,6 +36,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  msix: ^3.16.8
 
 flutter:
   uses-material-design: true
@@ -44,3 +45,17 @@ flutter:
     - assets/branding/icon/
     - assets/branding/favicon/
     - assets/branding/token/  
+
+msix_config:
+  display_name: SCAVIUM Wallet
+  publisher_display_name: SCAVO Technologies
+  publisher: CN=SCAVO Technologies
+  identity_name: com.scavium.wallet  msix_version: 0.2.1.12
+  logo_path: C:\Users\gnard\VSCODE\scavium-wallet\windows\runner\resources\app_logo.png
+  capabilities: internetClient
+  architecture: x64
+  store: false
+
+  certificate_path: C:\certs\scavo-dev-cert.pfx
+  certificate_password: Scavo123!
+  install_certificate: false
