@@ -80,6 +80,20 @@ This does not change the security model, but it improves identity consistency in
 
 ---
 
+## 🛠️ Release Tooling Integrity
+
+Phase 7.4 does not change runtime application security, but it improves operational correctness in the release process.
+
+By centralizing version handling and build execution in a single project-native tool, it reduces the likelihood of release mistakes such as:
+
+- inconsistent version increments
+- accidental manual command divergence
+- operational drift across release-candidate builds
+
+This is release-process hardening rather than runtime security redesign.
+
+---
+
 ## 💸 Transaction Safety
 
 - Preview before execution
@@ -103,9 +117,10 @@ This does not change the security model, but it improves identity consistency in
 - No advanced threat detection
 - Secure storage is not a substitute for a user-managed recovery backup
 - Uninstall/reinstall is not a supported recovery strategy
+- Store publication is not yet automated
 
 ---
 
 ## 🎯 Goal
 
-Provide a secure environment for managing digital assets while maintaining usability and release-stage stability.
+Provide a secure environment for managing digital assets while maintaining usability, operational correctness, and release-stage stability.

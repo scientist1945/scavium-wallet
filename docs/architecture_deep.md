@@ -141,6 +141,16 @@ This was intentionally handled at the shared widget layer so that all dependent 
 
 ---
 
+## 🛠️ Build Automation Path
+
+Phase 7.4 introduced a project-native build automation path through `tool/build.dart`.
+
+This tooling path reads version data from `pubspec.yaml`, applies controlled version mutation rules, runs requested Flutter build targets, and optionally invokes MSIX packaging for Windows.
+
+This path is intentionally external to runtime app logic, but it plays an important role in release consistency and operational reliability.
+
+---
+
 ## 🔁 Reactive Updates
 
 Controllers invalidate each other when needed.

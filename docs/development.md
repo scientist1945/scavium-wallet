@@ -24,6 +24,7 @@ lib/
   core/
   shared/
   features/
+tool/
 
 ---
 
@@ -34,7 +35,7 @@ lib/
 3. Integrate with existing architecture
 4. Test manually on real targets
 5. Consolidate phase
-6. document release impact
+6. Document release impact
 
 ---
 
@@ -71,6 +72,51 @@ These rules were applied directly in:
 - Phase 7.1 for the Android biometric fix
 - Phase 7.2 for wallet persistence hardening and startup-state validation
 - Phase 7.3 for the shared-logo branding correction
+- Phase 7.4 for build and versioning automation hardening
+
+---
+
+## 🛠️ Build System
+
+The project includes a custom build tool located at:
+
+tool/build.dart
+
+### Main responsibilities
+
+- parse release/build arguments
+- read version from `pubspec.yaml`
+- increment build numbers safely
+- optionally override semantic version base
+- run multiplatform Flutter builds
+- invoke MSIX packaging when requested
+
+### Typical usage
+
+Full build:
+
+    dart run tool/build.dart --platform all
+
+Android App Bundle only:
+
+    dart run tool/build.dart --platform android-bundle
+
+Version override:
+
+    dart run tool/build.dart --platform all --version 0.2.2
+
+No version bump:
+
+    dart run tool/build.dart --platform web --no-version-bump
+
+### Supported targets
+
+- android-apk
+- android-bundle
+- web
+- windows
+- windows-msix
+- all
 
 ---
 
@@ -81,14 +127,16 @@ Currently:
 - manual testing
 - real-device validation
 - internal tester feedback through Play Store Internal Testing
+- local validation of build automation scenarios
 
 Future:
 
 - unit tests
 - integration tests
+- CI/CD pipeline validation
 
 ---
 
 ## 🎯 Goal
 
-Maintain a stable, scalable and predictable codebase while hardening release candidates safely.
+Maintain a stable, scalable and predictable codebase while hardening release candidates safely and making release operations more repeatable.

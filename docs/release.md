@@ -52,6 +52,54 @@ Current release state:
 - Android
 - iOS
 - Web (optional)
+- Windows (packaging-ready)
+- Windows MSIX installer
+
+---
+
+## 🛠️ Release Tooling (Phase 7.4)
+
+The release workflow now includes a Dart-native build tool:
+
+tool/build.dart
+
+### Supported targets
+
+- android-apk
+- android-bundle
+- web
+- windows
+- windows-msix
+- all
+
+### Typical commands
+
+Android App Bundle:
+
+    dart run tool/build.dart --platform android-bundle
+
+Full build:
+
+    dart run tool/build.dart --platform all
+
+Version override:
+
+    dart run tool/build.dart --platform all --version 0.2.2
+
+No version bump:
+
+    dart run tool/build.dart --platform web --no-version-bump
+
+### Version behavior
+
+- version is read from `pubspec.yaml`
+- build number increments automatically when the base version stays the same
+- build number resets to `1` when the base version changes
+
+Example:
+
+    0.2.1+3 → 0.2.1+4
+    0.2.2+1
 
 ---
 
@@ -79,6 +127,14 @@ Phase 7.3 specifically validated:
 - in-app branding consistency for the shared splash/logo widget
 - correct runtime usage of official SCAVIUM visual assets
 
+Phase 7.4 specifically validated:
+
+- automated version handling
+- stable multiplatform build execution
+- version override path
+- no-version-bump path
+- Windows MSIX packaging invocation
+
 ---
 
 ## 🧠 Notes
@@ -90,9 +146,24 @@ Phase 7.3 specifically validated:
 - Prefer minimal patches during release stabilization
 - Treat uninstall/reinstall recovery assumptions carefully in self-custody flows
 - Validate visible branding consistency in runtime UI, not only packaged native assets
+- Prefer the build tool over manual command repetition for release builds
+
+---
+
+## 🚧 Out of Scope for Current Release Tooling
+
+The current tooling does not yet include:
+
+- automatic Play Store upload
+- automatic Microsoft Store submission
+- CI/CD remote runners
+- automatic git tagging
+- automatic changelog generation
+
+These remain future release engineering steps.
 
 ---
 
 ## 🎯 Goal
 
-Deliver a stable, secure and production-ready build with controlled regression handling between release candidates.
+Deliver a stable, secure and production-ready build with controlled regression handling between release candidates and a safer, repeatable build workflow.

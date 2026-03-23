@@ -118,6 +118,16 @@ This preserves the existing widget structure while aligning runtime UI branding 
 
 ---
 
+## 🛠️ Tooling Layer
+
+From Phase 7.4 onward, the project also includes a Dart-native build automation tool located in:
+
+tool/build.dart
+
+This tooling layer does not alter runtime application architecture, but it standardizes version handling and multiplatform build execution around the existing Flutter project structure.
+
+---
+
 ## 🧩 Stabilization Model
 
 From Phase 7 onward, the architecture enters a stabilization-oriented operational mode.
@@ -134,6 +144,7 @@ Concrete examples include:
 - the Android biometric fix of Phase 7.1, solved through a platform-layer correction
 - the wallet persistence hardening of Phase 7.2, solved through service, repository, startup, and Android manifest corrections without changing the overall architecture
 - the branding correction of Phase 7.3, solved through a shared-widget asset correction without altering UI flows
+- the build hardening of Phase 7.4, solved through project-native tooling without changing runtime feature architecture
 
 ---
 

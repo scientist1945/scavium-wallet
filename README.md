@@ -34,6 +34,7 @@ Current state:
 - Android biometric unlock regression addressed in Phase 7.1
 - Wallet persistence and restore-state hardening completed in Phase 7.2
 - In-app splash/logo branding corrected in Phase 7.3
+- Build and versioning automation hardened in Phase 7.4
 
 ---
 
@@ -104,6 +105,27 @@ From Phase 7.3 onward, the in-app shared logo widget also uses the official SCAV
 
 ---
 
+## 🛠️ Build and Release Tooling
+
+From Phase 7.4 onward, the project includes a Dart-native build tool located at:
+
+- `tool/build.dart`
+
+This tool standardizes build execution and version handling across supported platforms.
+
+Supported targets include:
+
+- Android APK
+- Android App Bundle
+- Web
+- Windows
+- Windows MSIX
+- Full multiplatform build via `all`
+
+The version source of truth remains `pubspec.yaml`.
+
+---
+
 ## 📘 Documentation
 
 Full documentation is available in the `docs/` folder:
@@ -142,6 +164,7 @@ Phase 7 currently includes:
 - Phase 7.1 → Android biometric unlock stabilization
 - Phase 7.2 → wallet persistence hardening and restore-state stabilization
 - Phase 7.3 → in-app branding correction for splash and shared logo usage
+- Phase 7.4 → build and versioning automation hardening
 
 ---
 
@@ -152,17 +175,19 @@ Phase 7 currently includes:
 - No advanced RPC metrics
 - Secure local storage is not a replacement for user-managed recovery backup
 - Uninstall/reinstall is not a supported wallet recovery strategy
+- Store publication is not yet automated
 
 ---
 
 ## 🧱 Next Step
 
-After Phase 7.3, stabilization continues with:
+After Phase 7.4, stabilization can continue with:
 
 - additional runtime fixes reported by testers
 - repeated validation across Android devices
+- CI/CD preparation
+- store submission automation readiness
 - release candidate refinement
-- preparation of the next release candidate
 
 ---
 
@@ -170,4 +195,4 @@ After Phase 7.3, stabilization continues with:
 
 SCAVIUM Wallet is now a:
 
-> packaged, store-distributed and stabilization-focused wallet with a solid architecture, hardened local persistence behavior, corrected in-app branding consistency, and a controlled path toward broader release readiness
+> packaged, store-distributed and stabilization-focused wallet with a solid architecture, hardened local persistence behavior, corrected in-app branding consistency, and a safer, automated release workflow

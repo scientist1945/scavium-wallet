@@ -736,3 +736,299 @@ Phase 7.3 resolves an in-app branding regression by replacing a placeholder-styl
 The fix preserves the existing UI structure, avoids unnecessary scope expansion, and improves release candidate polish without introducing architectural or functional risk.
 
 This subphase establishes the third stabilization milestone of Phase 7 and reinforces visual consistency across the wallet experience.
+
+---
+
+## Phase 7.4 — Build and Versioning Automation Hardening
+
+### Objective
+
+Standardize the release build process and reduce manual release errors by introducing a project-native build automation tool that manages version increments and multiplatform build execution from a single entry point.
+
+The goal of this subphase is not to redesign deployment infrastructure.
+
+The goal is to harden the existing release workflow so that release candidate iteration becomes more consistent, repeatable, and safer under the current project structure.
+
+This subphase preserves:
+
+- the existing Flutter project layout
+- `pubspec.yaml` as the version source of truth
+- the current platform targets
+- the existing signing/distribution strategy
+- the existing release-candidate workflow
+
+### Initial Context
+
+By the time Phase 7.4 began, the application had already entered an active release-candidate cycle.
+
+That created a recurring operational need:
+
+- compile different targets repeatedly
+- increment build numbers correctly
+- avoid manual release mistakes
+- keep versioning aligned with Flutter expectations
+- prepare Windows artifacts beyond raw desktop build output
+
+A scripting approach based on PowerShell was considered, but the stabilization criteria of the project favored a solution that remains portable, easier to maintain, and better aligned with the Flutter ecosystem itself.
+
+### Problem Statement
+
+The build and release process still depended on repeated manual execution of commands such as:
+
+- `flutter clean`
+- `flutter pub get`
+- `flutter build appbundle`
+- `flutter build web`
+- `flutter build windows`
+
+This created avoidable risks such as:
+
+- forgetting to increment the build number
+- inconsistent version tracking between builds
+- running different command sets manually per platform
+- reduced repeatability during RC iterations
+- more friction when producing full multiplatform outputs
+
+### Investigation Scope
+
+The investigation and implementation scope for this subphase was intentionally limited to the build/release tooling layer.
+
+The following areas were included:
+
+- version parsing and update logic
+- build orchestration
+- multiplatform target selection
+- Windows MSIX packaging invocation
+- command-line argument handling
+- null-safety and fail-fast correctness in the tooling
+
+The following were not redesigned:
+
+- CI/CD infrastructure
+- Play Store submission automation
+- Microsoft Store publication automation
+- signing model
+- runtime application architecture
+- wallet feature set
+
+### Key Technical Decision
+
+#### Build Tool Implemented in Dart
+
+Instead of using an OS-specific shell or PowerShell script as the primary release tool, build automation was implemented in:
+
+- `tool/build.dart`
+
+This decision was made because a Dart-based tool is:
+
+- more portable
+- better aligned with Flutter development workflows
+- easier to maintain inside the project itself
+- less dependent on host operating system specifics
+- better positioned for future CI/CD reuse
+
+### Version Source of Truth
+
+#### pubspec.yaml Remains Authoritative
+
+The build tool uses `pubspec.yaml` as the single source of truth for versioning.
+
+It reads and updates the standard Flutter version format:
+
+- `MAJOR.MINOR.PATCH+BUILD`
+
+This avoids:
+
+- duplicated version sources
+- desynchronization between tooling and Flutter metadata
+- extra configuration files solely for version control
+
+### Versioning Strategy
+
+The adopted strategy preserves a clear separation between:
+
+- manually controlled semantic version base
+- automatically incremented build number
+
+Examples:
+
+- `0.2.1+3`
+- `0.2.1+4`
+- `0.2.2+1`
+
+Behavior:
+
+- if the base version remains unchanged, the build number increments
+- if a new base version is provided, the build number resets to `1`
+- an explicit no-bump mode is also supported for cases where version mutation is not desired
+
+### Implemented Build Capabilities
+
+The build tool supports the following targets:
+
+- `android-apk`
+- `android-bundle`
+- `web`
+- `windows`
+- `windows-msix`
+- `all`
+
+This allows both:
+
+- single-target iterative builds
+- full build orchestration from one command
+
+### Windows Packaging Scope
+
+Phase 7.4 also includes support for generating a Windows installer package via MSIX.
+
+This is currently limited to package generation and local release preparation.
+
+It does not yet include Microsoft Store submission automation.
+
+The MSIX step depends on the project already containing a valid:
+
+- `msix` dev dependency
+- `msix_config` section in `pubspec.yaml`
+
+### Internal Workflow
+
+The build tool executes a controlled release sequence:
+
+1. parse command-line arguments
+2. load and validate `pubspec.yaml`
+3. resolve version strategy
+4. update `pubspec.yaml` when applicable
+5. run `flutter clean` unless skipped
+6. run `flutter pub get` unless skipped
+7. run the requested build target(s)
+8. produce artifact path visibility
+
+This standardizes the release flow and reduces release drift between iterations.
+
+### Null-Safety and Failure Semantics
+
+The final implementation was hardened with strict null-safety and explicit failure semantics.
+
+A key correction in the tool was declaring the error-exit helper using:
+
+- `Never`
+
+instead of `void`
+
+This ensures that:
+
+- Dart flow analysis correctly understands termination paths
+- null-safety promotions behave correctly
+- the tooling remains robust under static analysis
+
+### Files Affected
+
+#### Tooling Layer
+
+- `tool/build.dart`
+
+#### Package Configuration
+
+- `pubspec.yaml`
+
+### Implementation Characteristics
+
+The Phase 7.4 solution was intentionally designed to be:
+
+- minimal in scope
+- native to the project stack
+- release-oriented
+- portable
+- defensive
+- easy to extend later
+
+It does not introduce:
+
+- CI/CD workflows
+- store upload automation
+- automatic changelog generation
+- git tagging automation
+- release-note automation
+- architecture changes in the app itself
+
+### Validation Performed
+
+#### Local Validation
+
+The following real scenarios were executed successfully:
+
+- Android App Bundle build
+- full multiplatform build through `all`
+- explicit version override
+- no-version-bump execution path
+
+This confirmed:
+
+- correct version mutation behavior
+- correct argument parsing
+- stable execution across supported targets
+- proper build orchestration under the expected development environment
+
+### Current Status of Phase 7.4
+
+Phase 7.4 is considered:
+
+- implemented
+- locally validated
+- operationally ready for continued release-candidate usage
+
+This means the subphase is complete from an implementation standpoint and already useful in the real release workflow.
+
+### Release Impact
+
+This subphase has meaningful release-process impact because it reduces operational mistakes without touching runtime application behavior.
+
+Release impact includes:
+
+- more repeatable build execution
+- safer version handling
+- lower manual error rate
+- faster RC iteration
+- improved Windows packaging readiness
+- stronger foundation for future CI/CD
+
+### Risks and Remaining Considerations
+
+#### Low Remaining Risk
+
+The tool operates outside the runtime app itself, so the product risk is relatively low.
+
+Its main importance is operational correctness rather than feature correctness.
+
+#### Remaining Future Work
+
+Future work may extend this foundation toward:
+
+- GitHub Actions or similar CI/CD integration
+- Google Play upload automation
+- Microsoft Store submission readiness
+- release metadata automation
+
+Those items remain intentionally outside the scope of Phase 7.4.
+
+### What Phase 7.4 Does Not Solve
+
+This subphase does not address:
+
+- automated store publishing
+- remote CI runners
+- signing secret management in CI
+- automatic release notes
+- automatic git version tagging
+- cross-repository release orchestration
+
+These remain follow-up concerns for future release engineering phases.
+
+### Conclusion
+
+Phase 7.4 hardens the build and versioning workflow by introducing a Dart-native build tool that centralizes version handling and multiplatform build execution while preserving the current project structure and release model.
+
+The result is a safer, more repeatable, and more scalable release workflow for ongoing RC stabilization.
+
+This subphase establishes the fourth stabilization milestone of Phase 7 and prepares the project for future CI/CD and store-automation work without introducing unnecessary complexity at this stage.

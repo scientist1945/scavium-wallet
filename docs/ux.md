@@ -73,6 +73,16 @@ This improves the first impression and overall visual coherence of the wallet ex
 
 ---
 
+## 🛠️ Release Workflow UX
+
+Although release tooling is not end-user UX, it directly affects the consistency of tester-facing builds.
+
+Phase 7.4 improved this layer by standardizing version handling and build execution through a single Dart-native tool.
+
+This reduces release friction and makes RC iteration more predictable for internal distribution.
+
+---
+
 ## 📊 RPC Transparency
 
 User can see:

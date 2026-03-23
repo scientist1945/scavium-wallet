@@ -129,3 +129,46 @@ Benefits:
 - no need for per-screen fixes
 - no asset pipeline redesign
 - very low implementation risk
+
+---
+
+### 13. Build system implemented in Dart
+
+Phase 7.4 implemented build automation in:
+
+- `tool/build.dart`
+
+instead of relying on a PowerShell-first approach.
+
+Benefits:
+
+- cross-platform compatibility
+- alignment with Flutter/Dart tooling
+- easier maintenance inside the project
+- improved future CI/CD reuse
+
+---
+
+### 14. pubspec.yaml retained as the version source of truth
+
+Phase 7.4 kept `pubspec.yaml` as the authoritative version source for the build workflow.
+
+Benefits:
+
+- avoids duplicated version storage
+- keeps Flutter metadata aligned with tooling
+- simplifies release semantics
+- reduces version drift risk
+
+---
+
+### 15. Fail-fast tooling with Never for termination semantics
+
+Phase 7.4 hardened the tooling implementation by using explicit termination semantics (`Never`) for unrecoverable failures.
+
+Benefits:
+
+- correct Dart flow analysis
+- stronger null-safety behavior
+- simpler control flow reasoning
+- safer static analysis outcomes
