@@ -4,7 +4,7 @@
 
 This document lists all implemented features up to the current stabilization phase.
 
-Phase 7 does not add new feature scope. It hardens and validates the existing product.
+Phase 7 does not add new user-facing product scope. It hardens and validates the existing product.
 
 ---
 
@@ -79,6 +79,16 @@ Phase 7 does not add new feature scope. It hardens and validates the existing pr
 
 ---
 
+## 🛠️ Release Tooling
+
+- Dart-native build tool
+- Automatic build-number increment
+- Semantic version override support
+- Multiplatform build orchestration
+- Windows MSIX packaging support
+
+---
+
 ## 🛠️ Stabilization Notes
 
 Phase 7.1 did not introduce a new feature.
@@ -93,8 +103,12 @@ Phase 7.3 also did not introduce a new feature.
 
 It corrected branding consistency by replacing a placeholder-style shared logo implementation with the official SCAVIUM asset.
 
+Phase 7.4 also did not introduce a new end-user feature.
+
+It hardened build and versioning operations by introducing a project-native release tool.
+
 ---
 
 ## 🎯 Summary
 
-The wallet supports all core operations required for a functional EVM wallet and is now in a stabilization stage focused on release quality rather than scope expansion.
+The wallet supports all core operations required for a functional EVM wallet and is now in a stabilization stage focused on release quality, operational consistency, and readiness for broader release engineering.

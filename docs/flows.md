@@ -98,6 +98,22 @@ Phase 7.3 hardened visual consistency by replacing the previous placeholder-styl
 
 ---
 
+## 🛠️ Build and Versioning Flow
+
+1. Developer invokes `tool/build.dart`
+2. Tool parses target and version arguments
+3. Tool reads version from `pubspec.yaml`
+4. Tool resolves whether to increment or reset build number
+5. Tool updates `pubspec.yaml` when applicable
+6. Tool runs clean and dependency resolution unless skipped
+7. Tool executes the requested build target(s)
+8. Tool optionally invokes Windows MSIX packaging
+9. Tool reports artifact locations
+
+Phase 7.4 hardened this operational flow to reduce release mistakes and standardize RC build iteration.
+
+---
+
 ## 🔗 RPC Failover Flow
 
 1. RPC request fails

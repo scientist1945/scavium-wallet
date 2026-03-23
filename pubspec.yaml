@@ -2,8 +2,7 @@ name: scavium_wallet
 description: SCAVIUM Wallet - self-custody wallet for the SCAVIUM network
 publish_to: "none"
 
-version: 0.2.1+5
-
+version: 0.2.1+6
 environment:
   sdk: ^3.7.2
 
