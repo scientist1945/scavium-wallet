@@ -103,6 +103,25 @@ Example:
 
 ---
 
+## ♻️ Recovery Readiness (Phase 7.5)
+
+From Phase 7.5 onward, release candidates also include encrypted backup and restore behavior that should be validated during QA.
+
+### Recommended validation scenarios
+
+- export encrypted backup from settings
+- desktop save dialog behavior on Windows
+- mobile share/export behavior
+- reset wallet after export
+- restore from encrypted backup
+- invalid password handling
+- invalid/corrupt file handling
+- restore flow returning to a valid wallet state
+
+This recovery validation is especially important because it materially affects wallet-loss risk in real-world usage.
+
+---
+
 ## 🧪 Release Candidate Validation
 
 The current release process now includes:
@@ -135,6 +154,14 @@ Phase 7.4 specifically validated:
 - no-version-bump path
 - Windows MSIX packaging invocation
 
+Phase 7.5 specifically validated:
+
+- encrypted backup generation
+- platform-appropriate backup export
+- encrypted restore path
+- repository-backed restore persistence
+- password failure handling
+
 ---
 
 ## 🧠 Notes
@@ -147,6 +174,7 @@ Phase 7.4 specifically validated:
 - Treat uninstall/reinstall recovery assumptions carefully in self-custody flows
 - Validate visible branding consistency in runtime UI, not only packaged native assets
 - Prefer the build tool over manual command repetition for release builds
+- Validate backup and restore before broader release expansion
 
 ---
 
@@ -160,10 +188,17 @@ The current tooling does not yet include:
 - automatic git tagging
 - automatic changelog generation
 
-These remain future release engineering steps.
+The current recovery model also does not yet include:
+
+- cloud backup
+- remote sync
+- server-side restore
+- custodial fallback
+
+These remain future release engineering or product-scope steps.
 
 ---
 
 ## 🎯 Goal
 
-Deliver a stable, secure and production-ready build with controlled regression handling between release candidates and a safer, repeatable build workflow.
+Deliver a stable, secure and production-ready build with controlled regression handling between release candidates, a safer repeatable build workflow, and a practical self-custody recovery path.

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
 import 'package:scavium_wallet/features/assets/data/token_registry_repository_impl.dart';
 import 'package:scavium_wallet/features/assets/data/tx_history_repository_impl.dart';
+import 'package:scavium_wallet/features/settings/presentation/export_backup_screen.dart';
 import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/app_snackbar.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/confirm_dialog.dart';
@@ -35,6 +36,22 @@ class SettingsScreen extends ConsumerWidget {
           ScaviumCard(
             child: ListTile(
               contentPadding: EdgeInsets.zero,
+              title: const Text('Export encrypted backup'),
+              subtitle: const Text(
+                'Create a password-protected backup file that can be used to restore this wallet later.',
+              ),
+              trailing: const Icon(Icons.download_outlined),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ExportBackupScreen()),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          ScaviumCard(
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
               title: const Text('Reset wallet'),
               subtitle: const Text(
                 'Delete locally stored wallet, token list and local transaction history.',
@@ -47,7 +64,7 @@ class SettingsScreen extends ConsumerWidget {
                       (context) => ConfirmDialog(
                         title: 'Reset wallet',
                         message:
-                            'This will remove wallet data from this device. Make sure you backed up your recovery phrase.',
+                            'This will remove wallet data from this device. Make sure you backed up your recovery phrase or exported an encrypted backup.',
                         confirmText: 'Reset',
                         destructive: true,
                         onConfirm: () async {

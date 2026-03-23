@@ -29,13 +29,14 @@ Examples:
 - assets_controller
 - rpc_status_controller
 - lock_controller
+- wallet_backup_controller
 
 Responsibilities:
 
 - validate inputs
 - call services
 - manage loading/error states
-- update UI
+- update UI state
 
 Controllers remain intentionally stable during stabilization phases.
 
@@ -62,10 +63,14 @@ Other relevant services include:
 - secure storage service
 - biometric auth service
 - screenshot protection service
+- backup crypto service
+- backup file service
 
 These services act as the preferred adaptation surface for release-stage fixes because they isolate runtime and platform details from the UI.
 
 From Phase 7.2 onward, the secure storage service also includes verification behavior for critical persistence paths so that sensitive wallet state is not assumed valid only because a write call was issued.
+
+From Phase 7.5 onward, backup services provide format validation, encryption/decryption, and external backup serialization without replacing the main secure storage model.
 
 ---
 
@@ -81,6 +86,8 @@ Examples:
 - TokenInfo
 - TransactionSendResult
 - NativeSendPreview
+- WalletBackupPayload
+- EncryptedWalletBackup
 
 Domain models should remain stable during Phase 7 unless a bug strictly requires correction.
 
@@ -100,6 +107,8 @@ Sensitive wallet material continues to belong to secure storage.
 Non-sensitive runtime and UI state continues to belong to local storage.
 
 Phase 7.2 hardens this layer by ensuring that startup and availability logic validate real secure state rather than relying only on local flags.
+
+Phase 7.5 adds an explicit external backup artifact, but that artifact is not treated as the primary runtime store. It is an encrypted export for user-managed recovery.
 
 ---
 
@@ -128,6 +137,43 @@ The startup logic does not rely only on a wallet-created flag.
 Instead, the startup path loads the wallet profile from real persisted state and only considers the wallet valid if all required secret and metadata values are present and consistent.
 
 This avoids false-positive wallet availability under partial restore or failed persistence conditions.
+
+---
+
+## ♻️ Backup Export Path
+
+From Phase 7.5 onward, export works conceptually like this:
+
+1. load wallet profile
+2. resolve wallet type and secret source
+3. build backup payload
+4. validate payload
+5. derive encryption key from user password
+6. encrypt payload
+7. serialize encrypted structure
+8. export file through platform-appropriate UX
+
+Export placement was intentionally split semantically:
+
+- export screen in settings/security flow
+- cryptographic and wallet logic in wallet/core layers
+
+---
+
+## ♻️ Backup Restore Path
+
+Restore works conceptually like this:
+
+1. user selects encrypted backup file
+2. raw backup content is decoded
+3. encrypted structure is validated
+4. password-derived key is reconstructed
+5. payload is decrypted and validated
+6. wallet type is resolved
+7. restore reuses existing wallet import method
+8. secure storage persistence and validation occur through the normal repository flow
+
+This is important because restore does not bypass the hardened repository. It inherits the same persistence safety semantics already introduced in earlier stabilization work.
 
 ---
 

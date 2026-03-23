@@ -114,6 +114,45 @@ Phase 7.4 hardened this operational flow to reduce release mistakes and standard
 
 ---
 
+## ♻️ Encrypted Backup Export Flow
+
+1. User opens Settings
+2. User selects export encrypted backup
+3. App explains backup risks and user responsibility
+4. User enters backup password
+5. User confirms backup password
+6. App loads wallet profile and secrets
+7. App builds a backup payload
+8. App encrypts the payload
+9. App serializes the encrypted backup
+10. App exports the file
+
+Platform-specific behavior:
+
+- desktop platforms → native save dialog
+- mobile platforms → share/export flow
+
+Phase 7.5 introduced this flow to provide a user-managed recovery artifact outside internal app storage.
+
+---
+
+## ♻️ Encrypted Backup Restore Flow
+
+1. User reaches wallet entry screen
+2. User selects restore from encrypted backup
+3. User picks backup file
+4. User enters backup password
+5. App decodes and validates the encrypted backup structure
+6. App decrypts the payload
+7. App validates the wallet payload
+8. App restores through the existing wallet import path
+9. Wallet is persisted into secure storage
+10. User returns to the normal post-entry flow
+
+Phase 7.5 introduced this flow to provide an explicit recovery path after storage loss, reinstall, or device migration.
+
+---
+
 ## 🔗 RPC Failover Flow
 
 1. RPC request fails

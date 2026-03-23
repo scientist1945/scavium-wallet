@@ -172,3 +172,63 @@ Benefits:
 - stronger null-safety behavior
 - simpler control flow reasoning
 - safer static analysis outcomes
+
+---
+
+### 16. Encrypted backup chosen over implicit persistence assumptions
+
+Phase 7.5 addressed reinstall/device-loss recovery by introducing an explicit encrypted backup flow instead of relying on implicit platform persistence or uninstall behavior.
+
+Benefits:
+
+- clearer user recovery model
+- less reliance on platform-specific storage semantics
+- stronger self-custody alignment
+- reduced risk of false recovery expectations
+
+---
+
+### 17. Export and restore intentionally placed in different presentation areas
+
+Phase 7.5 finalized the UI placement strategy as:
+
+- export backup in settings/security context
+- restore backup in wallet entry / acquisition context
+
+Benefits:
+
+- better semantic clarity
+- cleaner user expectations
+- no need to overload settings with pre-wallet recovery actions
+- no need to place export inside acquisition flow
+
+---
+
+### 18. Restore reuses existing wallet import paths
+
+Phase 7.5 restore does not write wallet secrets through a parallel persistence path.
+
+Instead, it reuses the existing wallet import methods.
+
+Benefits:
+
+- inherits Phase 7.2 persistence hardening
+- reduces duplicated logic
+- lowers restore inconsistency risk
+- keeps recovery integrated with the existing wallet model
+
+---
+
+### 19. Platform-aware export UX
+
+Phase 7.5 adopted different export UX behavior per platform:
+
+- desktop platforms → native save dialog
+- mobile platforms → share/export flow
+
+Benefits:
+
+- better Windows usability
+- better alignment with platform expectations
+- more reliable user-controlled file placement
+- no unnecessary desktop/mobile UX compromise

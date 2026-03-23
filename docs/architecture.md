@@ -44,6 +44,7 @@ features/
   home/
   lock/
   settings/
+  onboarding/
 
 Each feature contains:
 
@@ -128,6 +129,27 @@ This tooling layer does not alter runtime application architecture, but it stand
 
 ---
 
+## ♻️ Backup and Recovery Layer
+
+From Phase 7.5 onward, the project includes an encrypted backup and restore layer composed of:
+
+- backup payload models
+- encrypted backup models
+- backup cryptography service
+- backup file service
+- wallet backup controller
+- export and restore UI flows
+
+This layer is intentionally built on top of the existing wallet repository and secure storage system rather than replacing them.
+
+That means:
+
+- runtime secrets still live in secure storage
+- backup files are user-managed and external
+- restore reuses the same hardened wallet import flows already present in the app
+
+---
+
 ## 🧩 Stabilization Model
 
 From Phase 7 onward, the architecture enters a stabilization-oriented operational mode.
@@ -145,6 +167,7 @@ Concrete examples include:
 - the wallet persistence hardening of Phase 7.2, solved through service, repository, startup, and Android manifest corrections without changing the overall architecture
 - the branding correction of Phase 7.3, solved through a shared-widget asset correction without altering UI flows
 - the build hardening of Phase 7.4, solved through project-native tooling without changing runtime feature architecture
+- the encrypted recovery flow of Phase 7.5, solved by adding a backup layer that reuses existing wallet persistence semantics
 
 ---
 
@@ -155,5 +178,6 @@ The architecture enables:
 - safe transaction execution
 - resilient network communication
 - secure lock and unlock flows
+- explicit and user-managed wallet recovery
 - extensibility for future features (DEX, multi-account, etc)
 - controlled release candidate hardening without destabilizing the codebase

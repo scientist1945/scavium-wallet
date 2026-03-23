@@ -35,6 +35,7 @@ Current state:
 - Wallet persistence and restore-state hardening completed in Phase 7.2
 - In-app splash/logo branding corrected in Phase 7.3
 - Build and versioning automation hardened in Phase 7.4
+- Encrypted user backup and restore flow implemented in Phase 7.5
 
 ---
 
@@ -48,6 +49,7 @@ Current state:
 - Lifecycle-based lock security
 - RPC failover and diagnostics
 - Optional biometric unlock
+- Encrypted backup export and restore
 - Modular feature-based architecture
 
 ---
@@ -94,6 +96,7 @@ This ensures high availability and consistent user experience even under network
 - Optional biometric unlock
 - Controlled transaction execution flow
 - Defensive wallet persistence validation
+- Encrypted user-managed backup files
 
 ---
 
@@ -123,6 +126,20 @@ Supported targets include:
 - Full multiplatform build via `all`
 
 The version source of truth remains `pubspec.yaml`.
+
+---
+
+## ♻️ Backup and Recovery
+
+From Phase 7.5 onward, the wallet supports an encrypted backup and restore flow.
+
+Users can now:
+
+- export an encrypted backup file from Settings
+- protect it with a password
+- restore the wallet later from the onboarding wallet entry flow
+
+This does not replace mnemonic or private key recovery, but adds a safer and more practical user-managed recovery path beyond local app storage.
 
 ---
 
@@ -165,6 +182,7 @@ Phase 7 currently includes:
 - Phase 7.2 → wallet persistence hardening and restore-state stabilization
 - Phase 7.3 → in-app branding correction for splash and shared logo usage
 - Phase 7.4 → build and versioning automation hardening
+- Phase 7.5 → encrypted user backup and restore flow
 
 ---
 
@@ -174,14 +192,15 @@ Phase 7 currently includes:
 - No multi-account support yet
 - No advanced RPC metrics
 - Secure local storage is not a replacement for user-managed recovery backup
-- Uninstall/reinstall is not a supported wallet recovery strategy
+- Uninstall/reinstall is not a supported recovery strategy by itself
 - Store publication is not yet automated
+- Backup recovery requires both the exported file and the password
 
 ---
 
 ## 🧱 Next Step
 
-After Phase 7.4, stabilization can continue with:
+After Phase 7.5, stabilization can continue with:
 
 - additional runtime fixes reported by testers
 - repeated validation across Android devices
@@ -195,4 +214,4 @@ After Phase 7.4, stabilization can continue with:
 
 SCAVIUM Wallet is now a:
 
-> packaged, store-distributed and stabilization-focused wallet with a solid architecture, hardened local persistence behavior, corrected in-app branding consistency, and a safer, automated release workflow
+> packaged, store-distributed and stabilization-focused wallet with a solid architecture, hardened local persistence behavior, corrected in-app branding consistency, a safer automated release workflow, and a practical encrypted recovery path for end users
