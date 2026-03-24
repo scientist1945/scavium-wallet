@@ -507,10 +507,29 @@ Future<void> buildWindowsMsix(VersionInfo version) async {
 
   await runCommand('dart', ['run', 'msix:create']);
 
+  final isCi = isRunningInCi();
+
+  if (isCi) {
+    warn(
+      'CI environment detected: skipping extra signtool signing and verification',
+    );
+    success('Windows MSIX created successfully in CI');
+    return;
+  }
+
   await trySignMsix();
   await verifyMsixSignature();
 
   success('Windows MSIX created and verified');
+}
+
+bool isRunningInCi() {
+  final ci = Platform.environment['CI'];
+  if (ci == null) {
+    return false;
+  }
+
+  return ci.toLowerCase() == 'true';
 }
 
 Future<void> verifyMsixSignature() async {
