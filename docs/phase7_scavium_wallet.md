@@ -1707,6 +1707,7 @@ These issues confirmed that the release system itself was viable, but required C
 - `tool/build.dart`
 - `docs/release.md`
 - `docs/phase7_scavium_wallet.md`
+- `README.md`
 
 ### Implementation Characteristics
 
