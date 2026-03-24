@@ -73,7 +73,7 @@ jobs:
           fi
 
           mkdir -p android/keystores
-          echo "$ANDROID_KEYSTORE_B64" | base64 -d > android/keystores/release-upload.jks
+          echo "$ANDROID_KEYSTORE_B64" | base64 -d > android/keystores/scavium-wallet-upload.jks
           echo "$ANDROID_KEY_PROPERTIES_B64" | base64 -d > android/key.properties
 
       - name: Build Android App Bundle
