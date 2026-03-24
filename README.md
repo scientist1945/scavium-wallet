@@ -36,6 +36,7 @@ Current state:
 - In-app splash/logo branding corrected in Phase 7.3
 - Build and versioning automation hardened in Phase 7.4
 - Encrypted user backup and restore flow implemented in Phase 7.5
+- Windows MSIX packaging and signing readiness introduced in Phase 7.6
 
 ---
 
@@ -127,6 +128,8 @@ Supported targets include:
 
 The version source of truth remains `pubspec.yaml`.
 
+From Phase 7.6 onward, Windows MSIX packaging is being hardened for real distribution readiness, including signing preparation and compatibility with both development and production certificate strategies.
+
 ---
 
 ## ♻️ Backup and Recovery
@@ -183,6 +186,7 @@ Phase 7 currently includes:
 - Phase 7.3 → in-app branding correction for splash and shared logo usage
 - Phase 7.4 → build and versioning automation hardening
 - Phase 7.5 → encrypted user backup and restore flow
+- Phase 7.6 → Windows MSIX signing and distribution readiness
 
 ---
 
@@ -200,13 +204,14 @@ Phase 7 currently includes:
 
 ## 🧱 Next Step
 
-After Phase 7.5, stabilization can continue with:
+After Phase 7.6, stabilization can continue with:
 
 - additional runtime fixes reported by testers
 - repeated validation across Android devices
 - CI/CD preparation
 - store submission automation readiness
 - release candidate refinement
+- Windows distribution validation with signed MSIX packages
 
 ---
 
@@ -214,4 +219,4 @@ After Phase 7.5, stabilization can continue with:
 
 SCAVIUM Wallet is now a:
 
-> packaged, store-distributed and stabilization-focused wallet with a solid architecture, hardened local persistence behavior, corrected in-app branding consistency, a safer automated release workflow, and a practical encrypted recovery path for end users
+> packaged, store-distributed and stabilization-focused wallet with a solid architecture, hardened local persistence behavior, corrected in-app branding consistency, a safer automated release workflow, a practical encrypted recovery path for end users, and an emerging Windows distribution readiness through MSIX packaging and signing preparation

@@ -1374,3 +1374,217 @@ Phase 7.5 introduces a complete encrypted user backup and restore flow that give
 The implementation integrates cleanly into the current project, reuses the hardened persistence flows established earlier in Phase 7, and significantly reduces the operational risk of wallet loss caused by local-storage dependence alone.
 
 This subphase establishes the fifth stabilization milestone of Phase 7 and materially improves the wallet’s readiness for broader real-world usage.
+---
+
+## Phase 7.6 — Windows MSIX Signing and Distribution Readiness
+
+### Objective
+
+Harden the existing Windows packaging flow so SCAVIUM Wallet can progress from development-oriented MSIX generation toward real distribution readiness.
+
+The goal of this subphase is to stabilize MSIX packaging, define a clear signing strategy, and prepare the project for direct distribution and future Microsoft Store compatibility without modifying the current architecture.
+
+---
+
+### Initial Context
+
+By the time Phase 7.6 began, the project already had:
+
+- a functional Dart-based build tool (`tool/build.dart`)
+- stable multiplatform builds (Android, Web, Desktop)
+- Windows MSIX generation capability
+- development-level signing using a self-signed certificate
+
+However, the Windows packaging flow was still oriented toward development usage and not fully aligned with real distribution requirements.
+
+---
+
+### Problem Statement
+
+The existing Windows packaging flow presented several limitations:
+
+- MSIX configuration not fully portable across environments
+- reliance on absolute paths due to `signtool` behavior
+- development certificate embedded directly in configuration
+- no clear separation between development and production signing
+- lack of documented signing strategy aligned with distribution goals
+
+This created a gap between technical packaging capability and real-world distribution readiness.
+
+---
+
+### Scope
+
+Included:
+
+- MSIX flow stabilization
+- `msix_config` normalization
+- development vs production signing definition
+- preparation for valid certificate usage
+- documentation alignment within Phase 7
+
+Excluded:
+
+- CI/CD automation
+- Microsoft Store submission pipeline
+- auto-update systems
+- architecture changes
+
+---
+
+### Root Cause Analysis
+
+The issue was not the absence of Windows packaging support, but the lack of final hardening required for distribution.
+
+The system already worked for development purposes but needed:
+
+- configuration clarity
+- signing strategy definition
+- environment separation
+- documentation alignment
+
+---
+
+### Configuration Strategy
+
+The project adopts a dual-mode configuration approach:
+
+Development:
+
+- self-signed certificate
+- absolute path allowed
+- local-only usage
+- fast iteration support
+
+Production:
+
+- trusted code-signing certificate
+- no secrets stored in repository
+- environment-driven configuration
+- distribution-safe setup
+
+Absolute paths are explicitly allowed in development due to known `signtool` limitations.
+
+---
+
+### Signing Strategy
+
+The wallet uses an organization-level identity:
+
+SCAVO Technologies
+
+This enables reuse of a single certificate across:
+
+- SCAVIUM Wallet
+- SCAVO Exchange
+- future SCAVO products
+
+This avoids fragmentation and builds consistent trust reputation.
+
+---
+
+### Build Flow
+
+The Windows packaging flow remains integrated into the existing build tool:
+
+1. build Windows application
+2. generate MSIX package
+3. optionally sign using available certificate configuration
+4. maintain compatibility with development workflow
+
+No alternative build path is introduced.
+
+---
+
+### Files Affected
+
+#### Tooling Layer
+
+- `tool/build.dart`
+
+#### Package Configuration
+
+- `pubspec.yaml`
+
+#### Documentation
+
+- `README.md`
+- `docs/phase7_scavium_wallet.md`
+
+---
+
+### Implementation Characteristics
+
+The Phase 7.6 changes were designed to be:
+
+- minimal
+- non-invasive
+- release-safe
+- architecture-preserving
+- compatible with existing build tooling
+
+No new runtime behavior is introduced.
+
+---
+
+### Validation Performed
+
+#### Local Validation
+
+The Windows build and MSIX generation flow were executed successfully using the Dart build tool.
+
+#### Expected Validation
+
+Further validation should confirm:
+
+- MSIX installation behavior on clean Windows environments
+- SmartScreen behavior under self-signed and production certificates
+- compatibility across Windows versions
+
+---
+
+### Release Impact
+
+This subphase has medium release impact as it closes the gap between development-level Windows support and real distribution readiness.
+
+Release impact includes:
+
+- stabilized Windows packaging flow
+- defined signing strategy
+- improved distribution readiness
+- alignment with production certificate usage
+
+---
+
+### Outcome
+
+After Phase 7.6:
+
+- Windows packaging is stable
+- signing strategy is defined
+- development workflow remains intact
+- distribution readiness is established
+
+---
+
+### Risks and Considerations
+
+- self-signed certificates may trigger SmartScreen warnings
+- production requires a valid certificate from a trusted authority
+- Microsoft Store integration remains a future step
+
+---
+
+### What Phase 7.6 Does Not Solve
+
+- CI/CD pipeline
+- automatic signing infrastructure
+- update system
+- release hosting
+- telemetry
+
+---
+
+### Conclusion
+
+Phase 7.6 integrates Windows MSIX packaging and signing readiness into the stabilization phase, preserving the existing architecture while preparing the project for real-world Windows distribution.
