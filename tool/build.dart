@@ -10,6 +10,17 @@ Future<void> main(List<String> args) async {
     fail('pubspec.yaml not found in project root');
   }
 
+  if (options.checkVersion) {
+    validateExpectedTagAgainstPubspec(
+      pubspecFile: pubspecFile,
+      expectedTag: options.expectedTag,
+    );
+
+    logSection('DONE');
+    success('Version validation completed successfully');
+    return;
+  }
+
   final versionInfo = resolveVersion(
     pubspecFile: pubspecFile,
     overrideVersion: options.version,
@@ -68,6 +79,8 @@ class BuildOptions {
   final bool noVersionBump;
   final bool skipClean;
   final bool skipPubGet;
+  final bool checkVersion;
+  final String? expectedTag;
 
   const BuildOptions({
     required this.platform,
@@ -75,6 +88,8 @@ class BuildOptions {
     required this.noVersionBump,
     required this.skipClean,
     required this.skipPubGet,
+    required this.checkVersion,
+    required this.expectedTag,
   });
 
   static BuildOptions parse(List<String> args) {
@@ -83,6 +98,8 @@ class BuildOptions {
     bool noVersionBump = false;
     bool skipClean = false;
     bool skipPubGet = false;
+    bool checkVersion = false;
+    String? expectedTag;
 
     for (int i = 0; i < args.length; i++) {
       final arg = args[i];
@@ -114,6 +131,17 @@ class BuildOptions {
           skipPubGet = true;
           break;
 
+        case '--check-version':
+          checkVersion = true;
+          break;
+
+        case '--expected-tag':
+          if (i + 1 >= args.length) {
+            fail('Missing value for --expected-tag');
+          }
+          expectedTag = args[++i].trim();
+          break;
+
         case '--help':
         case '-h':
           printUsage();
@@ -130,6 +158,8 @@ class BuildOptions {
       noVersionBump: noVersionBump,
       skipClean: skipClean,
       skipPubGet: skipPubGet,
+      checkVersion: checkVersion,
+      expectedTag: expectedTag,
     );
   }
 
@@ -164,11 +194,56 @@ class VersionInfo {
   String get fullVersion => '$buildName+$buildNumber';
 }
 
-VersionInfo resolveVersion({
+void validateExpectedTagAgainstPubspec({
   required File pubspecFile,
-  required String? overrideVersion,
-  required bool noVersionBump,
+  required String? expectedTag,
 }) {
+  if (expectedTag == null || expectedTag.isEmpty) {
+    fail('Missing --expected-tag for version validation');
+  }
+
+  final versionInfo = readVersionInfo(pubspecFile);
+
+  final normalizedTag = normalizeGitTag(expectedTag);
+  if (normalizedTag == null) {
+    fail(
+      'Invalid expected tag format: $expectedTag. Expected forms like v0.2.1 or refs/tags/v0.2.1',
+    );
+  }
+
+  if (normalizedTag != versionInfo.buildName) {
+    fail(
+      'Tag/pubspec mismatch. Tag=$normalizedTag, pubspec=${versionInfo.buildName}',
+    );
+  }
+
+  success(
+    'Tag matches pubspec version: $normalizedTag == ${versionInfo.buildName}',
+  );
+}
+
+String? normalizeGitTag(String rawTag) {
+  var value = rawTag.trim();
+
+  if (value.startsWith('refs/tags/')) {
+    value = value.substring('refs/tags/'.length);
+  }
+
+  if (!value.startsWith('v')) {
+    return null;
+  }
+
+  final semantic = value.substring(1);
+  final versionRegex = RegExp(r'^\d+\.\d+\.\d+$');
+
+  if (!versionRegex.hasMatch(semantic)) {
+    return null;
+  }
+
+  return semantic;
+}
+
+VersionInfo readVersionInfo(File pubspecFile) {
   final content = pubspecFile.readAsStringSync();
 
   final regex = RegExp(
@@ -188,22 +263,38 @@ VersionInfo resolveVersion({
     fail('Invalid pubspec version groups');
   }
 
-  final currentName = name;
-  final currentBuild = int.tryParse(build);
-  if (currentBuild == null) {
+  final buildNumber = int.tryParse(build);
+  if (buildNumber == null) {
     fail('Invalid pubspec build number: $build');
   }
 
+  return VersionInfo(buildName: name, buildNumber: buildNumber);
+}
+
+VersionInfo resolveVersion({
+  required File pubspecFile,
+  required String? overrideVersion,
+  required bool noVersionBump,
+}) {
+  final current = readVersionInfo(pubspecFile);
+
   if (noVersionBump) {
-    return VersionInfo(buildName: currentName, buildNumber: currentBuild);
+    return current;
   }
+
+  final content = pubspecFile.readAsStringSync();
+
+  final regex = RegExp(
+    r'^version:\s*(\d+\.\d+\.\d+)\+(\d+)\s*$',
+    multiLine: true,
+  );
 
   late final String newName;
   late final int newBuild;
 
   if (overrideVersion == null || overrideVersion.isEmpty) {
-    newName = currentName;
-    newBuild = currentBuild + 1;
+    newName = current.buildName;
+    newBuild = current.buildNumber + 1;
   } else {
     final normalized = overrideVersion.trim();
 
@@ -212,9 +303,9 @@ VersionInfo resolveVersion({
       fail('Invalid --version format. Use x.y.z');
     }
 
-    if (normalized == currentName) {
+    if (normalized == current.buildName) {
       newName = normalized;
-      newBuild = currentBuild + 1;
+      newBuild = current.buildNumber + 1;
     } else {
       newName = normalized;
       newBuild = 1;
@@ -293,8 +384,7 @@ void syncMsixVersion({
   required File pubspecFile,
   required VersionInfo version,
 }) {
-  final content = pubspecFile.readAsStringSync();
-
+  var content = pubspecFile.readAsStringSync();
   final msixVersion = '${version.buildName}.${version.buildNumber}';
 
   final hasMsixConfig = RegExp(
@@ -311,10 +401,8 @@ void syncMsixVersion({
     multiLine: true,
   );
 
-  String updatedContent;
-
   if (msixVersionRegex.hasMatch(content)) {
-    updatedContent = content.replaceFirst(
+    content = content.replaceFirst(
       msixVersionRegex,
       '  msix_version: $msixVersion',
     );
@@ -324,18 +412,73 @@ void syncMsixVersion({
       multiLine: true,
     );
 
-    updatedContent = content.replaceFirst(
+    content = content.replaceFirst(
       msixConfigLineRegex,
       'msix_config:\n  msix_version: $msixVersion',
     );
   }
 
-  if (updatedContent != content) {
-    pubspecFile.writeAsStringSync(updatedContent);
-    success('Updated msix_config.msix_version to $msixVersion');
-  } else {
-    info('msix_config.msix_version already set to $msixVersion');
+  pubspecFile.writeAsStringSync(content);
+  success('Updated msix_config.msix_version to $msixVersion');
+}
+
+void syncMsixCiOverrides({required File pubspecFile}) {
+  var content = pubspecFile.readAsStringSync();
+
+  final certPath = Platform.environment['SCAVIUM_MSIX_CERT_PATH'];
+  final certPassword = Platform.environment['SCAVIUM_MSIX_CERT_PASSWORD'];
+  final logoPath = Platform.environment['SCAVIUM_MSIX_LOGO_PATH'];
+
+  if (logoPath != null && logoPath.trim().isNotEmpty) {
+    content = replaceOrInsertMsixField(
+      content: content,
+      fieldName: 'logo_path',
+      fieldValue: logoPath,
+    );
+    success('Applied CI override for msix_config.logo_path');
   }
+
+  if (certPath != null && certPath.trim().isNotEmpty) {
+    content = replaceOrInsertMsixField(
+      content: content,
+      fieldName: 'certificate_path',
+      fieldValue: certPath,
+    );
+    success('Applied CI override for msix_config.certificate_path');
+  }
+
+  if (certPassword != null && certPassword.trim().isNotEmpty) {
+    content = replaceOrInsertMsixField(
+      content: content,
+      fieldName: 'certificate_password',
+      fieldValue: certPassword,
+    );
+    success('Applied CI override for msix_config.certificate_password');
+  }
+
+  pubspecFile.writeAsStringSync(content);
+}
+
+String replaceOrInsertMsixField({
+  required String content,
+  required String fieldName,
+  required String fieldValue,
+}) {
+  final fieldRegex = RegExp('^\\s*$fieldName\\s*:\\s*.*\$', multiLine: true);
+
+  if (fieldRegex.hasMatch(content)) {
+    return content.replaceFirst(fieldRegex, '  $fieldName: $fieldValue');
+  }
+
+  final msixConfigLineRegex = RegExp(
+    r'^(\s*msix_config\s*:\s*$)',
+    multiLine: true,
+  );
+
+  return content.replaceFirst(
+    msixConfigLineRegex,
+    'msix_config:\n  $fieldName: $fieldValue',
+  );
 }
 
 Future<void> buildWindowsMsix(VersionInfo version) async {
@@ -347,6 +490,7 @@ Future<void> buildWindowsMsix(VersionInfo version) async {
   }
 
   syncMsixVersion(pubspecFile: pubspecFile, version: version);
+  syncMsixCiOverrides(pubspecFile: pubspecFile);
 
   await buildWindows(version);
 
@@ -363,13 +507,29 @@ Future<void> buildWindowsMsix(VersionInfo version) async {
 
   await runCommand('dart', ['run', 'msix:create']);
 
-  // Optional extra signing only if env vars are configured.
-  await trySignMsix();
+  final isCi = isRunningInCi();
 
-  // Always verify final artifact signature.
+  if (isCi) {
+    warn(
+      'CI environment detected: skipping extra signtool signing and verification',
+    );
+    success('Windows MSIX created successfully in CI');
+    return;
+  }
+
+  await trySignMsix();
   await verifyMsixSignature();
 
   success('Windows MSIX created and verified');
+}
+
+bool isRunningInCi() {
+  final ci = Platform.environment['CI'];
+  if (ci == null) {
+    return false;
+  }
+
+  return ci.toLowerCase() == 'true';
 }
 
 Future<void> verifyMsixSignature() async {
@@ -433,8 +593,12 @@ File? findLatestMsixFile() {
 }
 
 Future<void> trySignMsix() async {
-  final certPath = Platform.environment['SCAVIUM_CERT_PATH'];
-  final certPassword = Platform.environment['SCAVIUM_CERT_PASSWORD'];
+  final certPath =
+      Platform.environment['SCAVIUM_CERT_PATH'] ??
+      Platform.environment['SCAVIUM_MSIX_CERT_PATH'];
+  final certPassword =
+      Platform.environment['SCAVIUM_CERT_PASSWORD'] ??
+      Platform.environment['SCAVIUM_MSIX_CERT_PASSWORD'];
 
   if (certPath == null || certPassword == null) {
     info('Skipping extra signtool signing (env certificate not configured)');
@@ -519,6 +683,8 @@ Options:
   --no-version-bump        Do not modify pubspec.yaml version
   --skip-clean             Skip flutter clean
   --skip-pub-get           Skip flutter pub get
+  --check-version          Validate expected tag against pubspec.yaml semantic version
+  --expected-tag <tag>     Expected Git tag, for example v0.2.1
   --help, -h               Show this help
 
 Examples:
@@ -526,6 +692,7 @@ Examples:
   dart run tool/build.dart --platform android-bundle
   dart run tool/build.dart --platform all --version 0.2.2
   dart run tool/build.dart --platform windows-msix --no-version-bump
+  dart run tool/build.dart --check-version --expected-tag v0.2.1
 ''');
 }
 
