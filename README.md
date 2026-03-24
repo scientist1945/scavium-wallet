@@ -1,222 +1,263 @@
 # SCAVIUM Wallet
 
+Self-custody Flutter wallet for the SCAVIUM network.
+
+SCAVIUM Wallet is an EVM-compatible wallet focused on controlled production hardening, practical self-custody recovery, and reproducible multiplatform release engineering.
+
+---
+
 ## 🧭 Overview
 
-SCAVIUM Wallet is a self-custody, EVM-compatible wallet designed for the SCAVIUM network.
+The project is built with:
 
-It provides a secure, resilient and production-ready environment for interacting with blockchain assets, built with a modular architecture and a strong focus on reliability, release safety and user experience.
+- Flutter
+- Dart
+- Riverpod
+- GoRouter
 
----
+Current platform and release scope includes:
 
-## 🚀 Current Status
-
-The project has completed:
-
-- Phase 1 → Core setup
-- Phase 2 → Wallet creation/import
-- Phase 3 → Blockchain integration
-- Phase 4 → Transaction flows
-- Phase 5 → Production readiness (RPC, UX, lifecycle)
-- Phase 6 → Packaging, branding, release, and store deployment
-
-The project is now in:
-
-- Phase 7 → Stabilization, bug fixing, and release candidate hardening
-
-Current state:
-
-- Wallet distributed through Google Play Internal Testing
-- Android release candidate in active tester validation
-- Production-grade RPC layer (multi-endpoint + failover)
-- Stable lock-aware navigation and lifecycle protection
-- Local transaction persistence
-- Screenshot protection on Android via native bridge
-- Android biometric unlock regression addressed in Phase 7.1
-- Wallet persistence and restore-state hardening completed in Phase 7.2
-- In-app splash/logo branding corrected in Phase 7.3
-- Build and versioning automation hardened in Phase 7.4
-- Encrypted user backup and restore flow implemented in Phase 7.5
-- Windows MSIX packaging and signing readiness introduced in Phase 7.6
-
----
-
-## 🧱 Core Features
-
-- Wallet creation and import (mnemonic / private key)
-- Native token transfers
-- ERC-20 token transfers
-- Local transaction history with receipt tracking
-- Auto-refresh system
-- Lifecycle-based lock security
-- RPC failover and diagnostics
-- Optional biometric unlock
-- Encrypted backup export and restore
-- Modular feature-based architecture
-
----
-
-## 🏗️ Architecture
-
-The application is built using:
-
-- Flutter + Dart
-- Riverpod (AsyncNotifier)
-- Web3dart
-- GoRouter (reactive navigation)
-
-Architecture principles:
-
-- Feature-based modularization
-- Clear separation (UI / Application / Domain / Data)
-- Centralized RPC abstraction
-- Reactive and predictable state management
-- Minimal-risk stabilization during release phases
-
----
-
-## 🔗 RPC System
-
-The wallet uses a resilient RPC system with:
-
-- Multiple endpoints
-- Automatic failover
-- Node cooldown
-- Persistent state
-- UI observability
-
-This ensures high availability and consistent user experience even under network instability.
-
----
-
-## 🔒 Security
-
-- Self-custody wallet (no keys leave the device)
-- Secure storage for sensitive data
-- Lifecycle-based automatic locking
-- Android screenshot protection
-- Optional biometric unlock
-- Controlled transaction execution flow
-- Defensive wallet persistence validation
-- Encrypted user-managed backup files
-
----
-
-## 🎨 Branding
-
-The project includes packaged branding assets for icons, logos, splash integration, and visual identity consistency.
-
-From Phase 7.3 onward, the in-app shared logo widget also uses the official SCAVIUM asset, aligning splash and shared UI branding with the packaged identity.
-
----
-
-## 🛠️ Build and Release Tooling
-
-From Phase 7.4 onward, the project includes a Dart-native build tool located at:
-
-- `tool/build.dart`
-
-This tool standardizes build execution and version handling across supported platforms.
-
-Supported targets include:
-
-- Android APK
-- Android App Bundle
-- Web
+- Android
 - Windows
-- Windows MSIX
-- Full multiplatform build via `all`
+- Web support path
+- Windows MSIX packaging
+- GitHub Release automation
 
-The version source of truth remains `pubspec.yaml`.
+The wallet is currently under Phase 7 stabilization, which means the focus is on:
 
-From Phase 7.6 onward, Windows MSIX packaging is being hardened for real distribution readiness, including signing preparation and compatibility with both development and production certificate strategies.
+- hardening
+- fixes
+- operational safety
+- production readiness
+- release engineering improvements
 
----
-
-## ♻️ Backup and Recovery
-
-From Phase 7.5 onward, the wallet supports an encrypted backup and restore flow.
-
-Users can now:
-
-- export an encrypted backup file from Settings
-- protect it with a password
-- restore the wallet later from the onboarding wallet entry flow
-
-This does not replace mnemonic or private key recovery, but adds a safer and more practical user-managed recovery path beyond local app storage.
+This phase does not introduce major architecture redesign or broad new product features.
 
 ---
 
-## 📘 Documentation
+## 📦 Current Project Status
 
-Full documentation is available in the `docs/` folder:
+Completed phases:
 
-- architecture.md
-- architecture_deep.md
-- flows.md
-- rpc.md
-- ux.md
-- decisions.md
-- development.md
-- features.md
-- release.md
-- security.md
-- phase1_scavium_wallet.md
-- phase2_scavium_wallet.md
-- phase3_scavium_wallet.md
-- phase4_scavium_wallet.md
-- phase5_scavium_wallet.md
-- phase6_scavium_wallet.md
-- phase7_scavium_wallet.md
+- Phase 1 — Core setup
+- Phase 2 — Wallet creation and import
+- Phase 3 — Blockchain integration
+- Phase 4 — Transaction flows
+- Phase 5 — Production readiness
+- Phase 6 — Packaging, branding, and store deployment
+- Phase 7 — Stabilization
 
----
+Current implemented stabilization work includes:
 
-## 🚧 Current Stabilization Focus
-
-Phase 7 focuses on:
-
-- Android regressions
-- runtime issues reported by testers
-- release candidate hardening
-- stability improvements without architecture redesign
-
-Phase 7 currently includes:
-
-- Phase 7.1 → Android biometric unlock stabilization
-- Phase 7.2 → wallet persistence hardening and restore-state stabilization
-- Phase 7.3 → in-app branding correction for splash and shared logo usage
-- Phase 7.4 → build and versioning automation hardening
-- Phase 7.5 → encrypted user backup and restore flow
-- Phase 7.6 → Windows MSIX signing and distribution readiness
+- 7.1 — Android biometrics stabilization
+- 7.2 — Wallet persistence hardening
+- 7.3 — Branding correction
+- 7.4 — Build and versioning automation
+- 7.5 — Encrypted backup and restore
+- 7.6 — Windows MSIX signing and distribution readiness
+- 7.7 — GitHub Release automation and artifact publishing hardening
 
 ---
 
-## 🚧 Limitations
+## ✨ Key Characteristics
 
-- No remote transaction history (indexer not integrated yet)
-- No multi-account support yet
-- No advanced RPC metrics
-- Secure local storage is not a replacement for user-managed recovery backup
-- Uninstall/reinstall is not a supported recovery strategy by itself
-- Store publication is not yet automated
-- Backup recovery requires both the exported file and the password
-
----
-
-## 🧱 Next Step
-
-After Phase 7.6, stabilization can continue with:
-
-- additional runtime fixes reported by testers
-- repeated validation across Android devices
-- CI/CD preparation
-- store submission automation readiness
-- release candidate refinement
-- Windows distribution validation with signed MSIX packages
+- self-custody wallet model
+- EVM-compatible transaction support
+- production-oriented release hardening
+- encrypted local backup and restore flow
+- multiplatform build orchestration through `tool/build.dart`
+- GitHub Actions-based release artifact generation
+- draft GitHub Release publication with attached assets
 
 ---
 
-## 🚀 Conclusion
+## 🗂️ Repository Structure
 
-SCAVIUM Wallet is now a:
+Main areas of interest:
 
-> packaged, store-distributed and stabilization-focused wallet with a solid architecture, hardened local persistence behavior, corrected in-app branding consistency, a safer automated release workflow, a practical encrypted recovery path for end users, and an emerging Windows distribution readiness through MSIX packaging and signing preparation
+- `lib/` — application source code
+- `tool/build.dart` — build and release orchestration tool
+- `.github/workflows/release.yml` — GitHub Actions release workflow
+- `docs/` — structured technical documentation by phase and topic
+
+Important documentation includes:
+
+- `docs/phase7_scavium_wallet.md`
+- `docs/release.md`
+
+---
+
+## 🛠️ Build Tool
+
+The project uses a Dart-native build tool:
+
+`tool/build.dart`
+
+Supported targets:
+
+- `android-apk`
+- `android-bundle`
+- `web`
+- `windows`
+- `windows-msix`
+- `all`
+
+Typical commands:
+
+Android App Bundle:
+
+    dart run tool/build.dart --platform android-bundle
+
+Android APK:
+
+    dart run tool/build.dart --platform android-apk
+
+Windows MSIX:
+
+    dart run tool/build.dart --platform windows-msix
+
+Full build:
+
+    dart run tool/build.dart --platform all
+
+Version override:
+
+    dart run tool/build.dart --platform all --version 0.2.2
+
+No version bump:
+
+    dart run tool/build.dart --platform web --no-version-bump
+
+Release validation mode:
+
+    dart run tool/build.dart --check-version --expected-tag v0.2.1
+
+---
+
+## 📦 Release Artifacts
+
+The current release pipeline generates:
+
+- Android App Bundle (`.aab`)
+- Android APK (`.apk`)
+- Windows MSIX (`.msix`)
+- SHA256 checksums (`SHA256SUMS.txt`)
+
+The Android App Bundle is the primary Android distribution package.
+
+The Android APK is included as a secondary release artifact for:
+
+- direct installation
+- internal testing
+- technical validation
+- debugging
+- fallback distribution
+
+The Windows MSIX package is the primary Windows release artifact.
+
+---
+
+## 🚀 Release Flow
+
+Recommended formal release path:
+
+1. Update version in `pubspec.yaml` if needed
+2. Commit release state
+3. Create and push tag
+
+Example:
+
+    git tag v0.2.1
+    git push origin v0.2.1
+
+This triggers the GitHub Actions release workflow, which:
+
+- validates release state
+- builds Android artifacts
+- builds Windows MSIX
+- generates checksums
+- creates a GitHub draft release
+- attaches release artifacts
+
+Manual execution through GitHub Actions is also supported for CI testing and validation.
+
+---
+
+## 🔐 Signing and Secrets
+
+Sensitive signing material must never be committed to the repository.
+
+This includes:
+
+- Android keystore (`.jks`)
+- Windows certificate (`.pfx`)
+- passwords
+- raw signing configuration files containing secrets
+
+CI restores these through GitHub Secrets.
+
+---
+
+## 📝 Current Release Behavior
+
+As of Phase 7.7:
+
+- releases are created as Draft on GitHub
+- artifacts are attached automatically
+- source archives are exposed automatically by GitHub
+- manual review remains possible before publication
+
+This draft-first approach is intentional during stabilization.
+
+---
+
+## ♻️ Recovery Validation
+
+Encrypted backup and restore is now part of release validation expectations.
+
+Release candidates should validate:
+
+- encrypted backup generation
+- platform-appropriate export behavior
+- restore success
+- invalid password handling
+- invalid file handling
+- safe return to a valid wallet state after restore
+
+This is treated as a release-quality concern because it materially affects self-custody safety.
+
+---
+
+## 🚧 Out of Scope
+
+The current release engineering scope does not yet include:
+
+- automatic Play Store upload
+- automatic Microsoft Store submission
+- automatic iOS distribution
+- full CI/CD promotion flows
+- runtime updates
+- automatic git tagging
+- advanced changelog generation
+
+---
+
+## 📚 Documentation
+
+For detailed release and stabilization documentation, see:
+
+- `docs/release.md`
+- `docs/phase7_scavium_wallet.md`
+
+---
+
+## 🎯 Goal
+
+Deliver a stable, secure, production-oriented and operationally reproducible SCAVIUM Wallet build with:
+
+- controlled regression handling
+- safer repeatable build workflow
+- practical self-custody recovery validation
+- Windows distribution readiness
+- GitHub-based release artifact publication
+- lower operator error during release generation and distribution

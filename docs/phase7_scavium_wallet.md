@@ -1590,108 +1590,111 @@ After Phase 7.6:
 Phase 7.6 integrates Windows MSIX packaging and signing readiness into the stabilization phase, preserving the existing architecture while preparing the project for real-world Windows distribution.
 
 ---
+
 ## Phase 7.7 — GitHub Release Automation and Artifact Publishing Hardening
 
 ### Objective
 
 Establish a reproducible, traceable, and automated release publication workflow using GitHub Actions, leveraging the existing `tool/build.dart` system to:
 
-- build production artifacts in a controlled environment
-- enforce version consistency between source code and release tags
+- build production artifacts in a controlled CI environment
+- enforce release version consistency between Git tags and `pubspec.yaml`
 - automatically generate GitHub Releases
-- attach verified build artifacts to releases
-- reduce human error during release preparation and distribution
+- attach production artifacts to the generated release
+- reduce manual release risk and operator-dependent packaging errors
 
-This subphase focuses strictly on **release hardening**, not on introducing new product capabilities.
+This subphase remains strictly within the boundaries of Phase 7 stabilization and release hardening. It does not introduce new wallet features or architecture redesign.
 
 ### Initial Context
 
-At the beginning of Phase 7.7, the SCAVIUM Wallet project already includes:
+At the beginning of Phase 7.7, the SCAVIUM Wallet project already had the following foundations in place:
 
-- fully functional build system (`tool/build.dart`)
-- versioning defined in `pubspec.yaml`
-- stable Android and Windows builds
-- MSIX packaging implemented
-- manual release process partially standardized
-- Git repository hosted on GitHub
-- no centralized or automated release publication flow
+- a working multi-platform build tool implemented in `tool/build.dart`
+- stable local build flow for Android and Windows
+- Windows MSIX packaging already functional
+- Phase 7.6 already completed with signing and Windows distribution readiness
+- versioning controlled through `pubspec.yaml`
+- release preparation still partially manual
+- no GitHub-based centralized release publication pipeline
+- no guaranteed one-to-one traceability between:
+  - source commit
+  - Git tag
+  - generated artifacts
+  - release publication
 
-Current release workflow characteristics:
-
-- builds executed locally
-- artifacts manually collected
-- no strict validation between Git tag and app version
-- no automated artifact publishing
-- no guaranteed reproducibility across environments
-
-The project is already beyond the initial packaging stage and is operating under Phase 7 stabilization rules, which means no architecture redesign and no major feature expansion are allowed.
+The project had therefore reached a point where builds could already be produced, but release publication still depended on local execution and manual operator intervention.
 
 ### Problem Statement
 
-Although the application is production-ready from a functional standpoint, the release process remains partially manual and operationally fragile.
+The core problem was not the absence of build capability, but the absence of a deterministic and centralized release publication process.
 
-The main issues identified at this stage are:
+Before this subphase:
 
-- lack of a single authoritative CI build environment
-- no enforced relationship between:
-  - Git tag
-  - app version in `pubspec.yaml`
-  - generated artifacts
-- manual artifact handling introduces risk of:
-  - naming inconsistencies
-  - missing files
-  - incorrect versions
-  - accidental release of locally modified outputs
-- GitHub repository history and release assets are not yet tightly coupled
+- builds were generated locally
+- artifacts were manually reviewed and distributed
+- GitHub did not act as the authoritative release publication layer
+- no automated release pipeline existed for:
+  - Android bundle generation
+  - Android APK generation
+  - Windows MSIX generation
+  - asset upload
+  - release draft creation
+- no enforced validation existed to guarantee that the published release tag matched the actual application version declared in `pubspec.yaml`
 
-This creates unnecessary release risk, especially as the wallet moves toward more formal production distribution expectations.
+This created operational fragility in an area already close to production distribution.
+
+The release process was therefore functional, but not yet hardened.
 
 ### Scope
 
 #### Included
 
-- GitHub Actions workflow for release builds
-- execution of `tool/build.dart` inside CI
-- automated validation of version consistency
-- automated GitHub Release creation
-- automated upload of release artifacts
-- build output traceability tied to Git tags
-- preparation for secret-driven signing inputs in CI
+- GitHub Actions-based release workflow
+- CI-driven execution of `tool/build.dart`
+- release artifact generation for:
+  - Android App Bundle (`.aab`)
+  - Android APK (`.apk`)
+  - Windows MSIX (`.msix`)
+- automatic checksum generation (`SHA256SUMS.txt`)
+- automated GitHub Release draft creation
+- automated asset publication into the generated release
+- version/tag consistency validation for tag-triggered releases
+- support for CI-specific signing inputs through GitHub Secrets
+- CI-oriented handling of Windows MSIX behavior without forcing local-only assumptions
 
 #### Excluded
 
-- Play Store automatic deployment
-- Microsoft Store submission automation
-- macOS/iOS signing or notarization
-- full multi-stage CI/CD orchestration
+- Google Play automatic submission
+- Microsoft Store automatic submission
+- iOS/macOS release automation
+- advanced changelog automation
 - runtime auto-update
-- advanced changelog generation
-- architecture redesign of the build tool
+- full CI/CD redesign
+- release promotion between environments
+- production store publishing orchestration
 
 ### Root Cause Analysis
 
-The release process remained manual not because the project lacked a build system, but because the project evolved around a local-first operator-driven workflow.
+The project already had release-related capabilities, but they were concentrated in local workflows rather than in a repository-level controlled pipeline.
 
-The existing state before this subphase had the following characteristics:
+The root causes were:
 
-- build logic already centralized in `tool/build.dart`
-- packaging logic already functioning locally
-- version bumping already supported
-- release publication still dependent on manual intervention
+- the project evolved initially around local operator-driven packaging
+- release logic existed but was not yet executed from a canonical CI environment
+- Git tags and version declarations were not yet enforced as a release contract
+- some release-sensitive inputs were still machine-local in nature
+- Windows-specific MSIX handling included assumptions that worked locally but were not ideal for CI runners
+- Android signing restoration required exact path and filename consistency with the Gradle signing configuration
 
-The root problem was therefore not build capability itself, but the absence of an automated publication layer that could:
+During implementation, three concrete operational issues were validated:
 
-- consume the existing build tool
-- validate release intent
-- produce deterministic artifacts
-- publish those artifacts in a traceable way
+1. Manual workflow runs initially failed in the validation step because branch names such as `main` were being treated as release tags. The workflow was then corrected to skip strict tag validation for `workflow_dispatch` runs.
 
-A secondary practical issue was also identified:
+2. Android CI signing initially failed because the restored keystore filename in GitHub Actions did not match the filename expected by the Gradle signing configuration.
 
-- current MSIX-related configuration still contains machine-local assumptions
-- current release flow is not yet normalized for CI runners
+3. Windows CI packaging initially failed because the extra post-build `signtool` step assumed the presence of a local Windows signing toolchain in the runner PATH, which was not guaranteed in GitHub-hosted CI.
 
-This means release automation required hardening around existing behavior rather than replacing it.
+These issues confirmed that the release system itself was viable, but required CI-oriented hardening.
 
 ### Files Affected
 
@@ -1702,174 +1705,225 @@ This means release automation required hardening around existing behavior rather
 #### Modified
 
 - `tool/build.dart`
-- `README.md`
 - `docs/release.md`
 - `docs/phase7_scavium_wallet.md`
 
 ### Implementation Characteristics
 
-#### CI-Driven Release Workflow
+#### GitHub Actions Release Workflow
 
-A dedicated GitHub Actions workflow is introduced to standardize release execution.
+A dedicated workflow was introduced at:
 
-The workflow is designed to support:
+- `.github/workflows/release.yml`
 
-- tag-driven releases
-- manually triggered releases through GitHub Actions
+This workflow was designed to support:
+
+- tag-based release execution
+- manual execution through `workflow_dispatch`
 - centralized artifact generation
-- automated publishing to GitHub Releases
+- automated asset publication into GitHub Releases
 
-This workflow does not duplicate the existing build logic.
+The workflow was structured into separate jobs:
 
-Instead, it delegates artifact generation to:
+- `validate`
+- `build_android`
+- `build_windows_msix`
+- `publish_release`
+
+This keeps the release flow explicit, auditable, and operationally clean.
+
+#### Delegation to the Existing Build Tool
+
+The workflow does not duplicate build logic in YAML.
+
+Instead, it delegates build execution to the already existing:
 
 - `tool/build.dart`
 
-That preserves the existing local build strategy while extending it into a reproducible CI context.
+This preserves the build tool as the single source of truth for build orchestration and avoids CI/local divergence.
 
-#### Version Consistency Enforcement
+That alignment is especially important because build hardening was already introduced in previous Phase 7 work and should not be fragmented into independent release logic.
 
-A dedicated validation step is introduced to guarantee coherence between:
+#### Version Validation Behavior
 
-- Git tag
-- `pubspec.yaml` version
-- generated artifacts
+A dedicated version-check mode was introduced in `tool/build.dart`:
 
-The intended relationship is:
+- `--check-version`
+- `--expected-tag`
 
-- Git tag: `vX.Y.Z`
-- `pubspec.yaml`: `version: X.Y.Z+N`
+This allows the workflow to validate that:
 
-If the tag and the app semantic version do not match, the workflow must fail before any artifact is published.
+- a release tag such as `v0.2.1`
+- matches the semantic application version declared in `pubspec.yaml`
 
-This prevents accidental publication of mismatched builds.
+The workflow was then adjusted so that:
 
-#### Platform-Aware Artifact Generation
+- tag-triggered runs perform strict tag validation
+- manually triggered runs skip strict tag validation
 
-The release workflow is split according to platform capability:
+This distinction was necessary because manual GitHub Actions executions expose `main` or another branch name as `GITHUB_REF_NAME`, which is not a valid semantic release tag.
 
-- Android artifacts generated on Linux runner
-- Windows MSIX artifact generated on Windows runner
+#### Android CI Signing Restoration
 
-This is necessary because:
+GitHub Secrets were used to reconstruct Android signing inputs during CI:
 
-- Android build pipeline is naturally supported on Linux
-- Windows MSIX packaging and signature verification are Windows-specific
+- keystore file as Base64
+- `android/key.properties` as Base64
 
-This keeps the release process realistic and compatible with the current project structure.
+A critical implementation detail was validated during the first CI runs:
 
-#### Release Asset Publication
+- the keystore had to be restored using the exact filename expected by the Gradle signing configuration
 
-Generated artifacts are collected and uploaded to a GitHub Release.
+The workflow was corrected to restore:
 
-Expected outputs include:
+- `android/keystores/scavium-wallet-upload.jks`
 
-- Android App Bundle (`.aab`)
-- optional Android APK (`.apk`)
-- Windows MSIX (`.msix`)
+instead of a generic or mismatched filename.
 
-Artifact publication becomes tied to the release tag, which improves:
+This resolved the Android CI signing failure and allowed both Android outputs to complete successfully:
 
-- reproducibility
-- distribution consistency
-- operational traceability
+- App Bundle (`.aab`)
+- APK (`.apk`)
 
-#### CI Normalization of Existing Build Inputs
+#### Windows MSIX CI Behavior
 
-This subphase also acknowledges that some build inputs still reflect local-machine assumptions.
+The Windows job successfully built:
 
-As part of release hardening, the release flow is prepared to normalize or override CI-sensitive values such as:
+- the native Windows release executable
+- the MSIX package through `dart run msix:create`
 
-- MSIX certificate path
-- MSIX certificate password
-- MSIX asset paths when needed
-- Android signing material through GitHub Secrets
+However, the initial implementation failed in CI because `build.dart` attempted to run an additional `signtool` signing step and signature verification step, assuming local PATH availability.
 
-This is not a redesign of the build system.
+To make CI behavior robust without redesigning local release behavior:
 
-It is a controlled adaptation layer required to make the already-existing release system portable to CI execution.
+- CI detection was added
+- extra manual `signtool` signing and verification are skipped in CI
+- local execution can still retain stricter local verification behavior if needed
+
+This preserved the working MSIX generation flow while removing a CI-specific failure point.
+
+#### Artifact Publication Strategy
+
+The workflow collects and publishes the following release assets:
+
+- `scavium_wallet-<version>-android.aab`
+- `scavium_wallet-<version>-android.apk`
+- `scavium_wallet-<version>-windows.msix`
+- `SHA256SUMS.txt`
+
+GitHub also automatically exposes source archives:
+
+- Source code (`zip`)
+- Source code (`tar.gz`)
+
+The release is currently created as:
+
+- `Draft`
+
+This was intentionally chosen during Phase 7 stabilization to ensure release review remains possible before public publication.
+
+The APK is included as a secondary Android artifact.
+
+While the Android App Bundle (`.aab`) remains the primary release package for formal distribution, the APK provides practical value for:
+
+- direct installation
+- internal testing
+- QA validation
+- fast operational verification
+- fallback technical distribution outside store workflows
 
 ### Validation
 
 #### Technical Validation
 
-The implementation must be validated through real GitHub Actions executions confirming that:
+The workflow was executed successfully against the real repository state and produced a valid end-to-end result.
 
-- the workflow starts correctly from a release trigger
-- version validation behaves correctly
-- Android build completes in CI
-- Windows MSIX build completes in CI
-- release artifacts are uploaded successfully
-- GitHub Release is created or updated as expected
+Validated results:
 
-#### Consistency Validation
+- release workflow executed successfully in GitHub Actions
+- `validate` job completed successfully
+- Android build completed successfully after keystore path correction
+- Windows MSIX build completed successfully after CI-safe handling of extra signing steps
+- artifacts were correctly uploaded
+- GitHub Release draft was created successfully
+- release assets were attached correctly
 
-The following failure modes must be explicitly validated:
+#### Artifact Validation
 
-- tag does not match `pubspec.yaml` semantic version
-- required signing inputs are missing
-- expected output artifacts are not generated
-- build tool returns non-zero exit code
+The resulting GitHub Release draft included the following assets:
 
-In all such cases, the workflow must fail without creating an invalid release.
+- Android App Bundle (`scavium_wallet-0.2.1-android.aab`)
+- Android APK (`scavium_wallet-0.2.1-android.apk`)
+- Windows MSIX (`scavium_wallet-0.2.1-windows.msix`)
+- `SHA256SUMS.txt`
 
-#### Operational Validation
+This confirmed that artifact naming, upload, and draft release creation were functioning as intended.
 
-The new release process must demonstrate that a release can be produced from GitHub without relying on ad-hoc local manual packaging steps.
+#### Release Validation
 
-That does not eliminate local builds.
+The generated release was successfully associated with:
 
-It ensures that formal release publication has a deterministic and auditable path.
+- tag `v0.2.1`
+- commit `ab2291f`
+
+This confirmed that the release pipeline was correctly linked to the desired repository state.
 
 ### Release Impact
 
-This subphase materially improves the release quality of SCAVIUM Wallet by making the distribution pipeline more controlled and reproducible.
+This subphase significantly improves the release engineering maturity of SCAVIUM Wallet.
 
-Main release impact:
+Main impact:
 
-- reduces manual release error
-- improves traceability between code and published artifact
-- centralizes release execution
-- prepares the project for future store automation
-- improves confidence in production distribution handling
+- centralizes release generation inside GitHub Actions
+- reduces dependence on local manual packaging
+- improves release reproducibility
+- improves traceability between:
+  - commit
+  - tag
+  - generated assets
+  - published release draft
+- formalizes GitHub Releases as the publication layer for release artifacts
+- prepares the project for future release automation expansion
 
-This is a release engineering improvement, not an end-user feature change.
+This is an operational release improvement, not an end-user feature change.
 
 ### Risks
 
-The main risks associated with this subphase are:
+The main risks that remain after this subphase are:
 
-- CI environment differences relative to local machines
-- missing or misconfigured GitHub Secrets
-- Windows-specific packaging assumptions still embedded in configuration
-- incorrect tagging discipline blocking releases
-- temporary release workflow instability while first executions are being tuned
+- incorrect Git tagging discipline may still cause release mismatches if release procedure is not followed
+- CI runners may still differ from local environments in edge-case platform tooling behavior
+- release draft publication still depends on manual review/publication if `draft: true` is preserved
+- store submission remains outside the scope of this workflow
+- Android and Windows release outputs are automated, but not yet promoted into external stores automatically
 
-These risks are acceptable within Phase 7 because they are part of hardening and operational stabilization.
+These risks are acceptable and expected for a stabilization-oriented release hardening phase.
 
 ### What it does NOT solve
 
 Phase 7.7 does not solve:
 
-- automatic submission to Google Play
-- automatic submission to Microsoft Store
-- macOS or iOS release automation
-- runtime update delivery
-- advanced semantic changelog generation
-- broader CI/CD redesign
-- full cross-platform signing unification
-
-Those concerns remain outside the scope of this stabilization subphase.
+- automatic publishing to Google Play
+- automatic publishing to Microsoft Store
+- iOS or macOS release automation
+- semantic changelog generation beyond basic GitHub-generated notes
+- release approval workflows
+- multi-stage deployment environments
+- runtime package delivery or in-app update systems
+- universal signing standardization for every future platform
 
 ### Conclusion
 
-Phase 7.7 formalizes the release publication process of SCAVIUM Wallet by introducing GitHub-based automation over the already existing build system.
+Phase 7.7 successfully hardened the SCAVIUM Wallet release publication process by introducing a real GitHub Actions-based release pipeline over the already existing build system.
 
-Instead of redesigning packaging or deployment architecture, this subphase hardens what already exists:
+This subphase did not redesign packaging or architecture. Instead, it reinforced what already existed and converted it into a controlled and reproducible release mechanism.
 
-- build orchestration
-- version consistency
-- artifact traceability
-- release publication reliability
+The final result is a working GitHub Release automation flow that:
 
-This is a production-oriented stabilization step fully aligned with the constraints of Phase 7 and establishes the correct foundation for future release automation beyond GitHub artifact publishing.
+- validates release state
+- builds Android and Windows artifacts
+- generates checksums
+- creates a GitHub Release draft
+- attaches the expected release files
+
+This establishes the correct operational baseline for future production release evolution while remaining fully aligned with the constraints of Phase 7 stabilization.

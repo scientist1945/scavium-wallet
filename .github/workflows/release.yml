@@ -31,7 +31,12 @@ jobs:
         run: flutter pub get
 
       - name: Validate tag vs pubspec version
+        if: startsWith(github.ref, 'refs/tags/')
         run: dart run tool/build.dart --check-version --expected-tag "${GITHUB_REF_NAME}"
+
+      - name: Skip tag validation for manual runs
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        run: echo "Manual workflow run detected; skipping tag validation"
 
   build_android:
     name: Build Android release artifacts
@@ -79,14 +84,18 @@ jobs:
       - name: Build Android App Bundle
         run: dart run tool/build.dart --platform android-bundle --no-version-bump --skip-clean
 
-      - name: Rename Android artifact
+      - name: Build Android APK
+        run: dart run tool/build.dart --platform android-apk --no-version-bump --skip-clean
+
+      - name: Rename Android artifacts
         shell: bash
         run: |
           VERSION=$(grep '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)\+[0-9]+/\1/')
           mkdir -p release-artifacts
           cp build/app/outputs/bundle/release/app-release.aab "release-artifacts/scavium_wallet-${VERSION}-android.aab"
+          cp build/app/outputs/flutter-apk/app-release.apk "release-artifacts/scavium_wallet-${VERSION}-android.apk"
 
-      - name: Upload Android artifact
+      - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
         with:
           name: android-release-artifacts
