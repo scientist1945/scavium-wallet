@@ -1,0 +1,144 @@
+name: Build and Release Scavium Wallet
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versión del Release (ej. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+permissions:
+  contents: write # Permiso obligatorio para crear Releases en GitHub
+
+jobs:
+  # --------------------------------------------------------
+  # TRABAJO 1: COMPILAR ANDROID
+  # --------------------------------------------------------
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+
+    - name: Configurar Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Configurar Flutter SDK
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+
+    - name: Cirugía de Carpeta Android
+      shell: python
+      run: |
+        import os, re
+        manifest = 'android/app/src/main/AndroidManifest.xml'
+        perms = []
+        if os.path.exists(manifest):
+            with open(manifest, 'r') as f:
+                perms = re.findall(r'<uses-permission.*?>', f.read())
+        os.rename('android', 'android_old')
+        os.system('flutter create . --platforms=android')
+        if perms and os.path.exists(manifest):
+            with open(manifest, 'r') as f:
+                content = f.read()
+            content = content.replace('<application', '\n    '.join(perms) + '\n    <application')
+            with open(manifest, 'w') as f:
+                f.write(content)
+        for root, dirs, files in os.walk('android/app/src'):
+            if 'MainActivity.kt' in files:
+                kt = os.path.join(root, 'MainActivity.kt')
+                with open(kt, 'r') as f:
+                    code = f.read()
+                code = code.replace('FlutterActivity', 'FlutterFragmentActivity')
+                with open(kt, 'w') as f:
+                    f.write(code)
+        os.system('cp -r android_old/app/src/main/res/* android/app/src/main/res/ 2>/dev/null || true')
+
+    - name: Instalar dependencias
+      run: flutter pub get
+
+    - name: Parchear paquete obsoleto
+      run: |
+        CACHE_DIR=$(ls -d ~/.pub-cache/hosted/pub.dev/flutter_windowmanager-*/android | head -n 1)
+        if [ -n "$CACHE_DIR" ]; then
+          sed -i 's/android {/android {\n    namespace "flutter.plugins.windowmanager"/g' "$CACHE_DIR/build.gradle"
+          sed -i 's/package="[^"]*"//g' "$CACHE_DIR/src/main/AndroidManifest.xml"
+          sed -i 's/compileSdkVersion [0-9]*/compileSdkVersion 34/g' "$CACHE_DIR/build.gradle"
+          JAVA_FILE="$CACHE_DIR/src/main/java/io/adaptant/labs/flutter_windowmanager/FlutterWindowManagerPlugin.java"
+          printf "package io.adaptant.labs.flutter_windowmanager;\nimport android.app.Activity;\nimport androidx.annotation.NonNull;\nimport io.flutter.embedding.engine.plugins.FlutterPlugin;\nimport io.flutter.embedding.engine.plugins.activity.ActivityAware;\nimport io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;\nimport io.flutter.plugin.common.MethodCall;\nimport io.flutter.plugin.common.MethodChannel;\nimport io.flutter.plugin.common.MethodChannel.MethodCallHandler;\nimport io.flutter.plugin.common.MethodChannel.Result;\npublic class FlutterWindowManagerPlugin implements FlutterPlugin, ActivityAware, MethodCallHandler {\nprivate MethodChannel c;\nprivate Activity a;\n@Override public void onAttachedToEngine(@NonNull FlutterPluginBinding b) { c = new MethodChannel(b.getBinaryMessenger(), \"flutter_windowmanager\"); c.setMethodCallHandler(this); }\n@Override public void onMethodCall(@NonNull MethodCall call, @NonNull Result r) { if (a == null) { r.error(\"NO_ACTIVITY\", \"No activity\", null); return; } int f = call.argument(\"flags\") == null ? 0 : (int) call.argument(\"flags\"); if (call.method.equals(\"addFlags\")) { a.getWindow().addFlags(f); r.success(true); } else if (call.method.equals(\"clearFlags\")) { a.getWindow().clearFlags(f); r.success(true); } else { r.notImplemented(); } }\n@Override public void onDetachedFromEngine(@NonNull FlutterPluginBinding b) { c.setMethodCallHandler(null); }\n@Override public void onAttachedToActivity(@NonNull ActivityPluginBinding b) { a = b.getActivity(); }\n@Override public void onDetachedFromActivityForConfigChanges() { a = null; }\n@Override public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding b) { a = b.getActivity(); }\n@Override public void onDetachedFromActivity() { a = null; }\n}\n" > "$JAVA_FILE"
+        fi
+
+    - name: Compilar APK
+      run: flutter build apk --release
+
+    - name: Renombrar APK para el Release
+      run: mv build/app/outputs/flutter-apk/app-release.apk Scavium-Wallet-Android.apk
+
+    - name: Guardar APK temporalmente
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: Scavium-Wallet-Android.apk
+
+  # --------------------------------------------------------
+  # TRABAJO 2: COMPILAR WINDOWS
+  # --------------------------------------------------------
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v4
+
+    - name: Configurar Flutter SDK
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+
+    - name: Habilitar y Compilar Windows
+      run: |
+        flutter config --enable-windows-desktop
+        flutter pub get
+        flutter build windows --release
+
+    - name: Comprimir App de Windows a ZIP
+      run: Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath Scavium-Wallet-Windows.zip
+
+    - name: Guardar ZIP temporalmente
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-zip
+        path: Scavium-Wallet-Windows.zip
+
+  # --------------------------------------------------------
+  # TRABAJO 3: PUBLICAR RELEASE EN GITHUB
+  # --------------------------------------------------------
+  publish-release:
+    needs: [build-android, build-windows] # Espera a que Android y Windows terminen
+    runs-on: ubuntu-latest
+    steps:
+    - name: Descargar APK compilado
+      uses: actions/download-artifact@v4
+      with:
+        name: android-apk
+
+    - name: Descargar ZIP compilado
+      uses: actions/download-artifact@v4
+      with:
+        name: windows-zip
+
+    - name: Crear Release Oficial
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.event.inputs.version }}
+        name: Release ${{ github.event.inputs.version }}
+        body: "Archivos de instalación compilados automáticamente para Android y Windows."
+        files: |
+          Scavium-Wallet-Android.apk
+          Scavium-Wallet-Windows.zip
+        draft: false
+        prerelease: false
