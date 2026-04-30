@@ -1280,3 +1280,61 @@ fvm flutter test
 ```
 
 The analyze baseline should not increase beyond known pre-existing issues.
+
+---
+
+## Phase 8.1.6 — Backup / Restore Multi-Account Compatibility
+
+### Objective
+
+Extend the wallet backup and restore flow so the Phase 8.1 multi-account model can be exported and restored without breaking existing Phase 7 / Phase 8.1 legacy backup payloads.
+
+### Scope
+
+This subphase formalizes backup payload version 2 as the account-aware backup format.
+
+The backup payload now preserves:
+
+- the current wallet root material contract (`wallet`);
+- `accounts[]` metadata;
+- `activeAccountId`;
+- `defaultAccountId`;
+- imported-account private keys when required for operational restore.
+
+### Compatibility Rules
+
+Backup compatibility remains strictly additive:
+
+- backup payload v1 remains valid;
+- restore of v1 payloads continues to rebuild a single-account profile;
+- backup payload v2 restores the multi-account profile and persists account metadata;
+- imported account private keys are included only inside encrypted backup payloads;
+- derived accounts continue to rely on the mnemonic-backed wallet material.
+
+### Security Rules
+
+Imported private keys are not stored in account metadata. They remain in secure storage at runtime and are only serialized into encrypted backup payloads so imported accounts can remain usable after restore.
+
+The encrypted backup envelope is not replaced in this subphase. The change is limited to the decrypted wallet payload schema.
+
+### Explicit Non-Scope
+
+This subphase does not add:
+
+- backup v3;
+- release/build changes;
+- route changes;
+- account deletion;
+- account label editing;
+- navigation restructuring.
+
+### Validation Expectations
+
+The expected validation gate remains:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+The restore path must continue to accept v1 payloads while enabling v2 multi-account restore.

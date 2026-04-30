@@ -33,6 +33,7 @@ abstract class WalletRepository {
   });
   Future<String?> readMnemonic();
   Future<String?> readPrivateKey();
+  Future<Map<String, String>> readImportedPrivateKeys();
 
   Future<void> savePin(String pin);
   Future<bool> validatePin(String pin);

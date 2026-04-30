@@ -279,6 +279,17 @@ class WalletRepositoryImpl implements WalletRepository {
       defaultAccountId: defaultAccountId,
     );
 
+    for (final account in payload.accounts) {
+      if (account.isImportedByPrivateKey &&
+          account.privateKey != null &&
+          account.privateKey!.trim().isNotEmpty) {
+        await _persistImportedPrivateKeyForAccount(
+          accountId: account.id,
+          privateKey: _normalizePrivateKey(account.privateKey!),
+        );
+      }
+    }
+
     await _persistMultiAccountMetadata(
       accounts: normalizedAccounts,
       activeAccountId: activeAccountId,
@@ -711,7 +722,8 @@ class WalletRepositoryImpl implements WalletRepository {
     }
   }
 
-  Future<Map<String, String>> _readImportedPrivateKeys() async {
+  @override
+  Future<Map<String, String>> readImportedPrivateKeys() async {
     final raw = await secureStorage.read(
       StorageKeys.walletImportedPrivateKeysJson,
     );
@@ -739,7 +751,7 @@ class WalletRepositoryImpl implements WalletRepository {
     required String accountId,
     required String privateKey,
   }) async {
-    final importedPrivateKeys = await _readImportedPrivateKeys();
+    final importedPrivateKeys = await readImportedPrivateKeys();
     importedPrivateKeys[accountId] = privateKey;
 
     await secureStorage.writeAndVerify(

@@ -40,6 +40,22 @@ class WalletBackupController {
 
     final mnemonic = await walletRepository.readMnemonic();
     final privateKey = await walletRepository.readPrivateKey();
+    final importedPrivateKeys =
+        await walletRepository.readImportedPrivateKeys();
+
+    final backupAccounts = profile.accounts
+        .map((account) {
+          final importedPrivateKey =
+              account.isImportedByPrivateKey
+                  ? importedPrivateKeys[account.id]
+                  : null;
+
+          return WalletBackupAccount.fromWalletAccount(
+            account,
+            privateKey: importedPrivateKey,
+          );
+        })
+        .toList(growable: false);
 
     final payload = WalletBackupPayload.v2(
       createdAt: DateTime.now(),
@@ -50,10 +66,7 @@ class WalletBackupController {
         address: profile.activeAccount.address,
         accountName: profile.activeAccount.name,
       ),
-      accounts:
-          profile.accounts
-              .map(WalletBackupAccount.fromWalletAccount)
-              .toList(growable: false),
+      accounts: backupAccounts,
       activeAccountId: profile.activeAccountId,
       defaultAccountId: profile.defaultAccountId,
     );

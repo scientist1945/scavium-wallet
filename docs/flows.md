@@ -229,3 +229,7 @@ WalletController.setActiveAccount(accountId)
 ```
 
 No visible account switcher is introduced yet. Existing screens continue to behave as a single-account wallet because `WalletProfile.account` remains compatible with the selected active account.
+
+## Phase 8.1.6 — Multi-Account Backup / Restore Flow
+
+Export backup now emits a version 2 wallet payload containing the active account, default account, and account list. Restore remains backward-compatible: version 1 payloads rebuild a single-account profile, while version 2 payloads restore multi-account metadata and imported-account private keys required for later signing/send flows.

@@ -233,6 +233,7 @@ class WalletBackupAccount {
   final bool isImportedByPrivateKey;
   final bool isDefault;
   final bool isActive;
+  final String? privateKey;
   final String? createdAt;
   final String? updatedAt;
 
@@ -245,11 +246,15 @@ class WalletBackupAccount {
     required this.isImportedByPrivateKey,
     required this.isDefault,
     required this.isActive,
+    this.privateKey,
     required this.createdAt,
     required this.updatedAt,
   });
 
-  factory WalletBackupAccount.fromWalletAccount(WalletAccount account) {
+  factory WalletBackupAccount.fromWalletAccount(
+    WalletAccount account, {
+    String? privateKey,
+  }) {
     return WalletBackupAccount(
       id: account.id,
       name: account.name,
@@ -259,6 +264,7 @@ class WalletBackupAccount {
       isImportedByPrivateKey: account.isImportedByPrivateKey,
       isDefault: account.isDefault,
       isActive: account.isActive,
+      privateKey: privateKey,
       createdAt: account.createdAt?.toUtc().toIso8601String(),
       updatedAt: account.updatedAt?.toUtc().toIso8601String(),
     );
@@ -274,6 +280,7 @@ class WalletBackupAccount {
       isImportedByPrivateKey: json['is_imported_by_private_key'] == true,
       isDefault: json['is_default'] == true,
       isActive: json['is_active'] == true,
+      privateKey: json['private_key'] as String?,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
     );
@@ -289,6 +296,8 @@ class WalletBackupAccount {
       'is_imported_by_private_key': isImportedByPrivateKey,
       'is_default': isDefault,
       'is_active': isActive,
+      if (privateKey != null && privateKey!.trim().isNotEmpty)
+        'private_key': privateKey,
       'created_at': createdAt,
       'updated_at': updatedAt,
     };
@@ -324,6 +333,17 @@ class WalletBackupAccount {
 
     if (accountIndex < 0) {
       throw Exception('Invalid backup account index');
+    }
+
+    if (isImportedByPrivateKey &&
+        (privateKey == null || privateKey!.trim().isEmpty)) {
+      throw Exception('Imported backup account is missing private key');
+    }
+
+    if (!isImportedByPrivateKey &&
+        privateKey != null &&
+        privateKey!.trim().isNotEmpty) {
+      throw Exception('Derived backup account should not contain private key');
     }
 
     if (createdAt != null &&
