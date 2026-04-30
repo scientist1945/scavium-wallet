@@ -1,46 +1,46 @@
-# Current Task — Phase 8.2.1
+# Current Task — Phase 8.2.3
 
 Project: SCAVIUM Wallet
 Phase: 8.2 — Asset & Portfolio Expansion
-Subphase: 8.2.1 — Portfolio Summary Model Foundation
+Subphase: 8.2.3 — Manual Token Safety & Metadata UX
 Type: code
 
 ## Goal
 
-Introduce a minimal portfolio summary foundation derived from existing `AssetItem` data, without changing persistence, token discovery, wallet storage, backup format, or documentation.
+Harden manual ERC-20 token registration UX and safety using the existing token registry and RPC metadata loading flow.
 
 ## Scope
 
-Implement a small domain/application foundation that can summarize visible assets for UI use.
+Improve deterministic input handling, duplicate handling, metadata error presentation, and safe empty/loading/error states around manual token registration.
 
 ## Allowed Files
 
-- `lib/features/assets/domain/**`
-- `lib/features/assets/application/**`
+- `lib/features/assets/application/token_registry_controller.dart`
+- `lib/features/assets/data/token_registry_repository_impl.dart`
+- `lib/features/assets/domain/token_info.dart`
+- `lib/features/assets/presentation/add_token_screen.dart`
 - `lib/features/assets/presentation/assets_screen.dart`
+- `lib/shared/widgets/feedback/**` only if strictly needed
 - `test/**` only for focused tests if needed
 
 ## Forbidden
 
 - `docs/**`
 - `README.md`
-- `lib/features/wallet/data/**`
-- `lib/features/wallet/domain/wallet_profile.dart`
-- `lib/features/wallet/domain/wallet_account.dart`
+- wallet persistence changes
 - backup format changes
-- storage key changes
 - automatic token discovery
 - multi-chain support
-- large UI shell/navigation redesign
+- broad UI redesign
+- routing changes unless unavoidable and approved
 
 ## Implementation Requirements
 
-- Keep native balance behavior intact.
-- Keep existing ERC-20 token registry behavior intact.
-- Do not remove existing asset list behavior.
-- Add a deterministic summary representation only if it can be computed from current assets.
-- Keep empty/loading/error states safe.
-- Avoid broad refactors.
+- Normalize token contract input consistently.
+- Prevent duplicate tokens deterministically.
+- Surface invalid contract/metadata errors safely.
+- Preserve existing manual token registry storage format unless a compatible normalization is needed.
+- Keep existing native asset and token list behavior intact.
 
 ## Validation
 
@@ -60,7 +60,8 @@ flutter test
 
 ## Acceptance
 
-- Existing assets screen still loads native and manual ERC-20 items.
-- Portfolio summary foundation exists and is used or ready for use without unstable assumptions.
+- Invalid token input is rejected before RPC metadata loading.
+- Duplicate token additions do not create duplicate registry entries.
+- Metadata/RPC failures are user-visible and non-destructive.
 - No documentation files are modified.
 - Validation passes or remaining failures are unrelated and explicitly reported.

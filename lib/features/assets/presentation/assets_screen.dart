@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
 import 'package:scavium_wallet/features/assets/application/assets_controller.dart';
+import 'package:scavium_wallet/features/assets/domain/asset_account_context.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_kind.dart';
 import 'package:scavium_wallet/features/assets/domain/portfolio_summary.dart';
@@ -55,6 +56,7 @@ class AssetsScreen extends ConsumerWidget {
                 if (index == 0) {
                   return _PortfolioSummaryCard(
                     summary: PortfolioSummary.fromAssets(items),
+                    accountContext: items.first.accountContext,
                   );
                 }
 
@@ -78,8 +80,12 @@ class AssetsScreen extends ConsumerWidget {
 
 class _PortfolioSummaryCard extends StatelessWidget {
   final PortfolioSummary summary;
+  final AssetAccountContext? accountContext;
 
-  const _PortfolioSummaryCard({required this.summary});
+  const _PortfolioSummaryCard({
+    required this.summary,
+    required this.accountContext,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +122,22 @@ class _PortfolioSummaryCard extends StatelessWidget {
               ),
             ],
           ),
+          if (accountContext != null) ...[
+            const SizedBox(height: 12),
+            const Divider(height: 1),
+            const SizedBox(height: 12),
+            Text(
+              accountContext!.displayName,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              accountContext!.shortAddress,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
         ],
       ),
     );
