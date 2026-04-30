@@ -37,5 +37,10 @@
   Introduces the domain-level compatibility bridge for accounts[], activeAccountId, and defaultAccountId while keeping profile.account and current single-account behavior intact.
 
 - 8.1.2 — Storage Migration Foundation  
-- 8.1.3 — Active Account Controller  
   Adds parallel multi-account storage metadata while preserving legacy single-wallet keys and visible behavior.
+
+- 8.1.3 — Active Account Controller  
+  Adds the controller/repository path for resolving and persisting the active account without adding a switcher UI.
+
+- 8.1.4 — Account Switcher Basic UI  
+  Adds a minimal UI surface for displaying and selecting among already-known accounts without introducing account creation, deletion, backup changes, route changes, or release changes.

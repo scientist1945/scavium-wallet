@@ -140,6 +140,23 @@ User can see:
 
 ---
 
+
+---
+
+## 👛 Phase 8.1.4 Account Switcher UX
+
+Phase 8.1.4 introduces the first account-aware UI element without changing the overall navigation model.
+
+UX rules:
+
+- the account switcher must be visible but not disruptive
+- single-account wallets must remain understandable and stable
+- switching must only apply to already-known accounts
+- account creation, deletion, and editing must not be implied by the switcher
+- sensitive account expansion flows remain deferred until their dedicated subphases
+
+The home surface now separates balance display from active-account selection, reducing future pressure on the one-page wallet layout while preserving the current Phase 7 usability baseline.
+
 ## 🧠 Philosophy
 
 The wallet should:

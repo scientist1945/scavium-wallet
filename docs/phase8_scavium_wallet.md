@@ -1136,3 +1136,56 @@ Validation expectations:
 Next subphase:
 
 - 8.1.4 — Account Switcher Foundation, which can introduce a minimal UI surface for selecting among already-known accounts without changing the storage contract again.
+
+
+---
+
+## Phase 8.1.4 — Account Switcher Basic UI
+
+Status: Implemented as a minimal user-facing switcher foundation.
+
+Purpose:
+
+- introduce a visible account switcher surface on the existing home/dashboard area
+- display the currently active account through the account-aware profile model
+- allow active-account selection only among accounts already known by the wallet profile
+- preserve the Phase 7 single-account experience as a compatible fallback
+- avoid introducing account creation, import, deletion, editing, backup changes, route changes, build changes, or release workflow changes
+
+Implementation notes:
+
+- `AccountSwitcher` was added as a reusable wallet presentation widget.
+- `HomeScreen` now renders the account switcher as a separate card below the balance summary.
+- The switcher reads `WalletProfile.accounts` and `WalletProfile.activeAccount`.
+- Account changes are delegated through `WalletController.setActiveAccount(...)`.
+- Single-account wallets render the current account as the only available account and keep switching disabled.
+- Copy/explorer actions continue to use the active account address.
+
+Compatibility rule:
+
+```text
+single-account wallet -> one visible account option
+multi-account profile -> selectable existing account options
+```
+
+Behavioral constraints:
+
+- No additional accounts are created by this UI.
+- No imported account management flow is added in this subphase.
+- No account deletion or label editing is added in this subphase.
+- Backup/restore v1 remains unchanged.
+- Existing routes remain unchanged.
+- Build and release tooling remain unchanged.
+
+Validation expectations:
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- load a legacy single-account wallet and verify the switcher renders one account
+- verify the selected account address is the address used by copy/explorer actions
+- verify wallet creation/import/reset behavior remains unchanged
+- verify no route, backup, release, or build behavior changed
+
+Next subphase:
+
+- 8.1.5 — Backup and restore compatibility upgrade, which can formalize backup payload evolution after the account model, storage foundation, controller path, and basic switcher surface are already in place.

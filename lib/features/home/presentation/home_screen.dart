@@ -12,6 +12,7 @@ import 'package:scavium_wallet/features/blockchain/application/rpc_status_contro
 import 'package:scavium_wallet/features/blockchain/data/scavium_rpc_service.dart';
 import 'package:scavium_wallet/features/home/application/home_auto_refresh_controller.dart';
 import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
+import 'package:scavium_wallet/features/wallet/presentation/account_switcher.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_card.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
 
@@ -63,7 +64,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final profile = walletState.valueOrNull;
     final rpcService = ref.read(scaviumRpcServiceProvider);
 
-    final address = profile?.account.address ?? '-';
+    final address = profile?.activeAccount.address ?? '-';
     final assets = assetsState.valueOrNull;
     final nativeAsset =
         (assets != null && assets.isNotEmpty) ? assets.first : null;
@@ -104,13 +105,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 12),
-                Text('Account: ${profile?.account.name ?? '-'}'),
-                const SizedBox(height: 6),
-                SelectableText('Address: $address'),
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          ScaviumCard(child: AccountSwitcher(profile: profile)),
           const SizedBox(height: 16),
           ScaviumCard(
             child: Column(

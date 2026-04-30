@@ -310,3 +310,14 @@ Phase 8.1.3 introduces the internal active-account controller foundation for the
 The wallet remains visually single-account compatible, but the controller and repository can now resolve and persist the active account through the multi-account metadata prepared in Phase 8.1.2.
 
 No account switcher UI, route changes, backup/restore changes, build changes, or release workflow changes are introduced in this subphase.
+
+
+## 👛 Phase 8.1.4 Account Switcher Basic UI
+
+Phase 8.1.4 introduces the first minimal account switcher surface.
+
+The wallet still does not create, import, edit, or delete additional accounts from the UI in this subphase. The switcher only displays the currently known accounts from the account-aware profile and delegates active-account changes through `WalletController.setActiveAccount(...)`.
+
+Single-account wallets remain fully compatible and show the current account as the only selectable account.
+
+No route changes, backup/restore changes, build changes, or release workflow changes are introduced in this subphase.

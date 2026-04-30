@@ -180,5 +180,27 @@ The planned account expansion introduces, in later implementation subphases:
 - account-aware assets and activity
 - backup payload evolution with v1 restore compatibility
 
-As of Phase 8.1.1, the domain model is prepared for account-aware expansion, while user-visible multi-account behavior remains planned Phase 8 capability rather than completed runtime behavior.
+As of Phase 8.1.4, the domain model, storage foundation, active-account controller path, and a basic account switcher UI are prepared for account-aware expansion. The switcher displays and selects among already-known accounts, while account creation, account import, account deletion, label editing, and backup payload evolution remain planned Phase 8 capabilities rather than completed runtime behavior.
 
+
+
+---
+
+## 👛 Phase 8.1.4 Account Switcher Basic UI
+
+Phase 8.1.4 adds a minimal account switcher to the wallet home surface.
+
+Implemented behavior:
+
+- display the active account
+- display already-known accounts from the wallet profile
+- allow switching to another already-known account through the controller path
+- preserve single-account fallback behavior
+
+Not implemented in this subphase:
+
+- creating additional accounts
+- importing additional accounts into an existing profile
+- deleting accounts
+- editing labels
+- changing backup/restore payloads
