@@ -459,6 +459,46 @@ class WalletRepositoryImpl implements WalletRepository {
     );
   }
 
+  WalletAccount _resolveRequiredAccountById({
+    required List<WalletAccount> accounts,
+    required String accountId,
+  }) {
+    return accounts.firstWhere(
+      (account) => account.id == accountId,
+      orElse: () => throw StateError('Wallet account not found'),
+    );
+  }
+
+  @override
+  Future<WalletProfile> setActiveAccount(String accountId) async {
+    final profile = await loadWalletProfile();
+    if (profile == null) {
+      throw StateError('No wallet profile is loaded');
+    }
+
+    final requestedAccount = _resolveRequiredAccountById(
+      accounts: profile.accounts,
+      accountId: accountId,
+    );
+    final normalizedAccounts = _normalizeStoredAccountFlags(
+      accounts: profile.accounts,
+      activeAccountId: requestedAccount.id,
+      defaultAccountId: profile.defaultAccountId,
+    );
+
+    await _persistMultiAccountMetadata(
+      accounts: normalizedAccounts,
+      activeAccountId: requestedAccount.id,
+      defaultAccountId: profile.defaultAccountId,
+    );
+
+    return profile.copyWith(
+      account: requestedAccount.copyWith(isActive: true),
+      accounts: normalizedAccounts,
+      activeAccountId: requestedAccount.id,
+    );
+  }
+
   @override
   Future<String?> readMnemonic() {
     return secureStorage.read(StorageKeys.walletMnemonic);

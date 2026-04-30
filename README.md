@@ -302,3 +302,11 @@ defaultAccountId = accounts[0].id
 ```
 
 Backup/restore v1, UI, routing, build tooling, and release workflow remain unchanged in this subphase.
+
+## 🧭 Phase 8.1.3 Active Account Controller
+
+Phase 8.1.3 introduces the internal active-account controller foundation for the multi-account model.
+
+The wallet remains visually single-account compatible, but the controller and repository can now resolve and persist the active account through the multi-account metadata prepared in Phase 8.1.2.
+
+No account switcher UI, route changes, backup/restore changes, build changes, or release workflow changes are introduced in this subphase.

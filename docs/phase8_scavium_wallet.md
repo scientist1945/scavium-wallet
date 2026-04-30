@@ -1086,3 +1086,53 @@ Validation expectations:
 Next subphase:
 
 - 8.1.3 — Active Account Controller, which can begin using the persisted account metadata without changing the storage contract again.
+
+---
+
+## Phase 8.1.3 — Active Account Controller
+
+Status: Implemented as an internal controller foundation.
+
+Purpose:
+
+- introduce active-account selection at the controller and repository boundary
+- keep the app visually single-account compatible
+- use the multi-account storage metadata introduced in Phase 8.1.2
+- avoid introducing account switcher UI, additional routing, backup changes, build changes, or release changes
+
+Implementation notes:
+
+- `WalletRepository` now exposes `setActiveAccount(String accountId)`.
+- `WalletRepositoryImpl` resolves the requested account from the stored `WalletProfile.accounts` list.
+- The selected account is persisted through `wallet_active_account_id`.
+- Account flags are normalized so that only the selected account is active and only the default account remains default.
+- `WalletController` exposes the current active account and delegates active-account changes through the repository.
+- `WalletProfile.account` remains the compatibility account used by existing UI and runtime code.
+
+Compatibility rule:
+
+```text
+profile.account == profile.activeAccount
+wallet_active_account_id == profile.activeAccountId
+```
+
+Behavioral constraints:
+
+- No account switcher is introduced in this subphase.
+- No multiple-account creation flow is introduced in this subphase.
+- Backup/restore v1 remains unchanged.
+- Existing wallet creation, import, loading, reset, and visible surfaces remain compatible.
+
+Validation expectations:
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- create wallet from mnemonic
+- import wallet from mnemonic
+- import wallet from private key
+- load an existing wallet and verify the active account remains stable
+- call the active-account controller path against the current account id and verify no visible behavior changes
+
+Next subphase:
+
+- 8.1.4 — Account Switcher Foundation, which can introduce a minimal UI surface for selecting among already-known accounts without changing the storage contract again.

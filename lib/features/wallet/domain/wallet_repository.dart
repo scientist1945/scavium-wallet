@@ -20,6 +20,7 @@ abstract class WalletRepository {
   });
 
   Future<WalletProfile?> loadWalletProfile();
+  Future<WalletProfile> setActiveAccount(String accountId);
   Future<String?> readMnemonic();
   Future<String?> readPrivateKey();
 

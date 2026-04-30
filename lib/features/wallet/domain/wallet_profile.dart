@@ -85,10 +85,7 @@ class WalletProfile {
                   ? candidate.id == account.id
                   : candidate.id == defaultAccountId;
 
-          return candidate.copyWith(
-            isActive: candidate.isActive || isActive,
-            isDefault: candidate.isDefault || isDefault,
-          );
+          return candidate.copyWith(isActive: isActive, isDefault: isDefault);
         })
         .toList(growable: false);
   }

@@ -211,3 +211,21 @@ load wallet profile
 ```
 
 When clearing a wallet, both legacy and multi-account keys are removed so the app does not retain stale account metadata.
+
+---
+
+## Phase 8.1.3 Active Account Controller Flow
+
+The active-account flow is internal only in this subphase.
+
+```text
+WalletController.setActiveAccount(accountId)
+  -> WalletRepository.setActiveAccount(accountId)
+  -> load WalletProfile
+  -> resolve account from accounts[]
+  -> normalize active/default flags
+  -> persist wallet_active_account_id
+  -> return WalletProfile with profile.account aligned to activeAccount
+```
+
+No visible account switcher is introduced yet. Existing screens continue to behave as a single-account wallet because `WalletProfile.account` remains compatible with the selected active account.

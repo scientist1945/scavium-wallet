@@ -258,3 +258,15 @@ Storage is intentionally layered:
 - loading falls back from multi-account metadata to legacy single-wallet data when required
 
 The storage layer does not yet expose account switching. That responsibility is deferred to the active account controller subphase.
+
+---
+
+## Phase 8.1.3 Active Account Controller Architecture
+
+Phase 8.1.3 introduces the active-account controller boundary on top of the multi-account storage foundation.
+
+The repository remains the persistence owner. The wallet controller remains the application-state owner. UI code continues to consume `WalletProfile.account` as the compatibility account while future account-aware surfaces may consume `WalletProfile.activeAccount` or `WalletController.activeAccount`.
+
+The active account is resolved from `WalletProfile.accounts` and persisted through `wallet_active_account_id`. The default account remains independent and is persisted through `wallet_default_account_id`.
+
+This keeps the architecture prepared for an account switcher without introducing new routes, new surfaces, backup changes, or release pipeline changes in this subphase.
