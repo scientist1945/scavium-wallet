@@ -12,14 +12,13 @@ class WalletProfile {
 
   WalletProfile({
     required this.type,
-    required WalletAccount account,
+    required this.account,
     List<WalletAccount>? accounts,
     String? activeAccountId,
     String? defaultAccountId,
     required this.hasMnemonic,
     required this.biometricEnabled,
-  }) : account = account,
-       accounts = _normalizeAccounts(
+  }) : accounts = _normalizeAccounts(
          account: account,
          accounts: accounts,
          activeAccountId: activeAccountId,

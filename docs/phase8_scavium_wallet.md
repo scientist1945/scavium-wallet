@@ -582,6 +582,42 @@ Phase 8.1.1 is complete when:
 
 ---
 
+
+## 8.1.1.fix1 — WalletProfile Constructor Lint Cleanup
+
+### Objective
+
+Clean up the constructor lint introduced during Phase 8.1.1 without changing runtime behavior, account compatibility semantics, storage behavior, backup behavior, routing, UI, build tooling, or release automation.
+
+### Implementation Summary
+
+`WalletProfile` now uses an initializing formal for the required legacy-compatible account field.
+
+This keeps the existing compatibility contract intact:
+
+```text
+profile.account
+profile.accounts[0]
+profile.activeAccountId
+profile.defaultAccountId
+```
+
+No account normalization logic changed.
+
+No multi-account persistence was introduced.
+
+No backup format changed.
+
+### Completion Criteria
+
+Phase 8.1.1.fix1 is complete when:
+
+- the `prefer_initializing_formals` lint in `WalletProfile` is removed
+- `WalletProfile` continues to normalize the legacy account into `accounts[]`
+- no storage, backup, UI, routing, build, or release behavior changes
+- Phase 8.1.1 remains ready for Phase 8.1.2
+
+---
 ## 8.2 — Asset & Portfolio Expansion
 
 
