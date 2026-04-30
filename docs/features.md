@@ -217,3 +217,7 @@ SCAVIUM Wallet now supports adding additional accounts on top of the multi-accou
 - minimal add-account UI from the account switcher.
 
 Backup/restore v1 remains unchanged in this phase. Backup v2 compatibility is intentionally deferred to a later explicit subphase.
+
+## Phase 8.1.6 — Backup / Restore Multi-Account Compatibility
+
+SCAVIUM Wallet now supports account-aware backup payloads. Version 1 backups remain restorable, while version 2 backups preserve the multi-account account list, active/default account selection, and imported-account key material inside the encrypted backup envelope.

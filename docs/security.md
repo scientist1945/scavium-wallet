@@ -187,3 +187,7 @@ Security rules for this subphase:
 - multi-account metadata is persisted in parallel and cleared with the wallet
 - backup/restore v1 remains unchanged
 - no account-switching UX is introduced before controller-level validation exists
+
+## Phase 8.1.6 — Multi-Account Backup Security
+
+Backup payload version 2 remains protected by the existing encrypted backup envelope. Imported account private keys are serialized only inside the encrypted payload so restored imported accounts remain operational after recovery. Account metadata continues to avoid embedding private keys during normal runtime storage.
