@@ -41,7 +41,7 @@ class AccountSwitcher extends ConsumerWidget {
         ),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
-          value: activeAccount.id,
+          initialValue: activeAccount.id,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             labelText: 'Account',
