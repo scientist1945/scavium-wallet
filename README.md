@@ -275,4 +275,30 @@ Deliver a stable, secure, production-oriented and operationally reproducible SCA
 - a scalable path toward accounts, assets, activity, signing, UX, security, and release maturity
 - Windows distribution readiness
 - GitHub-based release artifact publication
-- lower operator error during release generation and distribution
+- lower operator error during release generation and distribution# Launch Screen Assets
+
+You can customize the launch screen with your own desired assets by replacing the image files in this directory.
+
+You can also do it by opening your Flutter project's Xcode project with `open ios/Runner.xcworkspace`, selecting `Runner/Assets.xcassets` in the Project Navigator and dropping in the desired images.
+---
+
+## 🧱 Phase 8.1.2 Storage Migration Foundation
+
+Phase 8.1.2 prepares wallet persistence for multi-account expansion without changing visible runtime behavior.
+
+The wallet continues to support the Phase 7 single-account baseline while persisting account metadata in parallel using:
+
+- `wallet_accounts_json`
+- `wallet_active_account_id`
+- `wallet_default_account_id`
+- `wallet_storage_version`
+
+Legacy wallet keys remain compatible and are still used as the fallback path for existing installations.
+
+```text
+legacy wallet -> accounts[0]
+activeAccountId = accounts[0].id
+defaultAccountId = accounts[0].id
+```
+
+Backup/restore v1, UI, routing, build tooling, and release workflow remain unchanged in this subphase.

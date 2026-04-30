@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +31,7 @@ class WalletRepositoryImpl implements WalletRepository {
   });
 
   static const _derivationPath = "m/44'/60'/0'/0/0";
+  static const _walletStorageVersion = '2';
 
   @override
   Future<String> generateMnemonic() async {
@@ -84,6 +87,17 @@ class WalletRepositoryImpl implements WalletRepository {
       );
 
       await secureStorage.delete(StorageKeys.walletPrivateKey);
+
+      final account = _buildSingleAccount(
+        accountName: accountName,
+        address: address.hexEip55,
+        isImportedByPrivateKey: false,
+      );
+      await _persistMultiAccountMetadata(
+        accounts: <WalletAccount>[account],
+        activeAccountId: account.id,
+        defaultAccountId: account.id,
+      );
 
       await _setWalletCreated(true);
 
@@ -152,6 +166,17 @@ class WalletRepositoryImpl implements WalletRepository {
       );
 
       await secureStorage.delete(StorageKeys.walletMnemonic);
+
+      final account = _buildSingleAccount(
+        accountName: accountName,
+        address: address.hexEip55,
+        isImportedByPrivateKey: true,
+      );
+      await _persistMultiAccountMetadata(
+        accounts: <WalletAccount>[account],
+        activeAccountId: account.id,
+        defaultAccountId: account.id,
+      );
 
       await _setWalletCreated(true);
 
@@ -244,7 +269,36 @@ class WalletRepositoryImpl implements WalletRepository {
     required bool hasMnemonic,
     required bool isImportedByPrivateKey,
   }) async {
-    final account = WalletAccount(
+    final legacyAccount = _buildSingleAccount(
+      accountName: accountName,
+      address: address,
+      isImportedByPrivateKey: isImportedByPrivateKey,
+    );
+    final storedAccountState = await _loadOrCreateStoredAccountState(
+      legacyAccount,
+    );
+    final activeAccount = _resolveAccountById(
+      accounts: storedAccountState.accounts,
+      accountId: storedAccountState.activeAccountId,
+    );
+
+    return WalletProfile(
+      type: type,
+      account: activeAccount,
+      accounts: storedAccountState.accounts,
+      activeAccountId: activeAccount.id,
+      defaultAccountId: storedAccountState.defaultAccountId,
+      hasMnemonic: hasMnemonic,
+      biometricEnabled: await isBiometricEnabled(),
+    );
+  }
+
+  WalletAccount _buildSingleAccount({
+    required String accountName,
+    required String address,
+    required bool isImportedByPrivateKey,
+  }) {
+    return WalletAccount(
       name: accountName,
       address: address,
       accountIndex: 0,
@@ -252,15 +306,156 @@ class WalletRepositoryImpl implements WalletRepository {
       isDefault: true,
       isActive: true,
     );
+  }
 
-    return WalletProfile(
-      type: type,
-      account: account,
-      accounts: <WalletAccount>[account],
-      activeAccountId: account.id,
-      defaultAccountId: account.id,
-      hasMnemonic: hasMnemonic,
-      biometricEnabled: await isBiometricEnabled(),
+  Future<_StoredAccountState> _loadOrCreateStoredAccountState(
+    WalletAccount legacyAccount,
+  ) async {
+    final storedAccounts = await _readStoredAccounts();
+    final activeAccountId = await secureStorage.read(
+      StorageKeys.walletActiveAccountId,
+    );
+    final defaultAccountId = await secureStorage.read(
+      StorageKeys.walletDefaultAccountId,
+    );
+
+    if (storedAccounts.isEmpty) {
+      await _persistMultiAccountMetadata(
+        accounts: <WalletAccount>[legacyAccount],
+        activeAccountId: legacyAccount.id,
+        defaultAccountId: legacyAccount.id,
+      );
+
+      return _StoredAccountState(
+        accounts: <WalletAccount>[legacyAccount],
+        activeAccountId: legacyAccount.id,
+        defaultAccountId: legacyAccount.id,
+      );
+    }
+
+    final resolvedDefaultAccountId = _resolveStoredAccountId(
+      accounts: storedAccounts,
+      preferredAccountId: defaultAccountId,
+      fallbackAccountId: legacyAccount.id,
+    );
+    final resolvedActiveAccountId = _resolveStoredAccountId(
+      accounts: storedAccounts,
+      preferredAccountId: activeAccountId,
+      fallbackAccountId: resolvedDefaultAccountId,
+    );
+    final normalizedAccounts = _normalizeStoredAccountFlags(
+      accounts: storedAccounts,
+      activeAccountId: resolvedActiveAccountId,
+      defaultAccountId: resolvedDefaultAccountId,
+    );
+
+    await _persistMultiAccountMetadata(
+      accounts: normalizedAccounts,
+      activeAccountId: resolvedActiveAccountId,
+      defaultAccountId: resolvedDefaultAccountId,
+    );
+
+    return _StoredAccountState(
+      accounts: normalizedAccounts,
+      activeAccountId: resolvedActiveAccountId,
+      defaultAccountId: resolvedDefaultAccountId,
+    );
+  }
+
+  Future<List<WalletAccount>> _readStoredAccounts() async {
+    final rawAccounts = await secureStorage.read(
+      StorageKeys.walletAccountsJson,
+    );
+
+    if (rawAccounts == null || rawAccounts.trim().isEmpty) {
+      return <WalletAccount>[];
+    }
+
+    try {
+      final decoded = jsonDecode(rawAccounts);
+      if (decoded is! List) {
+        return <WalletAccount>[];
+      }
+
+      return decoded
+          .whereType<Map<String, dynamic>>()
+          .map(WalletAccount.fromJson)
+          .where((account) => account.address.trim().isNotEmpty)
+          .toList(growable: false);
+    } catch (_) {
+      return <WalletAccount>[];
+    }
+  }
+
+  Future<void> _persistMultiAccountMetadata({
+    required List<WalletAccount> accounts,
+    required String activeAccountId,
+    required String defaultAccountId,
+  }) async {
+    final normalizedAccounts = _normalizeStoredAccountFlags(
+      accounts: accounts,
+      activeAccountId: activeAccountId,
+      defaultAccountId: defaultAccountId,
+    );
+    final encodedAccounts = jsonEncode(
+      normalizedAccounts.map((account) => account.toJson()).toList(),
+    );
+
+    await secureStorage.writeAndVerify(
+      StorageKeys.walletAccountsJson,
+      encodedAccounts,
+    );
+    await secureStorage.writeAndVerify(
+      StorageKeys.walletActiveAccountId,
+      activeAccountId,
+    );
+    await secureStorage.writeAndVerify(
+      StorageKeys.walletDefaultAccountId,
+      defaultAccountId,
+    );
+    await secureStorage.writeAndVerify(
+      StorageKeys.walletStorageVersion,
+      _walletStorageVersion,
+    );
+  }
+
+  List<WalletAccount> _normalizeStoredAccountFlags({
+    required List<WalletAccount> accounts,
+    required String activeAccountId,
+    required String defaultAccountId,
+  }) {
+    return accounts
+        .map(
+          (account) => account.copyWith(
+            isActive: account.id == activeAccountId,
+            isDefault: account.id == defaultAccountId,
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  String _resolveStoredAccountId({
+    required List<WalletAccount> accounts,
+    required String? preferredAccountId,
+    required String fallbackAccountId,
+  }) {
+    if (preferredAccountId != null &&
+        accounts.any((account) => account.id == preferredAccountId)) {
+      return preferredAccountId;
+    }
+    if (accounts.any((account) => account.id == fallbackAccountId)) {
+      return fallbackAccountId;
+    }
+    return accounts.first.id;
+  }
+
+  WalletAccount _resolveAccountById({
+    required List<WalletAccount> accounts,
+    required String accountId,
+  }) {
+    return accounts.firstWhere(
+      (account) => account.id == accountId,
+      orElse: () => accounts.first,
     );
   }
 
@@ -317,6 +512,10 @@ class WalletRepositoryImpl implements WalletRepository {
     await secureStorage.delete(StorageKeys.walletType);
     await secureStorage.delete(StorageKeys.walletAddress);
     await secureStorage.delete(StorageKeys.walletAccountName);
+    await secureStorage.delete(StorageKeys.walletAccountsJson);
+    await secureStorage.delete(StorageKeys.walletActiveAccountId);
+    await secureStorage.delete(StorageKeys.walletDefaultAccountId);
+    await secureStorage.delete(StorageKeys.walletStorageVersion);
     await secureStorage.delete(StorageKeys.appPin);
 
     await localStorage.setBool(StorageKeys.walletCreated, false);
@@ -382,4 +581,16 @@ class WalletRepositoryImpl implements WalletRepository {
   EthPrivateKey credentialsFromMnemonic(String mnemonic) {
     return _credentialsFromMnemonic(_normalizeMnemonic(mnemonic));
   }
+}
+
+class _StoredAccountState {
+  final List<WalletAccount> accounts;
+  final String activeAccountId;
+  final String defaultAccountId;
+
+  const _StoredAccountState({
+    required this.accounts,
+    required this.activeAccountId,
+    required this.defaultAccountId,
+  });
 }

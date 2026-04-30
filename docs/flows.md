@@ -181,3 +181,33 @@ This flow is contractual only in 8.1.0.
 
 It is documented to protect compatibility during the later implementation subphases.
 
+
+---
+
+## Phase 8.1.2 Legacy Wallet to Multi-Account Metadata Flow
+
+When a wallet is created or imported, SCAVIUM Wallet still writes the legacy single-wallet keys and additionally writes the multi-account metadata foundation.
+
+```text
+create/import wallet
+-> write legacy wallet keys
+-> build WalletAccount(accountIndex: 0)
+-> persist wallet_accounts_json
+-> persist wallet_active_account_id
+-> persist wallet_default_account_id
+-> persist wallet_storage_version = 2
+-> return WalletProfile compatible with profile.account
+```
+
+When loading an existing wallet, the repository first validates the legacy wallet material required by the current app. It then loads account metadata if available or creates it from the legacy wallet when missing.
+
+```text
+load wallet profile
+-> validate legacy wallet keys
+-> read account metadata
+-> if missing, create accounts[0] from legacy wallet
+-> normalize active/default account flags
+-> return WalletProfile
+```
+
+When clearing a wallet, both legacy and multi-account keys are removed so the app does not retain stale account metadata.

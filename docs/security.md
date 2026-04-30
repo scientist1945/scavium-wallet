@@ -172,3 +172,18 @@ Future backup v2 work must explicitly separate account metadata, account selecti
 
 The current single account remains the default security baseline for migration.
 
+
+---
+
+## Phase 8.1.2 Account Metadata Storage Security
+
+Phase 8.1.2 stores account metadata in the same secure storage boundary used by the existing wallet persistence layer.
+
+The new metadata contains account identifiers, labels, addresses, active/default flags, and storage version information. It does not introduce new secret material and does not change the handling of mnemonic, private key, PIN, biometric state, or backup payloads.
+
+Security rules for this subphase:
+
+- legacy secrets remain under their existing secure storage keys
+- multi-account metadata is persisted in parallel and cleared with the wallet
+- backup/restore v1 remains unchanged
+- no account-switching UX is introduced before controller-level validation exists

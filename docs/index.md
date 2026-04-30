@@ -35,3 +35,6 @@
 
 - 8.1.1 — Domain Model Preparation  
   Introduces the domain-level compatibility bridge for accounts[], activeAccountId, and defaultAccountId while keeping profile.account and current single-account behavior intact.
+
+- 8.1.2 — Storage Migration Foundation  
+  Adds parallel multi-account storage metadata while preserving legacy single-wallet keys and visible behavior.

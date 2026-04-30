@@ -242,3 +242,19 @@ The legacy single-account wallet must be interpreted as the default and active a
 
 Phase 8.1.1 begins this transition at the domain layer by preserving `profile.account` while adding the internal `accounts[]`, `activeAccountId`, and `defaultAccountId` foundation. This preserves Phase 7 behavior while enabling future Phase 8 account-aware assets, activity, signing, and navigation surfaces.
 
+
+---
+
+## Phase 8.1.2 Account Storage Architecture
+
+The wallet now has a compatibility storage foundation for future multi-account behavior.
+
+The runtime account model is represented by `WalletProfile.accounts`, `activeAccountId`, and `defaultAccountId`, while `WalletProfile.account` remains the compatibility accessor used by existing single-account surfaces.
+
+Storage is intentionally layered:
+
+- legacy wallet keys remain available for existing installations and backup/restore v1 compatibility
+- multi-account metadata is persisted in parallel through account JSON and active/default account identifiers
+- loading falls back from multi-account metadata to legacy single-wallet data when required
+
+The storage layer does not yet expose account switching. That responsibility is deferred to the active account controller subphase.

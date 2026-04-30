@@ -1026,3 +1026,63 @@ The key principle is controlled expansion:
 - harden security and release processes after product expansion is concrete
 
 This keeps SCAVIUM Wallet on a safe path from stabilized release candidate to mature user-facing product.
+
+---
+
+## Phase 8.1.2 — Storage Migration Foundation
+
+Status: Implemented as a compatibility foundation.
+
+Purpose:
+
+- prepare wallet persistence for the multi-account model introduced by 8.1.1
+- keep all legacy single-wallet keys intact
+- avoid changing visible behavior, navigation, backup/restore, or release tooling
+
+Implementation notes:
+
+- The existing wallet remains the compatibility baseline.
+- Legacy keys continue to be written and read:
+  - `wallet_type`
+  - `wallet_mnemonic`
+  - `wallet_private_key`
+  - `wallet_address`
+  - `wallet_account_name`
+- Multi-account metadata is now persisted in parallel:
+  - `wallet_accounts_json`
+  - `wallet_active_account_id`
+  - `wallet_default_account_id`
+  - `wallet_storage_version`
+- The current single wallet is migrated into `accounts[0]` when multi-account metadata is missing.
+- Runtime loading prefers the stored account metadata when present, but falls back safely to the legacy wallet.
+- `clearWallet()` removes both legacy and multi-account storage keys.
+
+Compatibility rule:
+
+```text
+legacy wallet -> accounts[0]
+activeAccountId = accounts[0].id
+defaultAccountId = accounts[0].id
+wallet_storage_version = 2
+```
+
+Behavioral constraints:
+
+- No account switcher is introduced in this subphase.
+- No additional account creation UI is introduced.
+- Backup/restore v1 remains unchanged.
+- Existing wallet creation, mnemonic import, private-key import, and profile loading remain single-account compatible.
+
+Validation expectations:
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- create wallet from mnemonic
+- import wallet from mnemonic
+- import wallet from private key
+- load an existing legacy wallet and verify it receives parallel multi-account metadata
+- clear wallet and verify legacy plus multi-account keys are removed
+
+Next subphase:
+
+- 8.1.3 — Active Account Controller, which can begin using the persisted account metadata without changing the storage contract again.
