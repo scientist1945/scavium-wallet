@@ -23,15 +23,18 @@ Current platform and release scope includes:
 - Windows MSIX packaging
 - GitHub Release automation
 
-The wallet is currently under Phase 7 stabilization, which means the focus is on:
+The wallet has completed Phase 7 stabilization and is now entering Phase 8 product expansion and production maturity.
 
-- hardening
-- fixes
-- operational safety
-- production readiness
-- release engineering improvements
+Phase 8 focuses on controlled product growth from the Phase 7 release-hardened baseline, including:
 
-This phase does not introduce major architecture redesign or broad new product features.
+- account model expansion
+- asset and portfolio expansion
+- transaction and activity maturity
+- message signing preparation and implementation
+- multi-surface navigation evolution
+- security, reliability, diagnostics, and release maturity extensions
+
+This phase does not replace the existing architecture, Riverpod state model, GoRouter navigation model, backup and restore semantics, or release pipeline baseline.
 
 ---
 
@@ -47,7 +50,12 @@ Completed phases:
 - Phase 6 — Packaging, branding, and store deployment
 - Phase 7 — Stabilization
 
-Current implemented stabilization work includes:
+Current phase:
+
+- Phase 8 — Product Expansion & Production Maturity
+- Current subphase: 8.1.1 — Domain Model Preparation
+
+Completed Phase 7 stabilization work includes:
 
 - 7.1 — Android biometrics stabilization
 - 7.2 — Wallet persistence hardening
@@ -68,6 +76,7 @@ Current implemented stabilization work includes:
 - multiplatform build orchestration through `tool/build.dart`
 - GitHub Actions-based release artifact generation
 - draft GitHub Release publication with attached assets
+- controlled Phase 8 product expansion path
 
 ---
 
@@ -83,6 +92,7 @@ Main areas of interest:
 Important documentation includes:
 
 - `docs/phase7_scavium_wallet.md`
+- `docs/phase8_scavium_wallet.md`
 - `docs/release.md`
 
 ---
@@ -207,7 +217,7 @@ As of Phase 7.7:
 - source archives are exposed automatically by GitHub
 - manual review remains possible before publication
 
-This draft-first approach is intentional during stabilization.
+This draft-first approach was introduced during stabilization and remains the release baseline while Phase 8 expands product capabilities.
 
 ---
 
@@ -230,7 +240,7 @@ This is treated as a release-quality concern because it materially affects self-
 
 ## 🚧 Out of Scope
 
-The current release engineering scope does not yet include:
+The current release engineering and Phase 8.0 documentation scope does not yet include:
 
 - automatic Play Store upload
 - automatic Microsoft Store submission
@@ -239,25 +249,83 @@ The current release engineering scope does not yet include:
 - runtime updates
 - automatic git tagging
 - advanced changelog generation
+- implemented multi-account runtime behavior
+- implemented message signing runtime behavior
 
 ---
 
 ## 📚 Documentation
 
-For detailed release and stabilization documentation, see:
+For detailed release, stabilization, and product expansion documentation, see:
 
 - `docs/release.md`
 - `docs/phase7_scavium_wallet.md`
+- `docs/phase8_scavium_wallet.md`
 
 ---
 
 ## 🎯 Goal
 
-Deliver a stable, secure, production-oriented and operationally reproducible SCAVIUM Wallet build with:
+Deliver a stable, secure, production-oriented and operationally reproducible SCAVIUM Wallet product with:
 
 - controlled regression handling
 - safer repeatable build workflow
 - practical self-custody recovery validation
+- controlled product expansion from the Phase 7 baseline
+- a scalable path toward accounts, assets, activity, signing, UX, security, and release maturity
 - Windows distribution readiness
 - GitHub-based release artifact publication
-- lower operator error during release generation and distribution
+- lower operator error during release generation and distribution# Launch Screen Assets
+
+You can customize the launch screen with your own desired assets by replacing the image files in this directory.
+
+You can also do it by opening your Flutter project's Xcode project with `open ios/Runner.xcworkspace`, selecting `Runner/Assets.xcassets` in the Project Navigator and dropping in the desired images.
+---
+
+## 🧱 Phase 8.1.2 Storage Migration Foundation
+
+Phase 8.1.2 prepares wallet persistence for multi-account expansion without changing visible runtime behavior.
+
+The wallet continues to support the Phase 7 single-account baseline while persisting account metadata in parallel using:
+
+- `wallet_accounts_json`
+- `wallet_active_account_id`
+- `wallet_default_account_id`
+- `wallet_storage_version`
+
+Legacy wallet keys remain compatible and are still used as the fallback path for existing installations.
+
+```text
+legacy wallet -> accounts[0]
+activeAccountId = accounts[0].id
+defaultAccountId = accounts[0].id
+```
+
+Backup/restore v1, UI, routing, build tooling, and release workflow remain unchanged in this subphase.
+
+## 🧭 Phase 8.1.3 Active Account Controller
+
+Phase 8.1.3 introduces the internal active-account controller foundation for the multi-account model.
+
+The wallet remains visually single-account compatible, but the controller and repository can now resolve and persist the active account through the multi-account metadata prepared in Phase 8.1.2.
+
+No account switcher UI, route changes, backup/restore changes, build changes, or release workflow changes are introduced in this subphase.
+
+
+## 👛 Phase 8.1.4 Account Switcher Basic UI
+
+Phase 8.1.4 introduces the first minimal account switcher surface.
+
+The wallet still does not create, import, edit, or delete additional accounts from the UI in this subphase. The switcher only displays the currently known accounts from the account-aware profile and delegates active-account changes through `WalletController.setActiveAccount(...)`.
+
+Single-account wallets remain fully compatible and show the current account as the only selectable account.
+
+No route changes, backup/restore changes, build changes, or release workflow changes are introduced in this subphase.
+# Launch Screen Assets
+
+You can customize the launch screen with your own desired assets by replacing the image files in this directory.
+
+You can also do it by opening your Flutter project's Xcode project with `open ios/Runner.xcworkspace`, selecting `Runner/Assets.xcassets` in the Project Navigator and dropping in the desired images.
+### Phase 8.1.5 — Account Creation & Import Expansion
+
+Phase 8.1.5 converts the multi-account foundation into minimal user-facing functionality by allowing additional derived accounts and imported private-key accounts to be added from the account switcher. Backup v1, routing, build automation, and release automation remain unchanged.

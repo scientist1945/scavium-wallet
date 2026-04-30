@@ -2,9 +2,11 @@
 
 ## 🧭 Overview
 
-This document lists all implemented features up to the current stabilization phase.
+This document lists implemented features up to the completed stabilization phase and records the Phase 8 expansion direction.
 
-Phase 7 does not add new unrelated product scope. It hardens and validates the existing product while adding essential safety and operational capabilities where needed.
+Phase 7 did not add new unrelated product scope. It hardened and validated the existing product while adding essential safety and operational capabilities where needed.
+
+Phase 8 begins controlled product expansion from that stabilized baseline. Planned capabilities are documented separately until implemented.
 
 ---
 
@@ -109,6 +111,25 @@ The encrypted backup flow includes:
 
 ---
 
+## 🧭 Phase 8 Expansion Direction
+
+Phase 8 introduces planned product expansion areas without treating them as implemented until their subphases are completed.
+
+Planned expansion areas include:
+
+- multi-account / multiple wallet support
+- account switcher and account metadata
+- richer asset and portfolio surfaces
+- account-aware asset organization
+- transaction and activity maturity
+- message signing with explicit preview and confirmation
+- multi-surface navigation for desktop, web, and mobile
+- additional security, reliability, and diagnostics maturity
+
+The current Phase 8.1.1 state includes internal domain preparation for account-aware expansion. User-visible multi-account behavior remains planned for later Phase 8.1 subphases.
+
+---
+
 ## 🛠️ Stabilization Notes
 
 Phase 7.1 did not introduce a new feature.
@@ -135,4 +156,64 @@ It added encrypted backup export and restore, giving users a practical recovery 
 
 ## 🎯 Summary
 
-The wallet supports all core operations required for a functional EVM wallet and is now in a stabilization stage focused on release quality, operational consistency, and safer real-world recovery behavior.
+The wallet supports all core operations required for a functional EVM wallet and has completed a stabilization stage focused on release quality, operational consistency, and safer real-world recovery behavior.
+
+Phase 8 builds on that baseline to expand the product surface in controlled, documented, and incrementally validated subphases.
+---
+
+## 👛 Phase 8.1 Planned Account Expansion
+
+Phase 8.1 defines the controlled transition from the current single-account wallet into a future multi-account wallet model.
+
+The current implemented feature remains:
+
+- one active wallet account
+- secure wallet creation/import
+- encrypted backup and restore compatibility
+
+The planned account expansion introduces, in later implementation subphases:
+
+- multiple wallet accounts
+- active account selection
+- default account semantics
+- account labels or aliases
+- account-aware assets and activity
+- backup payload evolution with v1 restore compatibility
+
+As of Phase 8.1.4, the domain model, storage foundation, active-account controller path, and a basic account switcher UI are prepared for account-aware expansion. The switcher displays and selects among already-known accounts, while account creation, account import, account deletion, label editing, and backup payload evolution remain planned Phase 8 capabilities rather than completed runtime behavior.
+
+
+
+---
+
+## 👛 Phase 8.1.4 Account Switcher Basic UI
+
+Phase 8.1.4 adds a minimal account switcher to the wallet home surface.
+
+Implemented behavior:
+
+- display the active account
+- display already-known accounts from the wallet profile
+- allow switching to another already-known account through the controller path
+- preserve single-account fallback behavior
+
+Not implemented in this subphase:
+
+- creating additional accounts
+- importing additional accounts into an existing profile
+- deleting accounts
+- editing labels
+- changing backup/restore payloads
+
+## Phase 8.1.5 — Account Creation & Import Expansion
+
+SCAVIUM Wallet now supports adding additional accounts on top of the multi-account foundation:
+
+- derived accounts for mnemonic wallets;
+- imported private-key accounts;
+- secure storage for imported account private keys;
+- duplicate account address protection;
+- automatic activation of the newly added account;
+- minimal add-account UI from the account switcher.
+
+Backup/restore v1 remains unchanged in this phase. Backup v2 compatibility is intentionally deferred to a later explicit subphase.

@@ -41,15 +41,21 @@ class WalletBackupController {
     final mnemonic = await walletRepository.readMnemonic();
     final privateKey = await walletRepository.readPrivateKey();
 
-    final payload = WalletBackupPayload.v1(
+    final payload = WalletBackupPayload.v2(
       createdAt: DateTime.now(),
       wallet: WalletBackupWallet(
         type: profile.type.name,
         mnemonic: profile.type.name == 'mnemonic' ? mnemonic : null,
         privateKey: profile.type.name == 'privateKey' ? privateKey : null,
-        address: profile.account.address,
-        accountName: profile.account.name,
+        address: profile.activeAccount.address,
+        accountName: profile.activeAccount.name,
       ),
+      accounts:
+          profile.accounts
+              .map(WalletBackupAccount.fromWalletAccount)
+              .toList(growable: false),
+      activeAccountId: profile.activeAccountId,
+      defaultAccountId: profile.defaultAccountId,
     );
 
     final encrypted = await backupCryptoService.encryptPayload(
@@ -80,33 +86,7 @@ class WalletBackupController {
       password: password,
     );
 
-    if (payload.wallet.type == 'mnemonic') {
-      final mnemonic = payload.wallet.mnemonic;
-      if (mnemonic == null || mnemonic.trim().isEmpty) {
-        throw Exception('Backup mnemonic is missing');
-      }
-
-      await walletRepository.importWalletFromMnemonic(
-        mnemonic: mnemonic,
-        accountName: payload.wallet.accountName,
-      );
-      return;
-    }
-
-    if (payload.wallet.type == 'privateKey') {
-      final privateKey = payload.wallet.privateKey;
-      if (privateKey == null || privateKey.trim().isEmpty) {
-        throw Exception('Backup private key is missing');
-      }
-
-      await walletRepository.importWalletFromPrivateKey(
-        privateKey: privateKey,
-        accountName: payload.wallet.accountName,
-      );
-      return;
-    }
-
-    throw Exception('Unsupported backup wallet type');
+    await walletRepository.restoreWalletBackup(payload);
   }
 
   String buildDefaultBackupFileName({

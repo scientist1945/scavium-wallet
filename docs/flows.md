@@ -161,3 +161,71 @@ Phase 7.5 introduced this flow to provide an explicit recovery path after storag
 4. Switch to next available node
 5. Retry request
 6. Update active node
+---
+
+## 👛 Phase 8.1 Account Model Migration Flow
+
+Phase 8.1.0 defines the account migration contract before runtime implementation.
+
+The intended future migration flow is:
+
+1. App starts with an existing Phase 7-compatible wallet.
+2. Wallet repository loads the legacy single-account profile.
+3. Repository maps the legacy account into `accounts[0]`.
+4. `activeAccountId` is assigned to the migrated account.
+5. `defaultAccountId` is assigned to the migrated account.
+6. Existing lock, PIN, biometric, backup, and restore behavior remain valid.
+7. UI continues to display the same effective wallet until account switching is implemented.
+
+This flow is contractual only in 8.1.0.
+
+It is documented to protect compatibility during the later implementation subphases.
+
+
+---
+
+## Phase 8.1.2 Legacy Wallet to Multi-Account Metadata Flow
+
+When a wallet is created or imported, SCAVIUM Wallet still writes the legacy single-wallet keys and additionally writes the multi-account metadata foundation.
+
+```text
+create/import wallet
+-> write legacy wallet keys
+-> build WalletAccount(accountIndex: 0)
+-> persist wallet_accounts_json
+-> persist wallet_active_account_id
+-> persist wallet_default_account_id
+-> persist wallet_storage_version = 2
+-> return WalletProfile compatible with profile.account
+```
+
+When loading an existing wallet, the repository first validates the legacy wallet material required by the current app. It then loads account metadata if available or creates it from the legacy wallet when missing.
+
+```text
+load wallet profile
+-> validate legacy wallet keys
+-> read account metadata
+-> if missing, create accounts[0] from legacy wallet
+-> normalize active/default account flags
+-> return WalletProfile
+```
+
+When clearing a wallet, both legacy and multi-account keys are removed so the app does not retain stale account metadata.
+
+---
+
+## Phase 8.1.3 Active Account Controller Flow
+
+The active-account flow is internal only in this subphase.
+
+```text
+WalletController.setActiveAccount(accountId)
+  -> WalletRepository.setActiveAccount(accountId)
+  -> load WalletProfile
+  -> resolve account from accounts[]
+  -> normalize active/default flags
+  -> persist wallet_active_account_id
+  -> return WalletProfile with profile.account aligned to activeAccount
+```
+
+No visible account switcher is introduced yet. Existing screens continue to behave as a single-account wallet because `WalletProfile.account` remains compatible with the selected active account.

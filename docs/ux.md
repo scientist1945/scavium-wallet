@@ -105,6 +105,31 @@ This results in:
 
 ---
 
+## 🧭 Phase 8 Product Surface UX
+
+Phase 8 expands the wallet from a stabilized product surface toward a scalable multi-surface UX.
+
+The UX direction includes:
+
+- preserving the existing wallet usability baseline
+- avoiding one-page overload as features grow
+- introducing clearer screen segmentation
+- supporting desktop and web sidebar-oriented navigation where appropriate
+- supporting mobile drawer or bottom navigation where appropriate
+- keeping sensitive actions explicit and reviewable
+
+Planned Phase 8 surfaces include:
+
+- Home / Dashboard
+- Wallet / Accounts
+- Assets
+- Activity
+- Settings
+
+Message signing UX must remain safety-oriented and must include message preview, explicit confirmation, cancellation, and clear result handling.
+
+---
+
 ## 📊 RPC Transparency
 
 User can see:
@@ -115,8 +140,36 @@ User can see:
 
 ---
 
+
+---
+
+## 👛 Phase 8.1.4 Account Switcher UX
+
+Phase 8.1.4 introduces the first account-aware UI element without changing the overall navigation model.
+
+UX rules:
+
+- the account switcher must be visible but not disruptive
+- single-account wallets must remain understandable and stable
+- switching must only apply to already-known accounts
+- account creation, deletion, and editing must not be implied by the switcher
+- sensitive account expansion flows remain deferred until their dedicated subphases
+
+The home surface now separates balance display from active-account selection, reducing future pressure on the one-page wallet layout while preserving the current Phase 7 usability baseline.
+
 ## 🧠 Philosophy
 
 The wallet should:
 
 > make blockchain complexity invisible, without hiding critical information
+
+Phase 8 extends this philosophy by allowing more product capability only when navigation, confirmation, and safety expectations remain clear.
+## Phase 8.1.5 — Add Account UX
+
+The account switcher now provides a minimal account-addition entry point. The UX remains intentionally small and reversible:
+
+- users can add a derived account when the wallet has a mnemonic;
+- users can import an additional private-key account;
+- unsupported derived-account creation is disabled for private-key-only wallets;
+- successful account addition activates the new account immediately;
+- no deletion, rename, or advanced account management UX is introduced yet.
