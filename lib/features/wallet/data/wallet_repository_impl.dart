@@ -106,16 +106,12 @@ class WalletRepositoryImpl implements WalletRepository {
         throw Exception('No se pudo persistir la wallet creada desde mnemonic');
       }
 
-      return WalletProfile(
+      return _buildSingleAccountProfile(
         type: ImportedWalletType.mnemonic,
+        accountName: accountName,
+        address: address.hexEip55,
         hasMnemonic: true,
-        biometricEnabled: await isBiometricEnabled(),
-        account: WalletAccount(
-          name: accountName,
-          address: address.hexEip55,
-          accountIndex: 0,
-          isImportedByPrivateKey: false,
-        ),
+        isImportedByPrivateKey: false,
       );
     } catch (_) {
       await _clearWalletAvailabilityFlags();
@@ -180,16 +176,12 @@ class WalletRepositoryImpl implements WalletRepository {
         );
       }
 
-      return WalletProfile(
+      return _buildSingleAccountProfile(
         type: ImportedWalletType.privateKey,
+        accountName: accountName,
+        address: address.hexEip55,
         hasMnemonic: false,
-        biometricEnabled: await isBiometricEnabled(),
-        account: WalletAccount(
-          name: accountName,
-          address: address.hexEip55,
-          accountIndex: 0,
-          isImportedByPrivateKey: true,
-        ),
+        isImportedByPrivateKey: true,
       );
     } catch (_) {
       await _clearWalletAvailabilityFlags();
@@ -221,16 +213,12 @@ class WalletRepositoryImpl implements WalletRepository {
         return null;
       }
 
-      return WalletProfile(
+      return _buildSingleAccountProfile(
         type: type,
+        accountName: accountName,
+        address: address,
         hasMnemonic: true,
-        biometricEnabled: await isBiometricEnabled(),
-        account: WalletAccount(
-          name: accountName,
-          address: address,
-          accountIndex: 0,
-          isImportedByPrivateKey: false,
-        ),
+        isImportedByPrivateKey: false,
       );
     }
 
@@ -240,16 +228,39 @@ class WalletRepositoryImpl implements WalletRepository {
       return null;
     }
 
+    return _buildSingleAccountProfile(
+      type: type,
+      accountName: accountName,
+      address: address,
+      hasMnemonic: false,
+      isImportedByPrivateKey: true,
+    );
+  }
+
+  Future<WalletProfile> _buildSingleAccountProfile({
+    required ImportedWalletType type,
+    required String accountName,
+    required String address,
+    required bool hasMnemonic,
+    required bool isImportedByPrivateKey,
+  }) async {
+    final account = WalletAccount(
+      name: accountName,
+      address: address,
+      accountIndex: 0,
+      isImportedByPrivateKey: isImportedByPrivateKey,
+      isDefault: true,
+      isActive: true,
+    );
+
     return WalletProfile(
       type: type,
-      hasMnemonic: false,
+      account: account,
+      accounts: <WalletAccount>[account],
+      activeAccountId: account.id,
+      defaultAccountId: account.id,
+      hasMnemonic: hasMnemonic,
       biometricEnabled: await isBiometricEnabled(),
-      account: WalletAccount(
-        name: accountName,
-        address: address,
-        accountIndex: 0,
-        isImportedByPrivateKey: true,
-      ),
     );
   }
 

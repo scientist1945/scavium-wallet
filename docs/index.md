@@ -28,7 +28,10 @@
 
 ---
 
-## Current Phase 8 account contract
+## Current Phase 8 account model foundation
 
 - 8.1.0 — Account Model Contract Definition  
   Defined inside phase8_scavium_wallet.md
+
+- 8.1.1 — Domain Model Preparation  
+  Introduces the domain-level compatibility bridge for accounts[], activeAccountId, and defaultAccountId while keeping profile.account and current single-account behavior intact.

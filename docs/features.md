@@ -126,7 +126,7 @@ Planned expansion areas include:
 - multi-surface navigation for desktop, web, and mobile
 - additional security, reliability, and diagnostics maturity
 
-The current Phase 8.0 state is documentation-only. Runtime feature implementation begins in later Phase 8 subphases.
+The current Phase 8.1.1 state includes internal domain preparation for account-aware expansion. User-visible multi-account behavior remains planned for later Phase 8.1 subphases.
 
 ---
 
@@ -180,5 +180,5 @@ The planned account expansion introduces, in later implementation subphases:
 - account-aware assets and activity
 - backup payload evolution with v1 restore compatibility
 
-Until implementation is completed, this document treats multi-account behavior as planned Phase 8 capability rather than implemented runtime behavior.
+As of Phase 8.1.1, the domain model is prepared for account-aware expansion, while user-visible multi-account behavior remains planned Phase 8 capability rather than completed runtime behavior.
 

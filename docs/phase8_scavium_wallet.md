@@ -453,6 +453,135 @@ Phase 8.1.0 is complete when:
 
 ---
 
+## 8.1.1 — Domain Model Preparation
+
+### Objective
+
+Prepare the wallet domain model for account-aware evolution while preserving the current single-account runtime behavior.
+
+This subphase introduces the internal shape required by the 8.1.0 contract without changing storage layout, backup format, routes, UI behavior, release automation, or onboarding flows.
+
+The application must continue to behave as a Phase 7 / Phase 8.0 single-account wallet from the user's perspective.
+
+### Implementation Summary
+
+The domain model now supports a compatibility bridge between the legacy single-account profile and the future multi-account profile.
+
+The compatibility shape is:
+
+```text
+WalletProfile
+├── account                 # legacy-compatible active account accessor
+├── accounts[]              # future account collection foundation
+├── activeAccountId         # selected account identity foundation
+├── defaultAccountId        # default account identity foundation
+├── hasMnemonic
+└── biometricEnabled
+```
+
+`WalletAccount` now carries account metadata needed by later subphases:
+
+```text
+WalletAccount
+├── id
+├── name
+├── label
+├── address
+├── accountIndex
+├── isImportedByPrivateKey
+├── isDefault
+├── isActive
+├── createdAt
+└── updatedAt
+```
+
+The account id is derived deterministically for the current legacy account using address plus account index. This avoids introducing a new persistence dependency during this subphase.
+
+### Compatibility Semantics
+
+The existing account continues to be represented as:
+
+```text
+profile.account
+```
+
+At the same time, the same account is normalized into:
+
+```text
+profile.accounts[0]
+profile.activeAccountId
+profile.defaultAccountId
+```
+
+For the current single-account runtime, the active and default account are the same account.
+
+This preserves compatibility with existing screens and flows that already read:
+
+```text
+profile.account.address
+profile.account.name
+```
+
+### Repository Boundary
+
+`WalletRepositoryImpl` now builds a single-account profile through a dedicated internal helper instead of repeatedly constructing the legacy profile shape inline.
+
+The repository remains responsible for adapting the current persisted wallet state into the domain model.
+
+No new storage keys are introduced in this subphase.
+
+No migration is executed in this subphase.
+
+### Out of Scope
+
+This subphase does not implement:
+
+- multi-account persistence
+- account creation beyond the existing wallet account
+- account switching
+- account switcher UI
+- backup v2 export
+- backup v2 restore
+- token partitioning by account
+- signing account selection
+- route changes
+- release pipeline changes
+
+### Validation Expectations
+
+The following behavior must remain unchanged:
+
+- create wallet from mnemonic
+- import wallet from mnemonic
+- import wallet from private key
+- load wallet profile
+- export backup v1
+- restore backup v1
+- read `profile.account` from existing UI
+- lock and biometric behavior
+
+The expected technical validation remains:
+
+```bash
+flutter analyze
+flutter test
+```
+
+### Completion Criteria
+
+Phase 8.1.1 is complete when:
+
+- `WalletAccount` exposes account metadata required by the 8.1 contract
+- `WalletProfile` supports `accounts`, `activeAccountId`, and `defaultAccountId`
+- `profile.account` remains backward-compatible
+- repository-loaded wallets normalize into a single-account account list
+- no storage migration is introduced
+- no backup payload version is changed
+- no UI behavior is changed
+- no route, build, CI, or release automation is changed
+
+---
+
 ## 8.2 — Asset & Portfolio Expansion
 
 

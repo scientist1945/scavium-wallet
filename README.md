@@ -53,7 +53,7 @@ Completed phases:
 Current phase:
 
 - Phase 8 — Product Expansion & Production Maturity
-- Current subphase: 8.1.0 — Account Model Contract Definition
+- Current subphase: 8.1.1 — Domain Model Preparation
 
 Completed Phase 7 stabilization work includes:
 

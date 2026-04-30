@@ -240,5 +240,5 @@ Architectural constraints for 8.1.x:
 
 The legacy single-account wallet must be interpreted as the default and active account when the multi-account model is introduced.
 
-This preserves Phase 7 behavior while enabling Phase 8 account-aware assets, activity, signing, and navigation surfaces.
+Phase 8.1.1 begins this transition at the domain layer by preserving `profile.account` while adding the internal `accounts[]`, `activeAccountId`, and `defaultAccountId` foundation. This preserves Phase 7 behavior while enabling future Phase 8 account-aware assets, activity, signing, and navigation surfaces.
 
