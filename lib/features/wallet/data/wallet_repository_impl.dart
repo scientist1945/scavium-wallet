@@ -68,7 +68,7 @@ class WalletRepositoryImpl implements WalletRepository {
     }
 
     final credentials = _credentialsFromMnemonic(normalized);
-    final address = await credentials.extractAddress();
+    final address = credentials.address;
 
     try {
       await secureStorage.writeAndVerify(
@@ -148,7 +148,7 @@ class WalletRepositoryImpl implements WalletRepository {
     }
 
     final credentials = EthPrivateKey.fromHex(normalized);
-    final address = await credentials.extractAddress();
+    final address = credentials.address;
 
     try {
       await secureStorage.writeAndVerify(
@@ -592,7 +592,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
     final accountIndex = _nextAccountIndex(profile.accounts);
     final credentials = _credentialsFromMnemonicAtIndex(mnemonic, accountIndex);
-    final address = await credentials.extractAddress();
+    final address = credentials.address;
 
     _ensureUniqueAccountAddress(
       accounts: profile.accounts,
@@ -628,7 +628,7 @@ class WalletRepositoryImpl implements WalletRepository {
     }
 
     final credentials = EthPrivateKey.fromHex(normalizedPrivateKey);
-    final address = await credentials.extractAddress();
+    final address = credentials.address;
 
     _ensureUniqueAccountAddress(
       accounts: profile.accounts,

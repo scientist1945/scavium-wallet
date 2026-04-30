@@ -5,6 +5,36 @@ import 'package:scavium_wallet/features/wallet/domain/wallet_profile.dart';
 
 enum _AddAccountMode { derived, privateKey }
 
+class _AccountModeTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  const _AccountModeTile({
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      enabled: enabled,
+      onTap: enabled ? onTap : null,
+      leading: Icon(
+        selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+      ),
+      title: Text(title),
+      subtitle: Text(subtitle),
+    );
+  }
+}
+
 Future<void> showAddAccountSheet(
   BuildContext context, {
   required WalletProfile profile,
@@ -87,27 +117,19 @@ class _AddAccountSheetState extends ConsumerState<AddAccountSheet> {
                 ],
               ),
               const SizedBox(height: 12),
-              RadioListTile<_AddAccountMode>(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Create derived account'),
-                subtitle: const Text('Uses the existing wallet mnemonic.'),
-                value: _AddAccountMode.derived,
-                groupValue: _mode,
-                onChanged:
-                    canDerive && !_submitting
-                        ? (value) => setState(() => _mode = value!)
-                        : null,
+              _AccountModeTile(
+                title: 'Create derived account',
+                subtitle: 'Uses the existing wallet mnemonic.',
+                selected: _mode == _AddAccountMode.derived,
+                enabled: canDerive && !_submitting,
+                onTap: () => setState(() => _mode = _AddAccountMode.derived),
               ),
-              RadioListTile<_AddAccountMode>(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Import private key account'),
-                subtitle: const Text('Adds an independent imported account.'),
-                value: _AddAccountMode.privateKey,
-                groupValue: _mode,
-                onChanged:
-                    !_submitting
-                        ? (value) => setState(() => _mode = value!)
-                        : null,
+              _AccountModeTile(
+                title: 'Import private key account',
+                subtitle: 'Adds an independent imported account.',
+                selected: _mode == _AddAccountMode.privateKey,
+                enabled: !_submitting,
+                onTap: () => setState(() => _mode = _AddAccountMode.privateKey),
               ),
               if (!canDerive) ...[
                 const SizedBox(height: 8),
