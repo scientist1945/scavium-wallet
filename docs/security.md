@@ -153,3 +153,22 @@ That is an intentional self-custody consequence.
 ## 🎯 Goal
 
 Provide a secure environment for managing digital assets while maintaining usability, operational correctness, and a realistic self-custody recovery model.
+---
+
+## 👛 Phase 8.1 Account Expansion Security Boundary
+
+Account expansion must not weaken the self-custody or secure-storage model.
+
+The Phase 8.1 contract requires that multi-account support preserve the existing security baseline:
+
+- secret material remains in secure storage
+- private keys and mnemonic data are never logged
+- account metadata must not be treated as secret material unless it exposes sensitive user intent
+- active account selection must not bypass lock state
+- account switching must not expose recovery material
+- backup v1 restore compatibility must remain safe
+
+Future backup v2 work must explicitly separate account metadata, account selection state, and sensitive recovery material.
+
+The current single account remains the default security baseline for migration.
+

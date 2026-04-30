@@ -159,3 +159,26 @@ It added encrypted backup export and restore, giving users a practical recovery 
 The wallet supports all core operations required for a functional EVM wallet and has completed a stabilization stage focused on release quality, operational consistency, and safer real-world recovery behavior.
 
 Phase 8 builds on that baseline to expand the product surface in controlled, documented, and incrementally validated subphases.
+---
+
+## 👛 Phase 8.1 Planned Account Expansion
+
+Phase 8.1 defines the controlled transition from the current single-account wallet into a future multi-account wallet model.
+
+The current implemented feature remains:
+
+- one active wallet account
+- secure wallet creation/import
+- encrypted backup and restore compatibility
+
+The planned account expansion introduces, in later implementation subphases:
+
+- multiple wallet accounts
+- active account selection
+- default account semantics
+- account labels or aliases
+- account-aware assets and activity
+- backup payload evolution with v1 restore compatibility
+
+Until implementation is completed, this document treats multi-account behavior as planned Phase 8 capability rather than implemented runtime behavior.
+

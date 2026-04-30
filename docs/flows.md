@@ -161,3 +161,23 @@ Phase 7.5 introduced this flow to provide an explicit recovery path after storag
 4. Switch to next available node
 5. Retry request
 6. Update active node
+---
+
+## 👛 Phase 8.1 Account Model Migration Flow
+
+Phase 8.1.0 defines the account migration contract before runtime implementation.
+
+The intended future migration flow is:
+
+1. App starts with an existing Phase 7-compatible wallet.
+2. Wallet repository loads the legacy single-account profile.
+3. Repository maps the legacy account into `accounts[0]`.
+4. `activeAccountId` is assigned to the migrated account.
+5. `defaultAccountId` is assigned to the migrated account.
+6. Existing lock, PIN, biometric, backup, and restore behavior remain valid.
+7. UI continues to display the same effective wallet until account switching is implemented.
+
+This flow is contractual only in 8.1.0.
+
+It is documented to protect compatibility during the later implementation subphases.
+

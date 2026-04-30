@@ -27,3 +27,8 @@
   phase8_scavium_wallet.md
 
 ---
+
+## Current Phase 8 account contract
+
+- 8.1.0 — Account Model Contract Definition  
+  Defined inside phase8_scavium_wallet.md

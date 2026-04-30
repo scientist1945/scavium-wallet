@@ -209,3 +209,36 @@ The architecture enables:
 - extensibility for future features (DEX, multi-account, etc)
 - controlled release candidate hardening without destabilizing the codebase
 - controlled Phase 8 product expansion without replacing the established architecture
+---
+
+## 👛 Phase 8.1 Account Model Expansion Contract
+
+Phase 8.1 introduces the account model expansion path, but implementation must remain compatible with the current single-account architecture.
+
+The current stable baseline is a single `WalletProfile` with one `WalletAccount`.
+
+Future multi-account support must be introduced through repository and controller boundaries rather than by letting UI widgets directly mutate persisted wallet state.
+
+The intended architectural direction is:
+
+```text
+WalletProfile
+├── accounts[]
+├── activeAccountId
+├── defaultAccountId
+└── wallet metadata
+```
+
+Architectural constraints for 8.1.x:
+
+- Riverpod remains the application-state owner.
+- GoRouter remains the navigation owner.
+- Secure storage remains responsible for sensitive wallet material.
+- Wallet repositories own persistence compatibility and migration behavior.
+- Controllers expose account-aware state to presentation layers.
+- UI surfaces consume selected account state but do not own secure persistence.
+
+The legacy single-account wallet must be interpreted as the default and active account when the multi-account model is introduced.
+
+This preserves Phase 7 behavior while enabling Phase 8 account-aware assets, activity, signing, and navigation surfaces.
+

@@ -297,7 +297,164 @@ Assets, activity, signing, and UX surfaces must eventually become account-aware.
 
 ---
 
+## 8.1.0 — Account Model Contract Definition
+
+### Objective
+
+Define the technical and documentary contract for expanding SCAVIUM Wallet from the current single-account model into a future multi-account model without changing runtime behavior yet.
+
+This subphase exists because account expansion affects secure storage, wallet profile shape, backup and restore payloads, Riverpod controller ownership, UI surfaces, and later asset, activity, and signing behavior.
+
+It must therefore be defined before implementation starts.
+
+### Current Baseline
+
+The current Phase 7 / Phase 8.0 baseline is a stable single-account wallet.
+
+The active model is conceptually:
+
+```text
+WalletProfile
+└── WalletAccount account
+```
+
+The existing persisted wallet state is also single-wallet oriented and includes legacy storage keys for wallet type, mnemonic, private key, address, and account name.
+
+The existing backup payload is versioned as a single-wallet backup and must remain restorable.
+
+This baseline is valid and must not be treated as incorrect.
+
+Phase 8.1 expands it through compatibility, not replacement.
+
+### Target Contract
+
+The future account model should evolve toward:
+
+```text
+WalletProfile
+├── accounts[]
+├── activeAccountId
+├── defaultAccountId
+├── hasMnemonic
+├── biometricEnabled
+└── wallet source / type metadata
+```
+
+Each account should eventually expose a stable account record such as:
+
+```text
+WalletAccount
+├── id
+├── name / label
+├── address
+├── accountIndex
+├── isDefault
+├── isActive
+├── isImportedByPrivateKey
+├── createdAt
+└── updatedAt
+```
+
+The exact code shape may be refined during implementation, but the compatibility semantics must remain stable.
+
+### Legacy Compatibility Rule
+
+The existing single account must migrate logically into the first account slot:
+
+```text
+legacy wallet account -> accounts[0]
+activeAccountId -> accounts[0].id
+defaultAccountId -> accounts[0].id
+```
+
+This must preserve:
+
+- existing mnemonic material
+- existing private-key import behavior
+- existing wallet address
+- existing account name
+- existing PIN and lock behavior
+- optional biometric unlock behavior
+- existing backup export and restore behavior
+
+No user with a valid Phase 7 wallet should be forced through onboarding again solely because multi-account support is introduced.
+
+### Backup and Restore Contract
+
+Backup compatibility is a first-class requirement of account expansion.
+
+Future implementation should support a v2-style account-aware payload while keeping v1 restore compatibility.
+
+The expected direction is:
+
+```text
+Backup v1
+└── wallet
+
+Backup v2
+├── accounts[]
+├── activeAccountId
+├── defaultAccountId
+└── wallet metadata
+```
+
+Restoring a v1 backup should create a valid single-account profile under the new model.
+
+Exporting a multi-account backup must be delayed until the account model and migration semantics are explicit and validated.
+
+### Provider and Controller Contract
+
+Riverpod remains the state-management owner.
+
+Future account expansion must not bypass the existing controller/repository boundaries.
+
+The recommended direction is:
+
+- repository owns persistence compatibility
+- controller owns selected active account state
+- UI observes account-aware read models
+- secure storage remains the authority for sensitive wallet material
+- account switcher UI must not directly mutate secure wallet state
+
+### Implementation Order After 8.1.0
+
+The recommended 8.1 sequence is:
+
+1. 8.1.1 — Domain model preparation
+2. 8.1.2 — Storage migration foundation
+3. 8.1.3 — Active account controller
+4. 8.1.4 — Account switcher foundation
+5. 8.1.5 — Backup and restore compatibility upgrade
+
+This order keeps the model stable before adding user-visible switching behavior.
+
+### Out of Scope
+
+This subphase does not implement:
+
+- Dart runtime changes
+- secure storage migrations
+- account switcher UI
+- backup v2 code
+- route changes
+- asset account partitioning
+- signing account selection
+
+### Completion Criteria
+
+Phase 8.1.0 is complete when:
+
+- the account expansion contract is documented
+- legacy single-account migration semantics are explicit
+- backup v1/v2 direction is documented
+- provider ownership expectations are documented
+- the next implementation subphase is identified as 8.1.1
+- no runtime code, build tooling, CI workflow, or release automation has been modified
+
+---
+
 ## 8.2 — Asset & Portfolio Expansion
+
 
 ### Objective
 
