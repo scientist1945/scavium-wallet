@@ -1,46 +1,44 @@
-# Current Task — Phase 8.2.3
+# Current Task — Phase 8.2.4
 
 Project: SCAVIUM Wallet
 Phase: 8.2 — Asset & Portfolio Expansion
-Subphase: 8.2.3 — Manual Token Safety & Metadata UX
+Subphase: 8.2.4 — Asset Surface Polish
 Type: code
 
 ## Goal
 
-Harden manual ERC-20 token registration UX and safety using the existing token registry and RPC metadata loading flow.
+Improve asset list presentation for mobile, web, and desktop-sized layouts without introducing a new navigation shell or documentation changes.
 
 ## Scope
 
-Improve deterministic input handling, duplicate handling, metadata error presentation, and safe empty/loading/error states around manual token registration.
+Polish existing asset display, native/token distinction, empty/loading/error states, and portfolio summary visibility if implemented by previous 8.2 subphases.
 
 ## Allowed Files
 
-- `lib/features/assets/application/token_registry_controller.dart`
-- `lib/features/assets/data/token_registry_repository_impl.dart`
-- `lib/features/assets/domain/token_info.dart`
-- `lib/features/assets/presentation/add_token_screen.dart`
 - `lib/features/assets/presentation/assets_screen.dart`
-- `lib/shared/widgets/feedback/**` only if strictly needed
+- `lib/features/assets/presentation/asset_detail_screen.dart`
+- `lib/features/assets/presentation/add_token_screen.dart` only if needed for consistency
+- `lib/shared/widgets/**` only if a tiny reusable UI helper is needed
 - `test/**` only for focused tests if needed
 
 ## Forbidden
 
 - `docs/**`
 - `README.md`
-- wallet persistence changes
-- backup format changes
+- router redesign
+- drawer/sidebar/bottom navigation shell changes
+- transaction/signing maturity
+- backup/storage changes
 - automatic token discovery
 - multi-chain support
-- broad UI redesign
-- routing changes unless unavoidable and approved
 
 ## Implementation Requirements
 
-- Normalize token contract input consistently.
-- Prevent duplicate tokens deterministically.
-- Surface invalid contract/metadata errors safely.
-- Preserve existing manual token registry storage format unless a compatible normalization is needed.
-- Keep existing native asset and token list behavior intact.
+- Keep current route names intact.
+- Keep `GoRouter` behavior intact.
+- Preserve send/receive/token flows.
+- Improve responsive presentation without overbuilding the Phase 8.4 navigation scope.
+- Maintain safe loading, empty, and error states.
 
 ## Validation
 
@@ -60,8 +58,7 @@ flutter test
 
 ## Acceptance
 
-- Invalid token input is rejected before RPC metadata loading.
-- Duplicate token additions do not create duplicate registry entries.
-- Metadata/RPC failures are user-visible and non-destructive.
+- Asset list remains functional.
+- Presentation improves without route or architecture churn.
 - No documentation files are modified.
 - Validation passes or remaining failures are unrelated and explicitly reported.
