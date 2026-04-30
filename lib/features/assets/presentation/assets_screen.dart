@@ -5,6 +5,7 @@ import 'package:scavium_wallet/app/router/route_names.dart';
 import 'package:scavium_wallet/features/assets/application/assets_controller.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_kind.dart';
+import 'package:scavium_wallet/features/assets/domain/portfolio_summary.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/state_message.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_card.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
@@ -48,10 +49,16 @@ class AssetsScreen extends ConsumerWidget {
                     ref.read(assetsControllerProvider.notifier).refreshAssets(),
             child: ListView.separated(
               padding: const EdgeInsets.all(20),
-              itemCount: items.length,
+              itemCount: items.length + 1,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
-                final item = items[index];
+                if (index == 0) {
+                  return _PortfolioSummaryCard(
+                    summary: PortfolioSummary.fromAssets(items),
+                  );
+                }
+
+                final item = items[index - 1];
                 return _AssetTile(item: item);
               },
             ),
@@ -65,6 +72,76 @@ class AssetsScreen extends ConsumerWidget {
               subtitle: '$e',
             ),
       ),
+    );
+  }
+}
+
+class _PortfolioSummaryCard extends StatelessWidget {
+  final PortfolioSummary summary;
+
+  const _PortfolioSummaryCard({required this.summary});
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaviumCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Portfolio summary',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _SummaryMetric(
+                  label: 'Assets',
+                  value: summary.totalAssets.toString(),
+                ),
+              ),
+              Expanded(
+                child: _SummaryMetric(
+                  label: 'With balance',
+                  value: summary.nonZeroAssetCount.toString(),
+                ),
+              ),
+              Expanded(
+                child: _SummaryMetric(
+                  label: 'Tokens',
+                  value: summary.erc20AssetCount.toString(),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryMetric extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _SummaryMetric({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          value,
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 2),
+        Text(label, style: Theme.of(context).textTheme.bodySmall),
+      ],
     );
   }
 }

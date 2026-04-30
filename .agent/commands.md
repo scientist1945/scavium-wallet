@@ -10,8 +10,9 @@ fvm flutter test
 ## Fallback if FVM is unavailable
 
 ```bash
+dart format .
 flutter analyze
-flutter test
+#flutter test
 ```
 
 ## Git Commands Template

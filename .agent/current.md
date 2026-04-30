@@ -1,37 +1,66 @@
-# Current Task — Phase 8.2.0
+# Current Task — Phase 8.2.1
 
 Project: SCAVIUM Wallet
 Phase: 8.2 — Asset & Portfolio Expansion
-Subphase: 8.2.0 — Real Baseline Inspection
-Type: inspection-only
+Subphase: 8.2.1 — Portfolio Summary Model Foundation
+Type: code
 
 ## Goal
 
-Inspect the current asset, token, portfolio, balance, account, and routing implementation before starting Phase 8.2 code changes.
+Introduce a minimal portfolio summary foundation derived from existing `AssetItem` data, without changing persistence, token discovery, wallet storage, backup format, or documentation.
 
-## Allowed Reads
+## Scope
 
-- `docs/phase8_scavium_wallet.md` only for the Phase 8.2 section
-- `lib/features/assets/**`
-- `lib/features/blockchain/**`
-- `lib/features/wallet/domain/wallet_account.dart`
-- `lib/features/wallet/domain/wallet_profile.dart`
-- `lib/features/wallet/application/wallet_controller.dart`
-- `lib/app/router/route_names.dart`
-- `lib/app/router/app_router.dart`
-- `test/**` only if existing tests are relevant
+Implement a small domain/application foundation that can summarize visible assets for UI use.
+
+## Allowed Files
+
+- `lib/features/assets/domain/**`
+- `lib/features/assets/application/**`
+- `lib/features/assets/presentation/assets_screen.dart`
+- `test/**` only for focused tests if needed
 
 ## Forbidden
 
-- Do not edit any file.
-- Do not modify documentation.
-- Do not create new documentation.
+- `docs/**`
+- `README.md`
+- `lib/features/wallet/data/**`
+- `lib/features/wallet/domain/wallet_profile.dart`
+- `lib/features/wallet/domain/wallet_account.dart`
+- backup format changes
+- storage key changes
+- automatic token discovery
+- multi-chain support
+- large UI shell/navigation redesign
 
-## Required Output
+## Implementation Requirements
 
-Report:
+- Keep native balance behavior intact.
+- Keep existing ERC-20 token registry behavior intact.
+- Do not remove existing asset list behavior.
+- Add a deterministic summary representation only if it can be computed from current assets.
+- Keep empty/loading/error states safe.
+- Avoid broad refactors.
 
-- current asset/token capability found
-- current gaps for Phase 8.2
-- recommended first coding subphase
-- exact files likely to be modified later
+## Validation
+
+Run:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Fallback:
+
+```bash
+flutter analyze
+flutter test
+```
+
+## Acceptance
+
+- Existing assets screen still loads native and manual ERC-20 items.
+- Portfolio summary foundation exists and is used or ready for use without unstable assumptions.
+- No documentation files are modified.
+- Validation passes or remaining failures are unrelated and explicitly reported.
