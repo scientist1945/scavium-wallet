@@ -48,20 +48,35 @@ class AssetsScreen extends ConsumerWidget {
             onRefresh:
                 () =>
                     ref.read(assetsControllerProvider.notifier).refreshAssets(),
-            child: ListView.separated(
-              padding: const EdgeInsets.all(20),
-              itemCount: items.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return _PortfolioSummaryCard(
-                    summary: PortfolioSummary.fromAssets(items),
-                    accountContext: items.first.accountContext,
-                  );
-                }
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final horizontalPadding =
+                    constraints.maxWidth >= 720 ? 32.0 : 20.0;
 
-                final item = items[index - 1];
-                return _AssetTile(item: item);
+                return ListView.separated(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                    vertical: 20,
+                  ),
+                  itemCount: items.length + 1,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final child =
+                        index == 0
+                            ? _PortfolioSummaryCard(
+                              summary: PortfolioSummary.fromAssets(items),
+                              accountContext: items.first.accountContext,
+                            )
+                            : _AssetTile(item: items[index - 1]);
+
+                    return Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 760),
+                        child: child,
+                      ),
+                    );
+                  },
+                );
               },
             ),
           );
@@ -180,10 +195,22 @@ class _AssetTile extends StatelessWidget {
         contentPadding: EdgeInsets.zero,
         leading: CircleAvatar(child: Text(item.symbol.characters.first)),
         title: Text(item.title),
-        subtitle: Text(
-          item.kind == AssetKind.native
-              ? 'Native asset'
-              : item.contractAddress ?? '',
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              _AssetKindChip(kind: item.kind),
+              if (item.kind == AssetKind.erc20 && item.contractAddress != null)
+                Text(
+                  _shortAddress(item.contractAddress!),
+                  style: Theme.of(context).textTheme.bodySmall,
+                  overflow: TextOverflow.ellipsis,
+                ),
+            ],
+          ),
         ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -200,6 +227,31 @@ class _AssetTile extends StatelessWidget {
           context.push(RouteNames.assetDetail, extra: item);
         },
       ),
+    );
+  }
+
+  String _shortAddress(String address) {
+    final trimmed = address.trim();
+    if (trimmed.length <= 14) {
+      return trimmed;
+    }
+    return '${trimmed.substring(0, 8)}...${trimmed.substring(trimmed.length - 6)}';
+  }
+}
+
+class _AssetKindChip extends StatelessWidget {
+  final AssetKind kind;
+
+  const _AssetKindChip({required this.kind});
+
+  @override
+  Widget build(BuildContext context) {
+    final isNative = kind == AssetKind.native;
+
+    return Chip(
+      label: Text(isNative ? 'Native' : 'ERC-20'),
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
 }
