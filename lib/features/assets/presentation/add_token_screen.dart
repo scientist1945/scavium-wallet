@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/features/assets/application/token_registry_controller.dart';
+import 'package:scavium_wallet/features/assets/domain/token_info.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/app_snackbar.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/loading_overlay.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_primary_button.dart';
@@ -26,21 +27,21 @@ class _AddTokenScreenState extends ConsumerState<AddTokenScreen> {
   }
 
   bool _isValidAddress(String value) {
-    return RegExp(r'^0x[a-fA-F0-9]{40}$').hasMatch(value.trim());
+    return TokenInfo.isValidContractAddress(value);
   }
 
   Future<void> _submit() async {
     setState(() => _error = null);
 
-    final address = _controller.text.trim();
-    if (!_isValidAddress(address)) {
-      setState(() => _error = 'Contract address inválido');
+    final rawAddress = _controller.text;
+    if (!_isValidAddress(rawAddress)) {
+      setState(() => _error = 'Enter a valid ERC-20 contract address');
       return;
     }
 
     await ref
         .read(tokenRegistryControllerProvider.notifier)
-        .addTokenByAddress(address);
+        .addTokenByAddress(TokenInfo.normalizeContractAddress(rawAddress));
 
     final state = ref.read(tokenRegistryControllerProvider);
     if (state.hasError) {
