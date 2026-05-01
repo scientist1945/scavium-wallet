@@ -19,7 +19,7 @@ fvm flutter analyze
 ## Scoped Test
 
 ```bash
-fvm flutter test test/widget_test.dart
+fvm flutter test test/signing_request_test.dart test/signing_controller_test.dart test/signing_screen_test.dart test/wallet_backup_payload_test.dart
 ```
 
 ---
@@ -54,14 +54,14 @@ flutter test
 ```bash
 git checkout main
 git pull
-git checkout -b feature/phase-8.4-ux-product-surface-maturity
+git checkout -b feature/phase-8.5-security-reliability-diagnostics-maturity
 
 git status
 git add <modified-files>
-git commit -m "Phase 8.4 - UX and product surface maturity"
+git commit -m "Phase 8.5 - Security reliability and diagnostics maturity"
 
 git checkout main
 git pull
-git merge feature/phase-8.4-ux-product-surface-maturity
-git branch -d feature/phase-8.4-ux-product-surface-maturity
+git merge feature/phase-8.5-security-reliability-diagnostics-maturity
+git branch -d feature/phase-8.5-security-reliability-diagnostics-maturity
 ```
