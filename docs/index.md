@@ -40,6 +40,16 @@ The next planned product-expansion area is Phase 8.4 — Navigation Shell and Pr
 
 Phase 8.3 is closed. The completed runtime scope includes safer local outgoing transaction history state handling, receipt-oriented transaction detail, local activity filtering/grouping, and explicit message-signing flows with preview, confirmation, cancellation, and result display.
 
+Phase 8.4 has now been documented as a planned navigation and product-surface maturity phase. It is not yet implemented. The generated subphase map is:
+
+- 8.4.0 — Navigation Shell Baseline Inspection and Product Surface Contract
+- 8.4.1 — Route Inventory and Shell Navigation Contract
+- 8.4.2 — Responsive App Shell Foundation
+- 8.4.3 — Dashboard and Product Surface Segmentation
+- 8.4.4 — Wallet and Account Surface Placement
+- 8.4.5 — Settings, Diagnostics, and Secondary Action Organization
+- 8.4.close — UX & Product Surface Maturity Closure
+
 ---
 
 ## Completed Phase 8.1 account model foundation
