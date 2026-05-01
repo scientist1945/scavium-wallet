@@ -2,9 +2,9 @@
 
 ## IMPORTANT
 
-All commands must be executed manually by the user in the VSCode terminal.
+All commands are executed manually by the user.
 
-The agent MUST NOT execute any shell commands.
+The agent MUST NOT execute any commands.
 
 ---
 
@@ -16,15 +16,15 @@ fvm flutter analyze
 
 ---
 
-## Scoped Test (Recommended)
+## Scoped Test
 
 ```bash
-fvm flutter test test/<subphase_test_file>.dart
+fvm flutter test test/tx_history_entry_test.dart test/tx_history_controller_test.dart
 ```
 
 ---
 
-## Optional Format (Only if needed)
+## Optional Format
 
 ```bash
 dart format <modified-dart-files>
@@ -32,7 +32,7 @@ dart format <modified-dart-files>
 
 ---
 
-## Full Test (ONLY at phase closure or if explicitly requested)
+## Full Test (only at phase closure)
 
 ```bash
 fvm flutter test
@@ -40,30 +40,28 @@ fvm flutter test
 
 ---
 
-## Fallback if FVM is unavailable
+## Fallback
 
 ```bash
 flutter analyze
-flutter test test/<subphase_test_file>.dart
+flutter test
 ```
 
 ---
 
-## Git Commands — Accumulative Phase Branch
+## Git — Accumulative Phase Branch
 
 ```bash
 git checkout main
 git pull
-git checkout -b phase-8.2-assets-portfolio-expansion
+git checkout -b feature/phase-8.3-transaction-activity-maturity
 
-# For each approved subphase (8.2.1, 8.2.2, etc.)
 git status
 git add <modified-files>
-git commit -m "Phase 8.2.x - <subphase title>"
+git commit -m "Phase 8.3 - Transaction and activity maturity"
 
-# Only after full Phase 8.2 completion
 git checkout main
 git pull
-git merge phase-8.2-assets-portfolio-expansion
-git branch -d phase-8.2-assets-portfolio-expansion
+git merge feature/phase-8.3-transaction-activity-maturity
+git branch -d feature/phase-8.3-transaction-activity-maturity
 ```

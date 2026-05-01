@@ -4,66 +4,63 @@
 
 - Code-only execution.
 - Do not create, edit, rewrite, summarize, or reformat documentation.
-- Do not modify `README.md`, `docs/**`, `privacy.md`, `tyc.md`, or release/distribution documentation.
+- Do not modify `README.md`, `docs/**`, or any Markdown unless explicitly allowed.
 - Work only from the real VSCode working tree.
-- Do not assume files or APIs that are not present in the repository.
+- Do not assume files, APIs, or structures that are not present.
 - Do not implement outside the active `.agent/current*.md` task.
-- Prefer the smallest safe change that satisfies the active task.
-- Preserve existing architecture, naming, routing style, Riverpod patterns, and UI conventions.
+- Prefer the smallest safe change.
+- Preserve architecture, naming, routing, state management, and UI patterns.
 
 ## Command Execution Rules
 
 - Do not execute any shell commands.
-- Do not run `dart`, `flutter`, or `fvm` commands.
-- Only report the commands to be executed manually by the user.
+- Do not run `dart`, `flutter`, `fvm`, or any CLI tools.
+- Only report commands for the user to run manually.
 - The user will run validation commands in the VSCode terminal.
 
 ## Formatting Rules
 
 - Do not run `dart format .`.
-- If formatting is needed, only suggest:
+- If needed, suggest:
   `dart format <modified-dart-files>`
 - Do not format unrelated files.
 
 ## Validation Rules
 
-- Always suggest running `fvm flutter analyze`.
-- Suggest scoped tests only:
-  `fvm flutter test test/<subphase_test_file>.dart`
-- Do not suggest running the full test suite unless explicitly requested.
-- If a failing test is unrelated to the subphase, report it but do not modify unrelated code.
+- Suggest primary validation commands defined in `.agent/commands.md`.
+- Suggest scoped tests only if defined in the current task.
+- Do not suggest full test suite unless explicitly requested.
+- If a failure is unrelated, report it without modifying unrelated code.
 
 ## Git Rules
 
-- Use a single accumulative branch for the entire phase.
-- Current branch:
-  `phase-8.2-assets-portfolio-expansion`
-- Commit per approved subphase.
-- Do not merge to `main` until the full phase is accepted.
+- Use a single accumulative branch per phase.
+- Current branch: `feature/phase-8.3-transaction-activity-maturity`
+- Commit per subphase.
+- Merge only after full phase completion.
 
 ## Before Editing
 
-Report only:
+Report:
 
 1. Files read
-2. Files proposed for modification
-3. Short implementation plan
-4. Commands the user should run manually
+2. Files to modify
+3. Short plan
+4. Commands to run manually
 
-Wait for user approval before editing.
+Wait for approval.
 
 ## After Editing
 
-Report only:
+Report:
 
-1. Exact modified files
-2. Short diff summary
-3. Suggested commands to run manually
-4. Any remaining blocker, if applicable
+1. Modified files
+2. Diff summary
+3. Suggested commands
+4. Blockers if any
 
 ## Context Discipline
 
-- Do not scan the entire repository unless required.
+- Do not scan entire repo unless needed.
 - Read only necessary files.
-- Prioritize paths listed in `.agent/current*.md`.
-- If additional files are needed, explain why first.
+- Prioritize paths in `.agent/current*.md`.
