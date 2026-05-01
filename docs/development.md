@@ -175,3 +175,31 @@ Future:
 ## 🎯 Goal
 
 Maintain a stable, scalable and predictable codebase while hardening release candidates safely, making release operations more repeatable, and reducing operational wallet-loss risk for users.
+---
+
+## 🤖 Agent-Assisted Phase Execution
+
+Phase 8.2 introduced a controlled agent-assisted implementation flow through `.agent/*` task files.
+
+The agent flow is constrained by:
+
+- one current task file per subphase;
+- explicit allowed and forbidden files;
+- no documentation changes during code-only subphases;
+- validation through `fvm flutter analyze` and `fvm flutter test`;
+- documentation closure after code subphases are implemented and reviewed.
+
+This keeps the implementation loop faster while preserving the project rule that trunk documentation is updated only from the real working tree state.
+
+### Phase 8.2 Development Boundary
+
+Phase 8.2 code subphases were intentionally limited to asset, token, portfolio, and presentation polish areas.
+
+They did not alter:
+
+- backup formats;
+- wallet account persistence;
+- route names;
+- build automation;
+- release automation;
+- navigation shell structure.

@@ -1338,3 +1338,209 @@ fvm flutter test
 ```
 
 The restore path must continue to accept v1 payloads while enabling v2 multi-account restore.
+
+---
+
+## 8.2.0 — Asset Model Contract Definition and Baseline Inspection
+
+### Objective
+
+Establish the Phase 8.2 asset and portfolio contract before accepting code-level expansion, using the real Phase 8.1 multi-account baseline and the existing asset/token implementation as the source of truth.
+
+### Baseline Confirmed
+
+Before Phase 8.2 code changes, the wallet already had:
+
+- an Assets surface routed through the existing GoRouter configuration;
+- native SCAVIUM balance loading through the RPC layer;
+- manual ERC-20 token registration foundation;
+- token metadata loading through the RPC service;
+- ERC-20 balance loading through the active wallet address;
+- local token registry persistence;
+- asset detail and send-token flows;
+- Phase 8.1 account model, active account, switcher, and backup compatibility.
+
+### Contract
+
+Phase 8.2 expands the asset surface without replacing the existing architecture.
+
+The asset model must remain:
+
+- deterministic;
+- account-aware where the current architecture supports it;
+- explicit about manual token registration;
+- independent from automatic token discovery;
+- independent from multi-chain aggregation;
+- compatible with current routes;
+- compatible with the Phase 8.1 active-account model.
+
+### Non-Scope
+
+Phase 8.2.0 and the subsequent 8.2 code subphases do not introduce:
+
+- automatic token discovery;
+- automatic indexer integration;
+- multi-chain portfolio aggregation;
+- route redesign;
+- navigation shell redesign;
+- backup format changes;
+- release or build pipeline changes.
+
+---
+
+## 8.2.1 — Portfolio Summary Model Foundation
+
+### Objective
+
+Introduce a minimal portfolio summary foundation derived from currently visible assets, without changing persistence, token discovery, wallet storage, backup format, or navigation.
+
+### Implementation Summary
+
+Phase 8.2.1 adds the `PortfolioSummary` domain model.
+
+The summary is computed from `AssetItem` entries and currently tracks:
+
+- total visible assets;
+- native asset count;
+- ERC-20 asset count;
+- non-zero asset count.
+
+This keeps the summary deterministic and avoids unsupported assumptions about fiat valuation, token discovery, or chain-wide indexing.
+
+### Runtime Behavior
+
+The Assets screen can now display a summary card above the asset list.
+
+The summary is intentionally derived from loaded assets only. It does not claim to represent off-chain valuation, undiscovered tokens, or assets outside the currently configured network and registry.
+
+---
+
+## 8.2.2 — Account-Aware Asset Context
+
+### Objective
+
+Attach the active wallet account context to loaded assets where supported by the current architecture.
+
+### Implementation Summary
+
+Phase 8.2.2 introduces `AssetAccountContext` and connects loaded native/ERC-20 asset items to the current active account from the wallet controller.
+
+The context provides:
+
+- account id;
+- account name;
+- optional account label;
+- address;
+- display name;
+- shortened address presentation.
+
+### Architecture Note
+
+The RPC service continues to own blockchain reads. Asset loading remains dependent on the current wallet profile and active account semantics already introduced in Phase 8.1.
+
+The implementation does not introduce a broad RPC redesign. It makes account context visible and traceable in the asset layer while preserving current balance and token behavior.
+
+---
+
+## 8.2.3 — Manual Token Safety & Metadata UX
+
+### Objective
+
+Harden manual ERC-20 token registration and metadata loading while preserving the current explicit manual-token model.
+
+### Implementation Summary
+
+Phase 8.2.3 improves token registration safety by introducing deterministic token address normalization and duplicate prevention.
+
+The implementation includes:
+
+- contract address validation before metadata loading;
+- normalized lowercase storage address handling;
+- duplicate-token prevention by normalized contract address;
+- safe token metadata fallback behavior;
+- user-visible metadata/loading errors through the add-token surface;
+- non-destructive token registration behavior when errors occur.
+
+### Safety Rule
+
+Manual token registration remains explicit. The wallet does not scan for tokens automatically and does not infer user holdings from external indexers.
+
+---
+
+## 8.2.4 — Asset Surface Polish
+
+### Objective
+
+Improve the asset surface presentation for mobile, web, and desktop-sized layouts without introducing a new navigation shell or changing routes.
+
+### Implementation Summary
+
+Phase 8.2.4 improves the existing Assets screen by:
+
+- displaying the portfolio summary card;
+- showing the active account context when available;
+- distinguishing native assets from ERC-20 tokens;
+- improving list spacing and responsive width constraints;
+- preserving refresh behavior;
+- preserving asset detail navigation;
+- preserving native and token send flows;
+- keeping safe loading, empty, and error states.
+
+### UX Constraint
+
+This subphase intentionally avoids the Phase 8.4 navigation shell scope. It polishes the current asset surface without introducing drawer/sidebar/bottom navigation changes.
+
+---
+
+## 8.2.close — Asset & Portfolio Expansion Closure
+
+### Objective
+
+Close Phase 8.2 by confirming that the code-level implementation delivered by subphases 8.2.1 through 8.2.4 is coherently represented in the trunk documentation and remains aligned with the Phase 8 product expansion contract.
+
+### Completed Scope
+
+Phase 8.2 is complete with the following implemented capabilities:
+
+- portfolio summary model foundation;
+- account-aware asset context;
+- native and ERC-20 asset items carrying account context;
+- deterministic manual token address validation and normalization;
+- duplicate-token protection;
+- safer metadata loading and error presentation;
+- improved asset list visual hierarchy;
+- asset kind distinction;
+- responsive asset surface polish.
+
+### Boundaries Preserved
+
+The completed implementation preserves the intended boundaries:
+
+- no automatic token discovery;
+- no multi-chain portfolio aggregation;
+- no route redesign;
+- no navigation shell redesign;
+- no build or release automation changes;
+- no wallet backup format change in Phase 8.2;
+- no broad wallet account persistence change beyond the existing Phase 8.1 baseline.
+
+### Validation Gate
+
+The expected validation gate remains:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Any remaining analyzer warnings should be classified against the project baseline and not treated as Phase 8.2 regressions unless they are introduced by the Phase 8.2 files.
+
+### Next Phase
+
+The next planned Phase 8 area is:
+
+```text
+8.3 — Transaction & Activity Maturity
+```
+
+Phase 8.3 should build on the now-completed account-aware and asset-aware foundation.

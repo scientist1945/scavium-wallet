@@ -28,21 +28,58 @@
 
 ---
 
-## Current Phase 8 account model foundation
+## Current Phase 8 status
+
+Phase 8 is active and currently completed through:
+
+- Phase 8.1 — Account Model Expansion
+- Phase 8.2 — Asset & Portfolio Expansion
+
+The next planned product-expansion area is Phase 8.3 — Transaction & Activity Maturity.
+
+---
+
+## Completed Phase 8.1 account model foundation
 
 - 8.1.0 — Account Model Contract Definition  
-  Defined inside phase8_scavium_wallet.md
+  Defined the multi-account contract, legacy compatibility expectations, and backup v1/v2 migration strategy.
 
 - 8.1.1 — Domain Model Preparation  
-  Introduces the domain-level compatibility bridge for accounts[], activeAccountId, and defaultAccountId while keeping profile.account and current single-account behavior intact.
+  Introduced the domain-level compatibility bridge for `accounts[]`, `activeAccountId`, and `defaultAccountId` while keeping `profile.account` and current single-account behavior intact.
 
 - 8.1.2 — Storage Migration Foundation  
-  Adds parallel multi-account storage metadata while preserving legacy single-wallet keys and visible behavior.
+  Added parallel multi-account storage metadata while preserving legacy single-wallet keys and visible behavior.
 
 - 8.1.3 — Active Account Controller  
-  Adds the controller/repository path for resolving and persisting the active account without adding a switcher UI.
+  Added the controller/repository path for resolving and persisting the active account without adding a switcher UI.
 
 - 8.1.4 — Account Switcher Basic UI  
-  Adds a minimal UI surface for displaying and selecting among already-known accounts without introducing account creation, deletion, backup changes, route changes, or release changes.
+  Added a minimal UI surface for displaying and selecting among already-known accounts.
 
-- Phase 8.1.5 — Account Creation & Import Expansion: adds minimal derived/imported account creation over the existing multi-account foundation without changing backup v1 or release automation.
+- 8.1.5 — Account Creation & Import Expansion  
+  Added minimal derived/imported account creation over the existing multi-account foundation.
+
+- 8.1.6 — Backup / Restore Multi-Account Compatibility  
+  Added backup v2 support for multi-account profiles while preserving v1 restore compatibility.
+
+---
+
+## Completed Phase 8.2 asset and portfolio expansion
+
+- 8.2.0 — Asset Model Contract Definition and Baseline Inspection  
+  Documented the asset/token/portfolio baseline and kept code untouched before implementation.
+
+- 8.2.1 — Portfolio Summary Model Foundation  
+  Added a deterministic `PortfolioSummary` domain model derived from visible `AssetItem` data.
+
+- 8.2.2 — Account-Aware Asset Context  
+  Added `AssetAccountContext` and associated native/ERC-20 asset items with the active account context.
+
+- 8.2.3 — Manual Token Safety & Metadata UX  
+  Hardened token address normalization, duplicate prevention, and safe token metadata error handling.
+
+- 8.2.4 — Asset Surface Polish  
+  Improved asset list presentation, portfolio summary visibility, asset type distinction, and responsive behavior.
+
+- 8.2.close — Asset & Portfolio Expansion Closure  
+  Consolidated Phase 8.2 documentation across trunk project documents.

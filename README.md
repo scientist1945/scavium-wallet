@@ -2,7 +2,7 @@
 
 Self-custody Flutter wallet for the SCAVIUM network.
 
-SCAVIUM Wallet is an EVM-compatible wallet focused on controlled production hardening, practical self-custody recovery, and reproducible multiplatform release engineering.
+SCAVIUM Wallet is an EVM-compatible wallet focused on controlled production hardening, practical self-custody recovery, reproducible multiplatform release engineering, and controlled product expansion.
 
 ---
 
@@ -23,7 +23,7 @@ Current platform and release scope includes:
 - Windows MSIX packaging
 - GitHub Release automation
 
-The wallet has completed Phase 7 stabilization and is now entering Phase 8 product expansion and production maturity.
+The wallet completed Phase 7 stabilization and is currently progressing through Phase 8 product expansion and production maturity.
 
 Phase 8 focuses on controlled product growth from the Phase 7 release-hardened baseline, including:
 
@@ -49,11 +49,13 @@ Completed phases:
 - Phase 5 — Production readiness
 - Phase 6 — Packaging, branding, and store deployment
 - Phase 7 — Stabilization
+- Phase 8.1 — Account Model Expansion
+- Phase 8.2 — Asset & Portfolio Expansion
 
-Current phase:
+Current Phase 8 milestone:
 
-- Phase 8 — Product Expansion & Production Maturity
-- Current subphase: 8.1.1 — Domain Model Preparation
+- Phase 8.2 completed — Asset & Portfolio Expansion
+- Next planned product-expansion area: Phase 8.3 — Transaction & Activity Maturity
 
 Completed Phase 7 stabilization work includes:
 
@@ -65,6 +67,25 @@ Completed Phase 7 stabilization work includes:
 - 7.6 — Windows MSIX signing and distribution readiness
 - 7.7 — GitHub Release automation and artifact publishing hardening
 
+Completed Phase 8.1 account expansion work includes:
+
+- 8.1.0 — Account Model Contract Definition
+- 8.1.1 — Domain Model Preparation
+- 8.1.2 — Storage Migration Foundation
+- 8.1.3 — Active Account Controller
+- 8.1.4 — Account Switcher Basic UI
+- 8.1.5 — Account Creation & Import Expansion
+- 8.1.6 — Backup / Restore Multi-Account Compatibility
+
+Completed Phase 8.2 asset expansion work includes:
+
+- 8.2.0 — Asset Model Contract Definition and Baseline Inspection
+- 8.2.1 — Portfolio Summary Model Foundation
+- 8.2.2 — Account-Aware Asset Context
+- 8.2.3 — Manual Token Safety & Metadata UX
+- 8.2.4 — Asset Surface Polish
+- 8.2.close — Asset & Portfolio Expansion Closure
+
 ---
 
 ## ✨ Key Characteristics
@@ -73,6 +94,10 @@ Completed Phase 7 stabilization work includes:
 - EVM-compatible transaction support
 - production-oriented release hardening
 - encrypted local backup and restore flow
+- multi-account wallet foundation
+- account-aware asset surface
+- deterministic manual ERC-20 token registry
+- portfolio summary foundation
 - multiplatform build orchestration through `tool/build.dart`
 - GitHub Actions-based release artifact generation
 - draft GitHub Release publication with attached assets
@@ -87,6 +112,7 @@ Main areas of interest:
 - `lib/` — application source code
 - `tool/build.dart` — build and release orchestration tool
 - `.github/workflows/release.yml` — GitHub Actions release workflow
+- `.agent/` — agent-execution prompts, rules, and current-task files used for staged implementation
 - `docs/` — structured technical documentation by phase and topic
 
 Important documentation includes:
@@ -233,14 +259,59 @@ Release candidates should validate:
 - invalid password handling
 - invalid file handling
 - safe return to a valid wallet state after restore
+- v1 backup restore compatibility
+- v2 multi-account backup restore compatibility
 
 This is treated as a release-quality concern because it materially affects self-custody safety.
 
 ---
 
+## 👛 Phase 8.1 Account Model Expansion
+
+Phase 8.1 completed the controlled transition from the Phase 7 single-account wallet baseline into a functional multi-account foundation.
+
+Implemented capabilities include:
+
+- multi-account domain model preparation
+- parallel storage migration metadata
+- active-account controller and repository support
+- basic account switcher UI
+- derived account creation for mnemonic wallets
+- imported private-key account addition
+- backup/restore v2 compatibility for multi-account profiles
+
+The Phase 8.1 implementation preserves legacy wallet compatibility and keeps v1 backup restore support intact.
+
+---
+
+## 📊 Phase 8.2 Asset & Portfolio Expansion
+
+Phase 8.2 completed asset and portfolio expansion on top of the Phase 8.1 account model.
+
+Implemented capabilities include:
+
+- portfolio summary model derived from visible asset data
+- account-aware asset context attached to native and ERC-20 asset items
+- deterministic manual token normalization
+- duplicate-token protection
+- safer token metadata error handling
+- improved asset list presentation
+- native/ERC-20 distinction in the asset surface
+- responsive asset layout polish for mobile, web, and desktop-sized widths
+
+The implementation remains intentionally bounded:
+
+- no automatic token discovery
+- no multi-chain expansion
+- no route redesign
+- no build or release pipeline change
+- no backup payload change beyond the already-completed Phase 8.1.6 scope
+
+---
+
 ## 🚧 Out of Scope
 
-The current release engineering and Phase 8.0 documentation scope does not yet include:
+The current release engineering and Phase 8 product expansion scope does not yet include:
 
 - automatic Play Store upload
 - automatic Microsoft Store submission
@@ -249,8 +320,10 @@ The current release engineering and Phase 8.0 documentation scope does not yet i
 - runtime updates
 - automatic git tagging
 - advanced changelog generation
-- implemented multi-account runtime behavior
 - implemented message signing runtime behavior
+- automatic token discovery
+- multi-chain portfolio aggregation
+- external dApp connectivity
 
 ---
 
@@ -275,57 +348,4 @@ Deliver a stable, secure, production-oriented and operationally reproducible SCA
 - a scalable path toward accounts, assets, activity, signing, UX, security, and release maturity
 - Windows distribution readiness
 - GitHub-based release artifact publication
-- lower operator error during release generation and distribution# Launch Screen Assets
-
-You can customize the launch screen with your own desired assets by replacing the image files in this directory.
-
-You can also do it by opening your Flutter project's Xcode project with `open ios/Runner.xcworkspace`, selecting `Runner/Assets.xcassets` in the Project Navigator and dropping in the desired images.
----
-
-## 🧱 Phase 8.1.2 Storage Migration Foundation
-
-Phase 8.1.2 prepares wallet persistence for multi-account expansion without changing visible runtime behavior.
-
-The wallet continues to support the Phase 7 single-account baseline while persisting account metadata in parallel using:
-
-- `wallet_accounts_json`
-- `wallet_active_account_id`
-- `wallet_default_account_id`
-- `wallet_storage_version`
-
-Legacy wallet keys remain compatible and are still used as the fallback path for existing installations.
-
-```text
-legacy wallet -> accounts[0]
-activeAccountId = accounts[0].id
-defaultAccountId = accounts[0].id
-```
-
-Backup/restore v1, UI, routing, build tooling, and release workflow remain unchanged in this subphase.
-
-## 🧭 Phase 8.1.3 Active Account Controller
-
-Phase 8.1.3 introduces the internal active-account controller foundation for the multi-account model.
-
-The wallet remains visually single-account compatible, but the controller and repository can now resolve and persist the active account through the multi-account metadata prepared in Phase 8.1.2.
-
-No account switcher UI, route changes, backup/restore changes, build changes, or release workflow changes are introduced in this subphase.
-
-
-## 👛 Phase 8.1.4 Account Switcher Basic UI
-
-Phase 8.1.4 introduces the first minimal account switcher surface.
-
-The wallet still does not create, import, edit, or delete additional accounts from the UI in this subphase. The switcher only displays the currently known accounts from the account-aware profile and delegates active-account changes through `WalletController.setActiveAccount(...)`.
-
-Single-account wallets remain fully compatible and show the current account as the only selectable account.
-
-No route changes, backup/restore changes, build changes, or release workflow changes are introduced in this subphase.
-# Launch Screen Assets
-
-You can customize the launch screen with your own desired assets by replacing the image files in this directory.
-
-You can also do it by opening your Flutter project's Xcode project with `open ios/Runner.xcworkspace`, selecting `Runner/Assets.xcassets` in the Project Navigator and dropping in the desired images.
-### Phase 8.1.5 — Account Creation & Import Expansion
-
-Phase 8.1.5 converts the multi-account foundation into minimal user-facing functionality by allowing additional derived accounts and imported private-key accounts to be added from the account switcher. Backup v1, routing, build automation, and release automation remain unchanged.
+- lower operator error during release generation and distribution

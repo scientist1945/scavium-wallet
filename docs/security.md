@@ -191,3 +191,26 @@ Security rules for this subphase:
 ## Phase 8.1.6 — Multi-Account Backup Security
 
 Backup payload version 2 remains protected by the existing encrypted backup envelope. Imported account private keys are serialized only inside the encrypted payload so restored imported accounts remain operational after recovery. Account metadata continues to avoid embedding private keys during normal runtime storage.
+
+---
+
+## 📊 Phase 8.2 Asset and Token Safety
+
+Phase 8.2 adds safety hardening around manual token registration and account-aware asset presentation.
+
+Manual token registration is intentionally explicit:
+
+- users provide the ERC-20 contract address;
+- the address is validated before metadata loading;
+- the address is normalized before storage;
+- duplicate entries are prevented by normalized contract address;
+- metadata failures are shown to the user and do not mutate the registry;
+- token removal is local only and does not affect on-chain funds.
+
+Account-aware asset presentation improves user clarity by showing which account context the current asset view belongs to, without moving account ownership into the asset feature.
+
+### Security Boundary
+
+Phase 8.2 does not scan for unknown user holdings, connect to external indexers, or infer assets automatically.
+
+This keeps asset expansion deterministic and avoids introducing external data-dependency or privacy assumptions during this phase.

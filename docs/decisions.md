@@ -232,3 +232,44 @@ Benefits:
 - better alignment with platform expectations
 - more reliable user-controlled file placement
 - no unnecessary desktop/mobile UX compromise
+---
+
+### 19. Portfolio summary derived only from visible assets
+
+Phase 8.2 introduced a portfolio summary model that is computed only from currently loaded `AssetItem` entries.
+
+Benefits:
+
+- deterministic behavior;
+- no dependency on external indexers;
+- no unsupported fiat valuation assumptions;
+- no hidden token discovery behavior;
+- safer incremental foundation for future portfolio maturity.
+
+---
+
+### 20. Manual token registry remains explicit
+
+Phase 8.2 keeps token registration user-driven and deterministic.
+
+Token addresses are validated and normalized before persistence, and duplicate entries are prevented by normalized contract address.
+
+Benefits:
+
+- lower risk of unstable automatic discovery;
+- predictable storage behavior;
+- safer metadata error handling;
+- clearer user control over locally displayed ERC-20 tokens.
+
+---
+
+### 21. Asset context depends on wallet account state but does not own it
+
+Phase 8.2 adds account context to asset items while keeping wallet identity ownership inside the wallet feature.
+
+Benefits:
+
+- avoids feature ownership inversion;
+- keeps account switching centralized;
+- allows assets to be presented in the correct account context;
+- prepares later activity and transaction maturity work without broad refactoring.

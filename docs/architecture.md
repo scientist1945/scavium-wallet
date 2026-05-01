@@ -281,3 +281,50 @@ Account creation/import remains owned by the wallet feature boundary:
 - `WalletRepositoryImpl` owns derivation, validation, duplicate protection, secure persistence, and active-account refresh.
 
 The architecture deliberately keeps account metadata separate from imported private-key material. Account metadata is persisted in multi-account JSON storage, while imported private keys are stored through secure storage under account-key mapping. Backup v2 is not introduced in this phase.
+
+---
+
+## 📊 Phase 8.2 Asset & Portfolio Layer
+
+Phase 8.2 extends the asset feature while preserving the existing feature-driven architecture.
+
+The asset layer now includes:
+
+- `PortfolioSummary` as a deterministic domain summary derived from visible assets;
+- `AssetAccountContext` as the account-aware bridge between the wallet account model and asset presentation;
+- normalized `TokenInfo` handling for manual ERC-20 registration;
+- token registry repository deduplication by normalized contract address;
+- account-context propagation through `AssetItem`.
+
+The separation remains:
+
+```text
+wallet/application
+  owns active account state
+
+assets/application
+  loads visible assets and derives account context
+
+assets/domain
+  defines asset, token, portfolio, and account-context models
+
+assets/data
+  persists the manual token registry
+
+assets/presentation
+  renders portfolio summary, asset list, token addition, and asset detail surfaces
+```
+
+Phase 8.2 deliberately does not move RPC ownership into the asset UI and does not introduce automatic token discovery or indexer-backed portfolio aggregation.
+
+### Account-Aware Boundary
+
+Assets can carry the active account context, but account ownership remains with the wallet feature.
+
+This prevents the asset feature from becoming the owner of wallet identity while still allowing asset UI to clearly display which account the current asset view belongs to.
+
+### Portfolio Summary Boundary
+
+The portfolio summary is derived from currently loaded asset entries only.
+
+It does not represent fiat valuation, undiscovered assets, external indexer results, or multi-chain holdings.

@@ -173,3 +173,25 @@ The account switcher now provides a minimal account-addition entry point. The UX
 - unsupported derived-account creation is disabled for private-key-only wallets;
 - successful account addition activates the new account immediately;
 - no deletion, rename, or advanced account management UX is introduced yet.
+
+---
+
+## 📊 Phase 8.2 Asset Surface UX
+
+Phase 8.2 improves the existing asset surface without introducing the later Phase 8.4 navigation shell.
+
+Implemented UX improvements:
+
+- portfolio summary card above the asset list;
+- active account context display when available;
+- clearer native versus ERC-20 asset distinction;
+- improved spacing and constrained width for larger screens;
+- safe loading, empty, and error states;
+- explicit token-add flow with visible validation and metadata feedback;
+- local token removal warning that clarifies funds are not affected.
+
+The UX remains intentionally bounded.
+
+The asset screen is more mature, but it does not yet become a full portfolio dashboard with valuation, sorting, grouping, token discovery, or multi-chain views.
+
+Those capabilities remain future product work beyond Phase 8.2.

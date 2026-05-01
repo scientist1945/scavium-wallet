@@ -221,3 +221,36 @@ Backup/restore v1 remains unchanged in this phase. Backup v2 compatibility is in
 ## Phase 8.1.6 — Backup / Restore Multi-Account Compatibility
 
 SCAVIUM Wallet now supports account-aware backup payloads. Version 1 backups remain restorable, while version 2 backups preserve the multi-account account list, active/default account selection, and imported-account key material inside the encrypted backup envelope.
+
+---
+
+## 📊 Phase 8.2 Implemented Asset & Portfolio Features
+
+Phase 8.2 converts the asset expansion plan into implemented product capability.
+
+Implemented capabilities:
+
+- portfolio summary card derived from visible assets;
+- total asset count;
+- native asset count;
+- ERC-20 token count;
+- non-zero asset count;
+- active account context on asset items;
+- deterministic manual token address validation;
+- normalized ERC-20 token registry entries;
+- duplicate-token prevention;
+- safe token metadata loading feedback;
+- improved asset list presentation;
+- responsive asset surface width constraints;
+- native/ERC-20 visual distinction;
+- preserved asset detail and send-token flows.
+
+The implementation remains explicit and local. It does not introduce automatic token discovery, external indexing, fiat valuation, or multi-chain aggregation.
+
+---
+
+## Phase 8.2 Completion State
+
+Phase 8.2 is complete as an asset and portfolio foundation phase.
+
+The product now has an account-aware asset surface that can support later activity, signing, navigation, and broader portfolio maturity work without requiring a disruptive redesign.

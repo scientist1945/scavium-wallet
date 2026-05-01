@@ -233,3 +233,55 @@ No visible account switcher is introduced yet. Existing screens continue to beha
 ## Phase 8.1.6 — Multi-Account Backup / Restore Flow
 
 Export backup now emits a version 2 wallet payload containing the active account, default account, and account list. Restore remains backward-compatible: version 1 payloads rebuild a single-account profile, while version 2 payloads restore multi-account metadata and imported-account private keys required for later signing/send flows.
+
+---
+
+## 📊 Phase 8.2 Asset and Portfolio Flow
+
+Phase 8.2 formalizes the current asset-loading flow around visible assets, active account context, and manual token registry behavior.
+
+### Asset Loading Flow
+
+```text
+AssetsScreen
+  -> AssetsController
+    -> WalletController active account context
+    -> ScaviumRpcService native balance
+    -> TokenRegistryRepository manual tokens
+    -> ScaviumRpcService ERC-20 balances
+    -> AssetItem[]
+    -> PortfolioSummary.fromAssets(...)
+```
+
+### Manual Token Addition Flow
+
+```text
+AddTokenScreen
+  -> validate ERC-20 contract address
+  -> normalize contract address
+  -> check duplicate registry entry
+  -> load token metadata through RPC
+  -> persist normalized token
+  -> refresh asset list
+```
+
+### Asset Detail Flow
+
+```text
+AssetsScreen asset item
+  -> AssetDetailScreen
+    -> native asset: Send screen
+    -> ERC-20 token: SendToken screen
+    -> ERC-20 token: optional local token removal
+```
+
+### Explicit Boundaries
+
+Phase 8.2 does not add:
+
+- automatic token discovery;
+- multi-chain aggregation;
+- indexer-backed balances;
+- backup format changes;
+- route redesign;
+- navigation shell redesign.
