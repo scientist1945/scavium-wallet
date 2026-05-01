@@ -295,3 +295,31 @@ The implementation does not introduce external activity indexing, incoming trans
 Phase 8.3 is complete as a transaction/activity/signing maturity phase.
 
 The product now has safer local outgoing activity handling and explicit signing behavior that can support later navigation-shell and product-surface expansion without moving ownership away from the existing assets, signing, wallet, and RPC boundaries.
+---
+
+## 🧭 Phase 8.4 Implemented Navigation Shell and Product Surface Features
+
+Phase 8.4 converts the navigation-shell and product-surface plan into implemented product capability.
+
+Implemented capabilities:
+
+- route classification for primary, public, lock, action, detail, and secondary routes;
+- responsive authenticated shell around the primary product destinations;
+- compact bottom navigation for mobile-sized layouts;
+- wide-layout navigation rail for web/desktop-sized layouts;
+- primary destinations for Home, Assets, Activity, and Settings;
+- Home dashboard segmentation through dedicated balance and recent-activity widgets;
+- dedicated Accounts surface for active-account placement clarity;
+- organized Settings sections for security/recovery, signing, diagnostics, danger-zone actions, and about information;
+- explicit preservation of action/detail routes for send, receive, signing, add token, token send, asset detail, transaction detail, RPC diagnostics, backup export, and reset.
+
+The implementation remains explicit and local. The shell does not own wallet state, asset state, transaction-history state, signing state, backup behavior, or RPC execution.
+
+---
+
+## Phase 8.4 Completion State
+
+Phase 8.4 is complete as a navigation-shell and product-surface maturity phase.
+
+The product now has a scalable authenticated navigation structure that can support later UX, diagnostics, security, and product-surface phases without overloading Home or moving ownership away from existing feature boundaries.
+

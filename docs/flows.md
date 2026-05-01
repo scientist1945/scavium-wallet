@@ -356,3 +356,75 @@ Phase 8.3 does not add:
 - dApp connectivity;
 - backup payload changes;
 - navigation shell redesign.
+---
+
+## 🧭 Phase 8.4 Navigation Shell and Product Surface Flows
+
+Phase 8.4 introduces a primary authenticated navigation flow while preserving explicit action and detail routes.
+
+### Primary Shell Navigation Flow
+
+```text
+Authenticated primary route
+  -> GoRouter ShellRoute
+    -> AppShell(location, child)
+      -> ResponsiveNavigation
+        -> compact width: NavigationBar
+        -> wide width: NavigationRail
+      -> selected destination maps to RouteNames
+      -> context.go(destination.route)
+```
+
+Primary destinations:
+
+- Home
+- Assets
+- Activity
+- Settings
+
+### Dashboard Flow
+
+```text
+HomeScreen
+  -> DashboardBalanceCard
+  -> AccountSwitcher summary
+  -> Network and RPC status summaries
+  -> explicit quick actions
+  -> DashboardRecentActivityCard
+    -> transaction detail route when an entry is selected
+```
+
+### Account Surface Flow
+
+```text
+Home quick action or route entry
+  -> RouteNames.accounts
+    -> AccountsScreen
+      -> WalletController
+      -> AccountSwitcher
+```
+
+### Settings Secondary Action Flow
+
+```text
+SettingsScreen
+  -> Security & recovery: encrypted backup export
+  -> Signing: explicit signing route
+  -> Diagnostics: RPC diagnostics route
+  -> Danger zone: confirmation-gated wallet reset
+  -> About: app information
+```
+
+### Explicit Boundaries
+
+Phase 8.4 does not add:
+
+- hidden shell-owned signing;
+- implicit destructive actions;
+- backup payload changes;
+- wallet encryption changes;
+- transaction submission changes;
+- automatic token discovery;
+- external activity indexing;
+- dApp connectivity.
+
