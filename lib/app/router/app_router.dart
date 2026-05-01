@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/app/shell/app_shell.dart';
 import 'package:scavium_wallet/core/constants/storage_keys.dart';
 import 'package:scavium_wallet/core/services/local_storage_service.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
@@ -71,10 +72,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, _) => const BackupMnemonicScreen(),
       ),
       GoRoute(path: RouteNames.lock, builder: (_, _) => const LockScreen()),
-      GoRoute(path: RouteNames.home, builder: (_, _) => const HomeScreen()),
-      GoRoute(
-        path: RouteNames.settings,
-        builder: (_, _) => const SettingsScreen(),
+      ShellRoute(
+        builder: (_, state, child) {
+          return AppShell(location: state.matchedLocation, child: child);
+        },
+        routes: [
+          GoRoute(path: RouteNames.home, builder: (_, _) => const HomeScreen()),
+          GoRoute(
+            path: RouteNames.assets,
+            builder: (_, _) => const AssetsScreen(),
+          ),
+          GoRoute(
+            path: RouteNames.history,
+            builder: (_, _) => const HistoryScreen(),
+          ),
+          GoRoute(
+            path: RouteNames.settings,
+            builder: (_, _) => const SettingsScreen(),
+          ),
+        ],
       ),
       GoRoute(path: RouteNames.send, builder: (_, _) => const SendScreen()),
       GoRoute(
@@ -85,14 +101,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: RouteNames.signing,
         builder: (_, _) => const SigningScreen(),
       ),
-      GoRoute(path: RouteNames.assets, builder: (_, _) => const AssetsScreen()),
       GoRoute(
         path: RouteNames.addToken,
         builder: (_, _) => const AddTokenScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.history,
-        builder: (_, _) => const HistoryScreen(),
       ),
       GoRoute(
         path: RouteNames.transactionDetail,
