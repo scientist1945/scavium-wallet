@@ -195,3 +195,34 @@ The UX remains intentionally bounded.
 The asset screen is more mature, but it does not yet become a full portfolio dashboard with valuation, sorting, grouping, token discovery, or multi-chain views.
 
 Those capabilities remain future product work beyond Phase 8.2.
+
+---
+
+## 🧾 Phase 8.3 Activity and Signing UX
+
+Phase 8.3 improves transaction/activity readability and introduces explicit signing UX without adding the later Phase 8.4 navigation shell.
+
+Implemented activity UX improvements:
+
+- history copy clarifies that the view shows locally tracked outgoing transactions;
+- refresh remains explicit and user-controlled;
+- transaction rows open a first-party detail view;
+- transaction detail explains pending, confirmed, and failed receipt states;
+- explorer opening is explicit rather than implicit;
+- status and transaction-kind filters are visible in the history surface;
+- filtered-empty state is distinct from no-history state;
+- error copy clarifies that existing local entries are not modified by a load/receipt failure.
+
+Implemented signing UX improvements:
+
+- signing is presented as separate from sending;
+- the active account is visible before signing;
+- users choose between personal-message and challenge signing modes;
+- message/challenge input is validated before confirmation;
+- the confirmation dialog previews mode, account, and message;
+- cancellation produces no wallet-state mutation;
+- successful signing displays signature metadata and copy feedback.
+
+The UX remains intentionally bounded.
+
+The activity surface is not a full explorer, and signing is not a transaction workflow. Those distinctions must remain visible in later navigation or product-surface phases.

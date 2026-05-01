@@ -203,3 +203,37 @@ They did not alter:
 - build automation;
 - release automation;
 - navigation shell structure.
+
+---
+
+## Phase 8.3 Development Boundary
+
+Phase 8.3 continued the controlled agent-assisted implementation flow established during Phase 8.2.
+
+The code subphases were intentionally limited to:
+
+- local outgoing transaction-history state maturity;
+- transaction detail presentation;
+- local activity filtering, grouping, and empty/error states;
+- message-signing domain and service boundaries;
+- message-signing UX with preview, confirmation, cancellation, and result display.
+
+They did not alter:
+
+- backup formats;
+- wallet account persistence ownership;
+- release automation;
+- build automation;
+- store publication flow;
+- external transaction indexing;
+- dApp connectivity;
+- Phase 8.4 navigation shell structure.
+
+Expected local validation remains:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Documentation closure must be performed after code subphases are reviewed so trunk documents describe the real working tree rather than planned implementation text.

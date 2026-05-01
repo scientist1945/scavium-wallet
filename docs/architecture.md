@@ -328,3 +328,67 @@ This prevents the asset feature from becoming the owner of wallet identity while
 The portfolio summary is derived from currently loaded asset entries only.
 
 It does not represent fiat valuation, undiscovered assets, external indexer results, or multi-chain holdings.
+
+---
+
+## 🧾 Phase 8.3 Transaction, Activity, and Signing Layer
+
+Phase 8.3 extends the assets and signing features while preserving the existing feature-driven architecture.
+
+The transaction/activity layer now includes:
+
+- `TxHistoryEntry` as the persisted local outgoing transaction record;
+- `TxHistoryFilter` as the local filtering and grouping helper;
+- `TxHistoryController` as the Riverpod owner for history loading, insertion, and receipt refresh;
+- `TransactionDetailScreen` as the first-party transaction detail surface;
+- `ScaviumRpcService.getReceipt(...)` as the receipt lookup boundary.
+
+The signing layer now includes:
+
+- `SigningMode`, `SigningRequest`, and `SigningResult` as signing domain models;
+- `SigningService` as the signing boundary;
+- `RpcSigningService` as the adapter to the RPC/wallet credential layer;
+- `SigningController` as the Riverpod owner of signing execution state;
+- `SigningScreen`, `SigningConfirmDialog`, and `SigningResultCard` as the presentation layer.
+
+The separation remains:
+
+```text
+assets/application
+  owns local outgoing history state and receipt refresh
+
+assets/domain
+  defines transaction-history records, status, kind, and local filters
+
+assets/data
+  persists local outgoing history and keeps transaction-feed indexing as a future seam
+
+assets/presentation
+  renders history, filters, grouping, and transaction detail
+
+signing/domain
+  defines signing modes, requests, and results
+
+signing/application
+  validates active-account signing and delegates to the signing service
+
+signing/presentation
+  renders preview, confirmation, cancellation, and result display
+
+blockchain/data
+  owns RPC receipt reads and credential-backed signing operations
+```
+
+Phase 8.3 deliberately does not move wallet identity ownership into the assets or signing features. Active account state remains owned by the wallet feature, while RPC execution remains owned by `ScaviumRpcService`.
+
+### Local Activity Boundary
+
+Local outgoing history is the current first-party activity source.
+
+The wallet does not claim incoming transaction discovery, external transaction indexing, automatic token activity, or full explorer replacement. `TransactionFeedRepositoryImpl` remains an empty future extension seam until a later phase explicitly introduces an explorer/indexer-backed activity boundary.
+
+### Signing Boundary
+
+Signing is not transaction submission.
+
+Signing uses active wallet credentials to produce a signature for an explicit message/challenge after preview and confirmation. It does not submit transactions, refresh balances, write transaction-history entries, or alter backup payloads.

@@ -1926,50 +1926,193 @@ Validation should confirm that cancellation leaves wallet state unchanged, succe
 
 ### Objective
 
-Close Phase 8.3 by confirming that transaction/activity maturity and message-signing behavior are implemented, validated, and coherently represented in trunk documentation.
+Close Phase 8.3 by confirming that transaction/activity maturity and message-signing behavior are implemented, validated against the real codebase, and coherently represented in trunk documentation.
 
 ### Scope
 
-This documentation closure should occur only after the runtime subphases are implemented and validated.
+This closure records the actual implementation delivered by Phase 8.3.1 through Phase 8.3.5 and updates trunk documentation without changing runtime code.
 
-Expected closure work includes:
+The closure confirms:
 
-- confirming final implemented subphases;
-- documenting actual files changed;
-- updating trunk docs based on the real final implementation;
-- recording preserved boundaries;
-- confirming validation results;
-- identifying the next Phase 8 area.
+- local outgoing transaction history remains the first-party activity source;
+- transaction-history entries are deserialized defensively and remain compatible with older stored records;
+- pending transactions without receipts remain pending instead of being marked failed;
+- transaction detail is available as an app route and presents receipt-oriented status explanation;
+- activity history supports local status/type filtering and local-day grouping;
+- message signing is implemented as a separate signing feature boundary;
+- signing requires user preview and confirmation before producing a signature;
+- signing does not submit transactions, refresh balances, or write transaction-history entries.
 
 ### State
 
-New closure subphase generated from the existing Phase 8.3 parent section.
+Implemented and closed as a documentation-only closure over the completed Phase 8.3 runtime subphases.
 
-### Existing Files Tentatively Intervened
+No runtime code was modified in this closure step.
 
-- `docs/phase8_scavium_wallet.md` — close Phase 8.3 with actual implemented scope.
-- `docs/index.md` — move Phase 8.3 from planned/formalized to completed once implementation is complete.
-- `README.md` — update only if Phase 8.3 becomes completed product capability.
-- `docs/features.md` — update implemented feature inventory after code completion.
-- `docs/architecture.md` — update durable activity/signing architecture only if implementation adds lasting boundaries.
-- `docs/flows.md` — document actual transaction detail and signing flows.
-- `docs/ux.md` — document user-facing activity/signing UX once implemented.
-- `docs/development.md` — update only if the agent-assisted execution boundary changes from Phase 8.2 conventions.
+### Phase 8.3 Runtime Implementation Validated
 
-### New Files Tentatively Created
+The final Phase 8.3 runtime state includes the following implemented areas.
 
-No new documentation files are expected unless Phase 8.3 introduces a durable standalone signing or activity document, which is not currently required.
+#### 8.3.1 — Transaction History State Model Maturity
+
+Implemented through the existing assets feature boundary.
+
+Validated implementation points:
+
+- `TxHistoryEntry.fromJson(...)` now reads stored entries defensively;
+- malformed or missing status values fall back safely to `TxStatus.pending`;
+- malformed or missing kind values fall back safely to `TxKind.nativeSend`;
+- missing IDs fall back to the transaction hash where available;
+- malformed timestamps fall back to a deterministic epoch value;
+- receipt refresh remains centralized in `TxHistoryController`;
+- pending entries without receipts remain pending;
+- receipt status updates only occur when a receipt is available.
+
+#### 8.3.2 — Transaction Detail and Receipt-Oriented Activity View
+
+Implemented through a dedicated transaction-detail route and screen.
+
+Validated implementation points:
+
+- `RouteNames.transactionDetail` defines the transaction-detail route;
+- `app_router.dart` registers `TransactionDetailScreen` using the selected `TxHistoryEntry`;
+- `HistoryScreen` opens the detail route instead of treating the history row as a direct-only external explorer action;
+- `TransactionDetailScreen` presents kind, status, destination, amount, symbol, token address when present, transaction hash, and timestamp;
+- the detail screen explains pending, confirmed, and failed receipt-oriented states;
+- explorer opening remains explicit through an external-action button.
+
+#### 8.3.3 — Activity Filtering, Grouping, and Empty/Error State Maturity
+
+Implemented as local filtering and grouping over existing first-party outgoing history.
+
+Validated implementation points:
+
+- `TxHistoryFilter` supports status filters for all, pending, confirmed, and failed;
+- `TxHistoryFilter` supports kind filters for all, native sends, and ERC-20 sends;
+- `TxHistoryFilter.groupByLocalDay(...)` groups filtered entries by local calendar day;
+- `HistoryScreen` exposes status/type filters using `ChoiceChip` controls;
+- history entries are grouped by day and sorted newest-first within each group;
+- empty and filtered-empty states are distinct;
+- error copy clarifies that existing local entries are not modified by a load/receipt failure.
+
+#### 8.3.4 — Message Signing Domain and Service Boundary
+
+Implemented as a dedicated signing feature separated from transaction submission.
+
+Validated implementation points:
+
+- `lib/features/signing/domain/signing_mode.dart` defines supported signing modes;
+- `SigningRequest` validates message content and account address format;
+- `SigningResult` captures mode, account, message, signature, and signing timestamp;
+- `SigningService` defines the signing boundary;
+- `RpcSigningService` adapts the boundary to `ScaviumRpcService`;
+- `ScaviumRpcService.signPersonalMessage(...)` and `ScaviumRpcService.signChallengeMessage(...)` sign with the active wallet credentials;
+- `SigningController` verifies that the signed account matches the requested active account;
+- signing does not create transaction history entries and does not submit an EVM transaction.
+
+#### 8.3.5 — Message Signing UX, Confirmation, and Result Display
+
+Implemented as an explicit user-facing signing flow.
+
+Validated implementation points:
+
+- `RouteNames.signing` defines the signing route;
+- `app_router.dart` registers `SigningScreen` under the existing guarded routing model;
+- `SigningScreen` displays the active account before signing;
+- signing copy clearly states that signing is not a transaction and does not move funds;
+- the user selects personal-message or challenge signing mode;
+- message/challenge text is normalized and validated before signing;
+- `SigningConfirmDialog` previews mode, account, and message before the signing call;
+- cancellation returns without mutating wallet state;
+- `SigningResultCard` displays the produced signature and signing metadata;
+- signature copy-to-clipboard uses the existing feedback pattern.
+
+### Existing Files Intervened by This Closure
+
+- `docs/phase8_scavium_wallet.md` — closes Phase 8.3 from the real implemented state and records actual runtime validation.
+- `docs/index.md` — moves Phase 8.3 from active/planned to completed.
+- `README.md` — updates the project-level Phase 8 status and removes message signing from the not-yet-implemented list.
+- `docs/features.md` — records implemented transaction/activity and signing capabilities.
+- `docs/architecture.md` — records the durable Phase 8.3 activity/signing boundaries.
+- `docs/flows.md` — records the implemented transaction detail, activity filtering, and signing flows.
+- `docs/ux.md` — records the implemented activity and signing UX behavior.
+- `docs/development.md` — records the Phase 8.3 agent-assisted execution boundary.
+
+### Runtime Files Reviewed During Closure
+
+The closure validation reviewed the Phase 8.3 runtime surface, including:
+
+- `lib/features/assets/domain/tx_history_entry.dart`
+- `lib/features/assets/domain/tx_history_filter.dart`
+- `lib/features/assets/domain/tx_status.dart`
+- `lib/features/assets/domain/tx_kind.dart`
+- `lib/features/assets/application/tx_history_controller.dart`
+- `lib/features/assets/data/tx_history_repository_impl.dart`
+- `lib/features/assets/data/transaction_feed_repository_impl.dart`
+- `lib/features/assets/presentation/history_screen.dart`
+- `lib/features/assets/presentation/transaction_detail_screen.dart`
+- `lib/features/signing/domain/signing_mode.dart`
+- `lib/features/signing/domain/signing_request.dart`
+- `lib/features/signing/domain/signing_result.dart`
+- `lib/features/signing/application/signing_controller.dart`
+- `lib/features/signing/presentation/signing_screen.dart`
+- `lib/features/signing/presentation/widgets/signing_confirm_dialog.dart`
+- `lib/features/signing/presentation/widgets/signing_result_card.dart`
+- `lib/features/blockchain/data/scavium_rpc_service.dart`
+- `lib/app/router/route_names.dart`
+- `lib/app/router/app_router.dart`
+- `test/tx_history_entry_test.dart`
+- `test/tx_history_controller_test.dart`
+- `test/tx_history_filter_test.dart`
+- `test/transaction_detail_screen_test.dart`
+- `test/signing_request_test.dart`
+- `test/signing_controller_test.dart`
+- `test/signing_screen_test.dart`
+
+### New Files Created by This Closure
+
+No new documentation files were created.
 
 ### Technical Justification
 
-The project treats Markdown files as trunk documents. Closure must be based on the final real working tree rather than on planned scope so documentation remains cumulative and accurate.
+Phase 8.3 closes a sensitive wallet capability area. The implementation intentionally matures locally tracked outgoing activity and signing behavior without turning the app into an explorer, external indexer, dApp connector, or automatic activity aggregator.
 
-### Expected Validations
+The closure documents the implemented boundaries from the real working tree so later phases can build on the completed transaction/activity/signing baseline without reinterpreting planned text as runtime truth.
+
+### Preserved Boundaries
+
+Phase 8.3 preserves these boundaries:
+
+- local outgoing transaction history remains the first-party activity source;
+- incoming transactions remain out of scope without a future explicit explorer/indexer boundary;
+- `TransactionFeedRepositoryImpl` remains an empty future extension seam and is not represented as implemented external activity indexing;
+- signing remains separate from sending;
+- signing does not write local transaction history;
+- signing does not update balances or receipt state;
+- active-account ownership remains in the wallet feature;
+- RPC ownership remains in `ScaviumRpcService`;
+- the Phase 8.4 navigation shell is not introduced here;
+- backup payloads, release tooling, and store publication flows are unchanged.
+
+### Validation Result
+
+Manual closure validation confirmed the implemented Phase 8.3 code paths and trunk documentation alignment.
+
+The following local command validation could not be executed in this environment because neither `fvm` nor `flutter` is installed in the execution container:
 
 ```bash
 fvm flutter analyze
 fvm flutter test
 ```
 
-Closure should also verify that the final documentation and any delivery ZIP list exactly the same intervened files.
+The commands remain the expected local validation gate for the developer workstation before merge.
 
+### Next Phase
+
+The next planned Phase 8 area remains:
+
+```text
+8.4 — Navigation Shell and Product Surface Scaling
+```
+
+Phase 8.4 should build on the completed Phase 8.1 account model, Phase 8.2 asset/portfolio surface, and Phase 8.3 transaction/activity/signing maturity without retroactively moving their ownership boundaries.
