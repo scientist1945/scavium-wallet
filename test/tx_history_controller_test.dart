@@ -63,6 +63,34 @@ void main() {
         TxStatus.confirmed,
       );
     });
+
+    test('preserves local entries when receipt refresh fails', () async {
+      final pending = _entry(id: 'tx-1', status: TxStatus.pending);
+      final repo = _FakeTxHistoryRepository([pending]);
+      final container = ProviderContainer(
+        overrides: [
+          txHistoryRepositoryProvider.overrideWithValue(repo),
+          txReceiptReaderProvider.overrideWithValue((_) async {
+            throw Exception(
+              'rpc failed for 0x1111111111111111111111111111111111111111 private_key=secret',
+            );
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(txHistoryControllerProvider.future);
+      await container
+          .read(txHistoryControllerProvider.notifier)
+          .refreshStatuses();
+
+      final entries = container.read(txHistoryControllerProvider).requireValue;
+
+      expect(entries, hasLength(1));
+      expect(entries.single.id, pending.id);
+      expect(entries.single.status, TxStatus.pending);
+      expect(repo.savedEntries.single.status, TxStatus.pending);
+    });
   });
 }
 

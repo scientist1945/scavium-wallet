@@ -58,8 +58,10 @@ class AssetsController extends AsyncNotifier<List<AssetItem>> {
   }
 
   Future<void> refreshAssets() async {
+    final previousItems = state.valueOrNull;
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+
+    try {
       ref.invalidate(tokenRegistryControllerProvider);
       final rpc = ref.read(scaviumRpcServiceProvider);
       final tokens =
@@ -99,8 +101,15 @@ class AssetsController extends AsyncNotifier<List<AssetItem>> {
         );
       }
 
-      return items;
-    });
+      state = AsyncData(items);
+    } catch (error, stackTrace) {
+      if (previousItems != null) {
+        state = AsyncData(previousItems);
+        return;
+      }
+
+      state = AsyncError(error, stackTrace);
+    }
   }
 
   AssetAccountContext? _activeAccountContext() {

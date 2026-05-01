@@ -41,7 +41,7 @@ class TxHistoryController extends AsyncNotifier<List<TxHistoryEntry>> {
 
     state = const AsyncLoading();
 
-    state = await AsyncValue.guard(() async {
+    try {
       final repo = ref.read(txHistoryRepositoryProvider);
       final readReceipt = ref.read(txReceiptReaderProvider);
       final entries = await repo.getEntries();
@@ -69,7 +69,9 @@ class TxHistoryController extends AsyncNotifier<List<TxHistoryEntry>> {
       }
 
       await repo.saveEntries(updated);
-      return repo.getEntries();
-    });
+      state = AsyncData(await repo.getEntries());
+    } catch (_) {
+      state = AsyncData(currentEntries);
+    }
   }
 }

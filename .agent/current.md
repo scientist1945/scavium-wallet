@@ -1,30 +1,34 @@
-# Current Task — 8.5.4
+# Current Task — 8.5.5
 
 Project: SCAVIUM Wallet
 Phase: 8.5 — Security, Reliability & Diagnostics Maturity
-Subphase: 8.5.4 — Lock, Lifecycle, and Sensitive Surface Reliability
+Subphase: 8.5.5 — Error Boundary and Invalid State Maturity
 Type: code
 
 ## Goal
 
-Improve reliability around lifecycle locking, screenshot protection, and sensitive route behavior without moving security ownership into shell widgets.
+Normalize user-facing error and invalid-state behavior across account-aware assets, activity, signing, backup, diagnostics, and settings surfaces.
 
 ## Scope
 
-Preserve GoRouter as routing owner and AppShell as navigation chrome only. Keep onboarding, wallet-entry, lock, detail, action, diagnostics, and shell route boundaries explicit.
+Reuse AppException, StateMessage, AppSnackbar, async UI helpers, and controller-level patterns. Avoid broad rewrites or a premature global error framework.
 
 ## Allowed Files
 
-- `lib/core/security/app_lifecycle_guard.dart`
-- `lib/core/security/lock_policy.dart`
-- `lib/core/security/screenshot_guard.dart`
-- `lib/app/router/app_route_category.dart`
-- `lib/app/router/app_router.dart`
-- `lib/app/shell/app_shell.dart`
-- `test/app_route_category_test.dart`
-- `test/app_shell_test.dart`
-- `test/app_lifecycle_guard_test.dart`
-- `test/sensitive_route_guard_test.dart`
+- `lib/core/errors/app_exception.dart`
+- `lib/core/utils/async_value_ui.dart`
+- `lib/shared/widgets/feedback/state_message.dart`
+- `lib/shared/widgets/feedback/app_snackbar.dart`
+- `lib/features/assets/application/assets_controller.dart`
+- `lib/features/assets/application/tx_history_controller.dart`
+- `lib/features/blockchain/application/send_transaction_controller.dart`
+- `lib/features/blockchain/application/send_token_controller.dart`
+- `lib/features/settings/presentation/settings_screen.dart`
+- `test/tx_history_controller_test.dart`
+- `test/token_registry_safety_test.dart`
+- `test/settings_screen_test.dart`
+- `test/app_error_boundary_test.dart`
+- `test/invalid_state_maturity_test.dart`
 
 ## Forbidden
 
@@ -37,19 +41,18 @@ Preserve GoRouter as routing owner and AppShell as navigation chrome only. Keep 
 
 ## Implementation Requirements
 
-- Review lifecycle lock/refresh ordering and harden only if needed.
-- Keep lock-aware redirects centralized in `app_router.dart`.
-- Harden screenshot guard platform/failure handling only if current behavior can affect runtime stability.
-- Update route categories only if sensitive route classification requires it.
-- Create lifecycle/route guard tests only if existing tests cannot cover the change.
+- Improve missing wallet/profile/account, invalid token/transaction, backup, RPC, signing mismatch, and secondary-action states only where real code requires it.
+- Do not destroy local state on refresh/read errors.
+- Do not include wallet addresses, private keys, mnemonic material, passwords, signatures, or backup payload content in error text.
+- Create focused error/invalid-state tests only if existing tests are insufficient.
 
 ## Validation (manual)
 
 ```bash
 fvm flutter analyze
-fvm flutter test test/app_route_category_test.dart test/app_shell_test.dart test/widget_test.dart
+fvm flutter test test/tx_history_controller_test.dart test/token_registry_safety_test.dart test/settings_screen_test.dart
 ```
 
 ## Acceptance
 
-Lock-aware routing remains centralized; shell remains presentation-only; sensitive routes stay explicit; lifecycle/screenshot failures fail safely.
+Invalid states are safe and actionable; existing local data is preserved; sensitive values are not leaked; retry/cancel flows remain predictable.
