@@ -2116,3 +2116,381 @@ The next planned Phase 8 area remains:
 ```
 
 Phase 8.4 should build on the completed Phase 8.1 account model, Phase 8.2 asset/portfolio surface, and Phase 8.3 transaction/activity/signing maturity without retroactively moving their ownership boundaries.
+
+---
+
+## 8.4.0 — Navigation Shell Baseline Inspection and Product Surface Contract
+
+### Objective
+
+Define the Phase 8.4 navigation-shell and product-surface contract before runtime implementation, using the real Phase 8.3-completed codebase as the baseline.
+
+### Scope
+
+This documentation-only subphase inspects the current UI, routing, and feature-surface state and locks the intended execution boundaries for the remaining Phase 8.4 implementation subphases.
+
+The current baseline includes:
+
+- `GoRouter` as the only application router;
+- `RouteNames` as the central route-name registry;
+- a guarded route model with onboarding, wallet-created, and lock-aware redirects;
+- `HomeScreen` as the current dashboard-like entry surface;
+- first-party routes for settings, send, receive, signing, assets, add token, history, transaction detail, asset detail, token send, and RPC diagnostics;
+- `ScaviumScaffold` as a simple shared scaffold wrapper;
+- feature state owned by Riverpod controllers inside each feature boundary;
+- no drawer, sidebar, bottom navigation, or shell route yet.
+
+### State
+
+New documentation-only baseline subphase generated from the existing Phase 8.4 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `docs/phase8_scavium_wallet.md` — document the Phase 8.4 baseline, generated subphase map, tentative intervention files, and execution boundaries.
+- `docs/index.md` — record Phase 8.4 as the next planned area with its generated subphase map.
+
+### Runtime Files Reviewed for Baseline
+
+- `lib/app/router/app_router.dart` — confirms the current flat route registration and lock-aware redirect behavior that the shell must preserve.
+- `lib/app/router/route_names.dart` — confirms the current route registry that should remain stable where safe.
+- `lib/shared/widgets/scavium_scaffold.dart` — confirms the current shared scaffold is intentionally minimal and not yet a navigation shell.
+- `lib/features/home/presentation/home_screen.dart` — confirms the current product entry surface combines dashboard content, quick actions, account switcher, network/RPC cards, and recent activity.
+- `lib/features/assets/presentation/assets_screen.dart` — confirms the assets surface already owns its own refresh and responsive width handling.
+- `lib/features/assets/presentation/history_screen.dart` — confirms the activity surface already owns local outgoing-history filtering and grouping.
+- `lib/features/settings/presentation/settings_screen.dart` — confirms settings currently groups diagnostics, backup export, signing, reset, and about actions.
+- `lib/features/signing/presentation/signing_screen.dart` — confirms signing exists as a dedicated route and must remain explicit, not hidden in shell chrome.
+- `lib/features/wallet/presentation/account_switcher.dart` — confirms account selection currently lives inside the home surface.
+
+### New Files Tentatively Created
+
+No runtime files are created in 8.4.0. This subphase is documentation-only.
+
+### Technical Justification
+
+Phase 8.4 changes a cross-cutting UX layer. Before introducing a shell, the project needs a documented baseline so navigation changes do not accidentally move business state into UI chrome, bypass lock-aware routing, duplicate feature ownership, or degrade the surfaces completed in Phase 8.1, Phase 8.2, and Phase 8.3.
+
+### Expected Validations
+
+- Confirm that Phase 8.4.0 changes documentation only.
+- Confirm that `.agent/*` files are not generated.
+- Confirm that no runtime code is modified.
+- Confirm that the remaining Phase 8.4 subphases are planned, not marked as implemented.
+
+---
+
+## 8.4.1 — Route Inventory and Shell Navigation Contract
+
+### Objective
+
+Define the application navigation inventory and shell contract before adding visible navigation chrome.
+
+### Scope
+
+This subphase should classify existing routes into stable product destinations and secondary/detail/action routes.
+
+Expected work may include:
+
+- identifying primary destinations such as Home, Assets, Activity, Settings, and optional Wallet/Accounts;
+- keeping send, receive, add token, token send, signing, asset detail, transaction detail, RPC diagnostics, backup, and onboarding routes as explicit secondary or action routes where appropriate;
+- defining how selected navigation state maps to the current route;
+- preserving direct route reachability for existing screens;
+- preserving lock-aware routing and onboarding redirects;
+- avoiding route renames unless there is a documented compatibility reason.
+
+### State
+
+New subphase generated from the existing Phase 8.4 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/app/router/route_names.dart` — preserve and, only if necessary, add route names for new primary product surfaces such as a wallet/accounts route.
+- `lib/app/router/app_router.dart` — prepare shell-compatible route grouping while preserving onboarding, lock, splash, wallet-entry, and detail/action routes.
+- `lib/features/home/presentation/home_screen.dart` — align quick actions and destination entry points with the formal route inventory without moving controller ownership.
+- `test/widget_test.dart` — adjust or add smoke expectations if the app shell changes the first rendered authenticated surface.
+
+### New Files Tentatively Created
+
+- `lib/app/router/app_route_category.dart` — optional route metadata helper if route classification would otherwise be duplicated across shell widgets.
+- `test/app_route_category_test.dart` — optional focused test if route classification logic is extracted.
+
+### Technical Justification
+
+A product shell should not be built by scattering route decisions across multiple screens. A route inventory allows Phase 8.4 to introduce navigation in a controlled way while preserving current route behavior, detail routes, and lock-aware guards.
+
+### Expected Validations
+
+- Existing named paths remain reachable.
+- Lock routing still redirects protected routes to the lock screen when required.
+- Onboarding and wallet-entry routes remain outside the authenticated shell.
+- Detail/action routes continue to work when opened from their owning feature screens.
+
+---
+
+## 8.4.2 — Responsive App Shell Foundation
+
+### Objective
+
+Introduce a reusable responsive product shell that can host primary wallet destinations without becoming a state-management owner.
+
+### Scope
+
+This subphase should add the shared shell foundation used by authenticated primary destinations.
+
+Expected work may include:
+
+- adding a shared shell widget around authenticated primary destinations;
+- using a desktop/web sidebar or rail for wider layouts;
+- using a mobile drawer or bottom navigation pattern for compact layouts;
+- keeping `GoRouter` as the routing owner;
+- keeping Riverpod feature controllers inside feature modules;
+- preserving existing `ScaviumScaffold` behavior for secondary/action screens where a full shell is not appropriate;
+- ensuring shell UI reflects the current route without introducing route loops.
+
+### State
+
+New subphase generated from the existing Phase 8.4 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/shared/widgets/scavium_scaffold.dart` — either remain as a simple screen scaffold or receive compatible optional hooks if the shell builds on it without breaking existing screens.
+- `lib/app/router/app_router.dart` — wrap authenticated primary routes with the shell while keeping public, lock, detail, and action routes safe.
+- `lib/app/router/route_names.dart` — preserve current route constants and add only necessary shell destinations.
+- `lib/features/home/presentation/home_screen.dart` — adapt app bar and quick-action behavior so it does not duplicate shell navigation.
+- `lib/features/assets/presentation/assets_screen.dart` — verify assets can run inside the shell without nested navigation conflicts.
+- `lib/features/assets/presentation/history_screen.dart` — verify activity can run inside the shell without losing filters, grouping, or refresh behavior.
+- `lib/features/settings/presentation/settings_screen.dart` — verify settings can run inside the shell without losing diagnostics, backup, signing, reset, and about actions.
+
+### New Files Tentatively Created
+
+- `lib/app/shell/app_shell.dart` — reusable authenticated product shell for primary destinations.
+- `lib/app/shell/app_shell_destination.dart` — destination metadata for label, icon, route, and selection behavior.
+- `lib/app/shell/responsive_navigation.dart` — optional extracted responsive navigation widget if the shell would otherwise become too large.
+- `test/app_shell_test.dart` — widget coverage for destination rendering and compact/wide behavior.
+
+### Technical Justification
+
+The wallet has grown beyond a one-page surface. A shell foundation prevents feature expansion from overloading `HomeScreen` while keeping product navigation consistent across mobile, web, and desktop layouts.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Primary destinations render inside the shell.
+- Public/onboarding/lock routes remain outside the authenticated shell.
+- No route loop is introduced by shell destination selection.
+- Feature controllers are not moved into shell code.
+
+---
+
+## 8.4.3 — Dashboard and Product Surface Segmentation
+
+### Objective
+
+Reduce Home-screen overload by turning Home into a clearer dashboard and moving destination-specific content to the appropriate product surfaces.
+
+### Scope
+
+This subphase should keep Home useful as a summary surface while relying on the new shell for navigation.
+
+Expected work may include:
+
+- keeping balance, active account summary, network summary, and recent activity preview on Home;
+- reducing duplicated navigation actions now provided by the shell;
+- preserving explicit send, receive, signing, and explorer actions as intentional quick actions;
+- keeping detailed asset management on the Assets surface;
+- keeping full transaction/activity filtering on the Activity/History surface;
+- ensuring recent activity rows still open transaction detail when appropriate;
+- preserving account-switcher visibility until a dedicated Wallet/Accounts surface is introduced or formally deferred.
+
+### State
+
+New subphase generated from the existing Phase 8.4 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/features/home/presentation/home_screen.dart` — simplify dashboard composition, avoid duplicated shell navigation, and preserve summary cards and quick actions.
+- `lib/features/wallet/presentation/account_switcher.dart` — preserve account-selection behavior and adjust placement only if Home/dashboard structure requires it.
+- `lib/features/assets/presentation/assets_screen.dart` — ensure asset detail and token-management entry points remain on the assets surface.
+- `lib/features/assets/presentation/history_screen.dart` — ensure full activity behavior remains on the activity surface, not duplicated on Home.
+- `lib/features/assets/presentation/transaction_detail_screen.dart` — preserve transaction-detail navigation from recent activity and full history lists.
+- `test/portfolio_summary_test.dart` — keep summary expectations valid if dashboard wording changes around visible asset totals.
+- `test/transaction_detail_screen_test.dart` — keep transaction-detail reachability valid from activity-related surfaces.
+
+### New Files Tentatively Created
+
+- `lib/features/home/presentation/widgets/dashboard_balance_card.dart` — optional extraction if Home composition becomes too large.
+- `lib/features/home/presentation/widgets/dashboard_recent_activity_card.dart` — optional extraction for the recent activity preview.
+- `test/home_screen_test.dart` — optional widget coverage if Home behavior becomes materially changed by dashboard segmentation.
+
+### Technical Justification
+
+Phase 8.1, 8.2, and 8.3 added account, asset, activity, and signing capabilities. Home should no longer act as the only product map. It should summarize the wallet state while the shell and feature surfaces carry navigation and detailed workflows.
+
+### Expected Validations
+
+- Home remains usable on compact layouts.
+- Home remains useful on wide layouts.
+- Recent activity preview remains read-only and opens detail intentionally.
+- Asset, activity, signing, send, receive, and settings routes remain reachable.
+- No feature state is duplicated in Home-specific controllers.
+
+---
+
+## 8.4.4 — Wallet and Account Surface Placement
+
+### Objective
+
+Decide and implement the correct product placement for account-oriented wallet controls within the new navigation model.
+
+### Scope
+
+This subphase should clarify whether account management remains on Home for now or becomes a dedicated Wallet/Accounts surface.
+
+Expected work may include:
+
+- reviewing current account switcher, account creation/import, and backup/restore entry points;
+- introducing a dedicated Wallet or Accounts surface only if it improves product clarity;
+- keeping active-account ownership in the wallet feature;
+- preserving Phase 8.1 backup/restore compatibility;
+- preserving imported/derived account behavior;
+- avoiding account deletion or label-editing expansion unless already documented as part of a later phase.
+
+### State
+
+New subphase generated from the existing Phase 8.4 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/features/wallet/presentation/account_switcher.dart` — preserve and possibly reposition account switching inside the chosen product surface.
+- `lib/features/wallet/presentation/add_account_sheet.dart` — preserve account creation/import entry behavior if surfaced from a dedicated Wallet/Accounts screen.
+- `lib/features/wallet/application/wallet_controller.dart` — should remain the account-state owner; intervention should be avoided unless UI placement exposes a missing read model.
+- `lib/features/home/presentation/home_screen.dart` — remove or keep account switcher depending on the documented placement decision.
+- `lib/app/router/route_names.dart` — add a wallet/accounts route only if a dedicated screen is introduced.
+- `lib/app/router/app_router.dart` — register the wallet/accounts route only if introduced.
+- `test/asset_account_context_test.dart` — preserve account-aware asset-context behavior.
+- `test/wallet_backup_payload_test.dart` — preserve backup payload compatibility if account controls are repositioned.
+
+### New Files Tentatively Created
+
+- `lib/features/wallet/presentation/accounts_screen.dart` — optional dedicated account/wallet surface if Phase 8.4 chooses not to keep account controls only on Home.
+- `test/accounts_screen_test.dart` — optional widget coverage for the dedicated account/wallet surface.
+
+### Technical Justification
+
+The account model is now broader than the original single-wallet surface. Phase 8.4 must place account controls deliberately so the navigation shell clarifies product structure without changing wallet-domain ownership or backup compatibility.
+
+### Expected Validations
+
+- Active account selection continues to work.
+- Account-aware assets still resolve against the active account.
+- Backup/restore compatibility remains unchanged.
+- No wallet reset or backup flow is accidentally moved into shell chrome.
+- Route reachability remains stable if a new Wallet/Accounts destination is added.
+
+---
+
+## 8.4.5 — Settings, Diagnostics, and Secondary Action Organization
+
+### Objective
+
+Organize settings, diagnostics, signing access, backup export, reset, and about information so secondary actions remain discoverable but do not overload primary navigation.
+
+### Scope
+
+This subphase should refine the relationship between primary shell destinations and secondary actions.
+
+Expected work may include:
+
+- preserving Settings as a primary or secondary destination according to the shell contract;
+- keeping RPC diagnostics reachable from Settings and/or a diagnostics entry point;
+- keeping signing access explicit and safely described;
+- keeping backup export and reset under Settings or wallet-management placement;
+- ensuring destructive actions remain confirmation-gated;
+- preserving visible app/about information;
+- avoiding hidden signing shortcuts or background signing behavior.
+
+### State
+
+New subphase generated from the existing Phase 8.4 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/features/settings/presentation/settings_screen.dart` — reorganize settings sections without changing the underlying feature ownership.
+- `lib/features/blockchain/presentation/rpc_diagnostics_screen.dart` — preserve diagnostics as an explicit route and ensure shell placement does not make it unreachable.
+- `lib/features/signing/presentation/signing_screen.dart` — preserve explicit signing flow and confirmation behavior.
+- `lib/features/settings/presentation/export_backup_screen.dart` — preserve backup export path if settings grouping changes.
+- `lib/shared/widgets/feedback/confirm_dialog.dart` — should remain the destructive-action confirmation pattern; intervention should be avoided unless UI consistency requires it.
+- `test/signing_screen_test.dart` — preserve signing UX expectations.
+- `test/signing_controller_test.dart` — preserve signing boundary behavior independent of navigation placement.
+
+### New Files Tentatively Created
+
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — optional extraction if Settings is reorganized into explicit sections.
+- `test/settings_screen_test.dart` — optional widget coverage if settings organization changes materially.
+
+### Technical Justification
+
+Settings currently contains several unrelated but valid secondary actions. Phase 8.4 should make those actions easier to understand without moving sensitive behavior into implicit shell actions or weakening confirmation/preview gates.
+
+### Expected Validations
+
+- RPC diagnostics remains reachable.
+- Signing remains explicit and still requires preview/confirmation.
+- Backup export remains reachable.
+- Reset wallet remains confirmation-gated.
+- Settings remains usable on mobile and wide layouts.
+
+---
+
+## 8.4.close — UX & Product Surface Maturity Closure
+
+### Objective
+
+Close Phase 8.4 by confirming that navigation-shell and product-surface maturity are implemented, validated against the real codebase, and coherently represented in trunk documentation.
+
+### Scope
+
+This closure should record the actual implementation delivered by Phase 8.4.1 through Phase 8.4.5 and update trunk documentation without changing runtime code.
+
+The closure should confirm:
+
+- the final shell/navigation structure;
+- the final list of primary destinations;
+- the final treatment of secondary/action/detail routes;
+- preserved lock-aware routing;
+- preserved onboarding and wallet-entry routing;
+- preserved feature-state ownership;
+- preserved account, asset, activity, signing, settings, diagnostics, backup, and reset behavior;
+- mobile and wide-layout UX validation results.
+
+### State
+
+Planned closure subphase generated from the existing Phase 8.4 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `docs/phase8_scavium_wallet.md` — close Phase 8.4 from the real implemented runtime state.
+- `docs/index.md` — move Phase 8.4 from planned to completed when implementation is validated.
+- `README.md` — update the project-level Phase 8 status once Phase 8.4 is actually complete.
+- `docs/features.md` — record implemented navigation/product-surface behavior only after runtime completion.
+- `docs/architecture.md` — record the final shell architecture and ownership boundaries.
+- `docs/flows.md` — record the final primary navigation and secondary action flows.
+- `docs/ux.md` — record the final mobile, web, and desktop navigation behavior.
+- `docs/development.md` — record the Phase 8.4 execution boundary and validation results.
+
+### New Files Tentatively Created
+
+No new documentation files are expected for closure unless implementation introduces a new durable documentation topic that cannot be represented in existing trunk documents.
+
+### Technical Justification
+
+Phase 8.4 is a cross-cutting product-surface phase. Its closure must distinguish planned navigation text from implemented runtime truth so future phases do not inherit stale route or shell assumptions.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Manual mobile layout validation.
+- Manual web/desktop-width layout validation.
+- Route reachability validation for primary, secondary, detail, action, onboarding, lock, and wallet-entry routes.
+- Confirmation that `.agent/*` files are not part of the closure deliverable unless a later operational prompt explicitly creates them.
