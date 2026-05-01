@@ -1,30 +1,27 @@
-# Current Task — 8.5.2
+# Current Task — 8.5.3
 
 Project: SCAVIUM Wallet
 Phase: 8.5 — Security, Reliability & Diagnostics Maturity
-Subphase: 8.5.2 — Signing Safety Copy and Confirmation Hardening
+Subphase: 8.5.3 — Backup and Recovery Warning Reliability
 Type: code
 
 ## Goal
 
-Strengthen message-signing safety copy, validation clarity, confirmation behavior, cancellation handling, and result display without changing Phase 8.3 signing architecture.
+Improve backup and recovery warning reliability so export, restore, password, compatibility, and invalid-payload states are explicit and safe.
 
 ## Scope
 
-Keep signing explicit and separate from transactions. Do not add dApp connectivity, WalletConnect, automatic challenge ingestion, transaction submission, or background signing.
+Preserve backup encryption semantics and backup payload compatibility. Do not change payload format unless a real defect is found and reported before editing.
 
 ## Allowed Files
 
-- `lib/features/signing/domain/signing_request.dart`
-- `lib/features/signing/application/signing_controller.dart`
-- `lib/features/signing/presentation/signing_screen.dart`
-- `lib/features/signing/presentation/widgets/signing_confirm_dialog.dart`
-- `lib/features/signing/presentation/widgets/signing_result_card.dart`
-- `lib/shared/widgets/feedback/app_snackbar.dart`
-- `test/signing_request_test.dart`
-- `test/signing_controller_test.dart`
-- `test/signing_screen_test.dart`
-- `test/signing_safety_copy_test.dart`
+- `lib/features/settings/presentation/export_backup_screen.dart`
+- `lib/features/wallet/presentation/restore_backup_screen.dart`
+- `lib/features/wallet/application/wallet_backup_controller.dart`
+- `lib/features/wallet/domain/wallet_backup_payload.dart`
+- `lib/core/services/backup_crypto_service.dart`
+- `test/wallet_backup_payload_test.dart`
+- `test/backup_recovery_warning_test.dart`
 
 ## Forbidden
 
@@ -37,20 +34,19 @@ Keep signing explicit and separate from transactions. Do not add dApp connectivi
 
 ## Implementation Requirements
 
-- Preserve signing service/controller/domain/presentation separation.
-- Keep active-account verification intact.
-- Improve warnings for personal message and challenge signing.
-- Make confirmation copy explicit that signing is not sending a transaction.
-- Keep cancellation non-mutating.
-- Create `test/signing_safety_copy_test.dart` only if existing signing tests become too broad.
+- Improve export and restore warning copy without weakening existing password gating.
+- Normalize unsafe or confusing backup/restore errors only inside existing ownership boundaries.
+- Preserve v1/v2 and multi-account compatibility semantics.
+- Do not expose password, key, mnemonic, encrypted payload, or raw backup content in UI/errors.
+- Create `test/backup_recovery_warning_test.dart` only if existing tests cannot cover the focused warning behavior.
 
 ## Validation (manual)
 
 ```bash
 fvm flutter analyze
-fvm flutter test test/signing_request_test.dart test/signing_controller_test.dart test/signing_screen_test.dart
+fvm flutter test test/wallet_backup_payload_test.dart test/backup_recovery_warning_test.dart
 ```
 
 ## Acceptance
 
-Signing still requires explicit preview/confirmation; cancellation does not mutate state; no transaction history entry is created; result copy is clear and safe.
+Backup export remains password-gated; restore remains explicit; invalid payloads fail safely; compatibility remains intact; no secret material appears in messages.

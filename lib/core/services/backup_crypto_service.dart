@@ -56,29 +56,35 @@ class BackupCryptoService {
     required String password,
   }) async {
     _validatePassword(password);
-    encrypted.validate();
+    try {
+      encrypted.validate();
 
-    final salt = base64Decode(encrypted.kdf.saltBase64);
-    final nonce = base64Decode(encrypted.cipher.nonceBase64);
-    final cipherText = base64Decode(encrypted.cipher.ciphertextBase64);
-    final macBytes = base64Decode(encrypted.cipher.macBase64);
+      final salt = base64Decode(encrypted.kdf.saltBase64);
+      final nonce = base64Decode(encrypted.cipher.nonceBase64);
+      final cipherText = base64Decode(encrypted.cipher.ciphertextBase64);
+      final macBytes = base64Decode(encrypted.cipher.macBase64);
 
-    final secretKey = await _deriveKey(password: password, salt: salt);
+      final secretKey = await _deriveKey(password: password, salt: salt);
 
-    final algorithm = AesGcm.with256bits();
+      final algorithm = AesGcm.with256bits();
 
-    final clearBytes = await algorithm.decrypt(
-      SecretBox(cipherText, nonce: nonce, mac: Mac(macBytes)),
-      secretKey: secretKey,
-    );
+      final clearBytes = await algorithm.decrypt(
+        SecretBox(cipherText, nonce: nonce, mac: Mac(macBytes)),
+        secretKey: secretKey,
+      );
 
-    final decoded = jsonDecode(utf8.decode(clearBytes));
-    final payload = WalletBackupPayload.fromJson(
-      Map<String, dynamic>.from(decoded as Map),
-    );
+      final decoded = jsonDecode(utf8.decode(clearBytes));
+      final payload = WalletBackupPayload.fromJson(
+        Map<String, dynamic>.from(decoded as Map),
+      );
 
-    payload.validate();
-    return payload;
+      payload.validate();
+      return payload;
+    } catch (error) {
+      throw Exception(
+        'Backup could not be decrypted. Check the backup file and password.',
+      );
+    }
   }
 
   Future<SecretKey> _deriveKey({

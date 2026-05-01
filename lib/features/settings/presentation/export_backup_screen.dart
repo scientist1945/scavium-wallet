@@ -62,7 +62,7 @@ class _ExportBackupScreenState extends ConsumerState<ExportBackupScreen> {
 
       final profile = await repository.loadWalletProfile();
       if (profile == null) {
-        throw Exception('No wallet available to export');
+        throw Exception(safeBackupExportErrorMessage());
       }
 
       final backupJson = await controller.exportEncryptedBackup(
@@ -110,7 +110,7 @@ class _ExportBackupScreenState extends ConsumerState<ExportBackupScreen> {
         );
       }
     } catch (e) {
-      setState(() => _error = e.toString().replaceFirst('Exception: ', ''));
+      setState(() => _error = safeBackupExportErrorMessage(e));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -149,7 +149,7 @@ class _ExportBackupScreenState extends ConsumerState<ExportBackupScreen> {
         padding: const EdgeInsets.all(20),
         children: [
           const Text(
-            'Create an encrypted backup file of your wallet.',
+            'Create a password-protected backup file of your wallet.',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 12),
@@ -159,15 +159,19 @@ class _ExportBackupScreenState extends ConsumerState<ExportBackupScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            '- Anyone with this file and the password can access your wallet.',
+            '- Anyone with this backup file and its password can restore and access your wallet.',
           ),
           const SizedBox(height: 4),
           const Text(
-            '- If you lose the file or the password, the backup cannot be recovered.',
+            '- SCAVIUM cannot recover a lost backup password or decrypt the file for you.',
           ),
           const SizedBox(height: 4),
           const Text(
             '- Do not store the password in the same place as the backup file.',
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            '- Keep the exported file private. It contains encrypted wallet recovery material.',
           ),
           const SizedBox(height: 24),
           TextField(
