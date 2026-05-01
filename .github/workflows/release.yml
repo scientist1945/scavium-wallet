@@ -94,9 +94,13 @@ jobs:
           mkdir -p release-artifacts
           cp build/app/outputs/bundle/release/app-release.aab "release-artifacts/scavium_wallet-${VERSION}-android-bundle.aab"
           cp build/app/outputs/flutter-apk/app-release.apk "release-artifacts/scavium_wallet-${VERSION}-android-apk.apk"
+          cp build/release/release-report-android-bundle.json "release-artifacts/scavium_wallet-${VERSION}-android-bundle-report.json"
+          cp build/release/release-report-android-apk.json "release-artifacts/scavium_wallet-${VERSION}-android-apk-report.json"
 
           test -f "release-artifacts/scavium_wallet-${VERSION}-android-bundle.aab"
           test -f "release-artifacts/scavium_wallet-${VERSION}-android-apk.apk"
+          test -f "release-artifacts/scavium_wallet-${VERSION}-android-bundle-report.json"
+          test -f "release-artifacts/scavium_wallet-${VERSION}-android-apk-report.json"
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
@@ -165,9 +169,14 @@ jobs:
           }
 
           Copy-Item $msix.FullName "release-artifacts\scavium_wallet-$version-windows.msix"
+          Copy-Item "build\release\release-report-windows-msix.json" "release-artifacts\scavium_wallet-$version-windows-report.json"
 
           if (-not (Test-Path "release-artifacts\scavium_wallet-$version-windows.msix")) {
             Write-Error "Renamed Windows MSIX artifact not found"
+            exit 1
+          }
+          if (-not (Test-Path "release-artifacts\scavium_wallet-$version-windows-report.json")) {
+            Write-Error "Windows release report not found"
             exit 1
           }
 
