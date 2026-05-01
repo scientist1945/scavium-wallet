@@ -2142,12 +2142,37 @@ The current baseline includes:
 
 ### State
 
-New documentation-only baseline subphase generated from the existing Phase 8.4 parent section.
+Implemented as a documentation-only baseline inspection and product-surface contract lock.
 
-### Existing Files Tentatively Intervened
+No runtime code was modified in this subphase. The current Phase 8.3-completed routing, shared scaffold, dashboard, asset, activity, settings, signing, and account-selection surfaces were inspected and confirmed as the baseline for the remaining Phase 8.4 implementation subphases.
 
-- `docs/phase8_scavium_wallet.md` — document the Phase 8.4 baseline, generated subphase map, tentative intervention files, and execution boundaries.
-- `docs/index.md` — record Phase 8.4 as the next planned area with its generated subphase map.
+### Existing Files Intervened
+
+- `docs/phase8_scavium_wallet.md` — records the completed Phase 8.4.0 baseline inspection, confirms the Phase 8.4 navigation-shell/product-surface execution contract, and preserves the remaining subphase map as planned.
+- `docs/index.md` — records Phase 8.4.0 as completed while keeping Phase 8.4.1 through 8.4.close planned.
+
+The following documents were reviewed as trunk documentation but did not require modification in this subphase:
+
+- `README.md`
+- `docs/architecture.md`
+- `docs/architecture_deep.md`
+- `docs/decisions.md`
+- `docs/development.md`
+- `docs/features.md`
+- `docs/flows.md`
+- `docs/phase1_scavium_wallet.md`
+- `docs/phase2_scavium_wallet.md`
+- `docs/phase3_scavium_wallet.md`
+- `docs/phase4_scavium_wallet.md`
+- `docs/phase5_scavium_wallet.md`
+- `docs/phase6_scavium_wallet.md`
+- `docs/phase7_scavium_wallet.md`
+- `docs/privacy_policy.md`
+- `docs/release.md`
+- `docs/rpc.md`
+- `docs/s.md`
+- `docs/security.md`
+- `docs/ux.md`
 
 ### Runtime Files Reviewed for Baseline
 
@@ -2161,21 +2186,52 @@ New documentation-only baseline subphase generated from the existing Phase 8.4 p
 - `lib/features/signing/presentation/signing_screen.dart` — confirms signing exists as a dedicated route and must remain explicit, not hidden in shell chrome.
 - `lib/features/wallet/presentation/account_switcher.dart` — confirms account selection currently lives inside the home surface.
 
-### New Files Tentatively Created
+### New Files Created
 
-No runtime files are created in 8.4.0. This subphase is documentation-only.
+No new files were created in this documentation-only subphase.
 
 ### Technical Justification
 
 Phase 8.4 changes a cross-cutting UX layer. Before introducing a shell, the project needs a documented baseline so navigation changes do not accidentally move business state into UI chrome, bypass lock-aware routing, duplicate feature ownership, or degrade the surfaces completed in Phase 8.1, Phase 8.2, and Phase 8.3.
 
+### Baseline Inspection Result
+
+Phase 8.4.0 confirms that the Phase 8.3-completed codebase already contains the route and feature surfaces needed to introduce a controlled navigation shell in later subphases. The inspected runtime baseline includes:
+
+- `lib/app/router/app_router.dart` as the only route registration and redirect boundary;
+- `lib/app/router/route_names.dart` as the stable route-name registry;
+- `lib/shared/widgets/scavium_scaffold.dart` as the current shared page scaffold, without shell navigation ownership;
+- `lib/features/home/presentation/home_screen.dart` as the current dashboard/product entry surface;
+- `lib/features/wallet/presentation/account_switcher.dart` as the current account-selection UI embedded in Home;
+- `lib/features/assets/presentation/assets_screen.dart` as the first-party assets surface;
+- `lib/features/assets/presentation/history_screen.dart` as the first-party activity surface;
+- `lib/features/assets/presentation/transaction_detail_screen.dart` as the first-party transaction detail surface introduced in Phase 8.3;
+- `lib/features/blockchain/presentation/send_screen.dart` and `lib/features/blockchain/presentation/receive_screen.dart` as the native transfer surfaces;
+- `lib/features/assets/presentation/send_token_screen.dart` as the ERC-20 transfer surface;
+- `lib/features/signing/presentation/signing_screen.dart` as the explicit message-signing surface;
+- `lib/features/settings/presentation/settings_screen.dart` as the current secondary-action and diagnostics entry surface;
+- `lib/features/blockchain/presentation/rpc_diagnostics_screen.dart` as the explicit RPC diagnostics route.
+
+### Execution Contract Locked for Remaining Phase 8.4 Subphases
+
+The remaining Phase 8.4 implementation must preserve these boundaries:
+
+- `GoRouter` remains the application router and route guards must stay centralized in the router layer;
+- lock-aware redirects, onboarding redirects, and wallet-created redirects must not be bypassed by shell navigation;
+- `RouteNames` should remain the stable registry for first-party destinations;
+- shell navigation must remain UI composition, not business-state ownership;
+- feature controllers must remain inside their existing Riverpod/application boundaries;
+- Home may be segmented visually, but asset, activity, signing, and settings ownership must not be collapsed into Home-only logic;
+- signing must remain an explicit user-selected destination with preview/confirmation behavior preserved;
+- settings and diagnostics may be organized, but destructive or sensitive actions must remain explicit and confirmation-gated;
+- Phase 8.4 must not change backup payload formats, wallet encryption, transaction submission semantics, or release tooling.
+
 ### Expected Validations
 
-- Confirm that Phase 8.4.0 changes documentation only.
-- Confirm that `.agent/*` files are not generated.
-- Confirm that no runtime code is modified.
-- Confirm that the remaining Phase 8.4 subphases are planned, not marked as implemented.
-
+- Confirm that Phase 8.4.0 is completed without modifying runtime code.
+- Confirm that `.agent/*` files are not generated or modified.
+- Confirm that documentation changes are incremental and do not rewrite trunk documents.
+- Confirm that the remaining Phase 8.4 subphases are still planned and not marked as implemented by this baseline-only step.
 ---
 
 ## 8.4.1 — Route Inventory and Shell Navigation Contract
