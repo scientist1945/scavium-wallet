@@ -44,7 +44,7 @@
 ## Git Rules
 
 - Use a single accumulative branch per phase.
-- Current branch: `feature/phase-8.3-transaction-activity-maturity`
+- Current branch: `feature/phase-8.4-ux-product-surface-maturity`
 - Commit per subphase.
 - Merge only after full phase completion.
 
