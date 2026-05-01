@@ -145,3 +145,23 @@ Completed Phase 8.4 scope:
 
 - 8.4.close — UX & Product Surface Maturity Closure  
   Completed final trunk documentation closure from the real implemented Phase 8.4 working tree and confirmed the navigation shell, product surfaces, and secondary flows are coherently represented across documentation.
+
+---
+
+## Planned Phase 8.5 security, reliability, and diagnostics maturity
+
+Phase 8.5 is documented as the next Phase 8 area after the completed Phase 8.4 navigation-shell and product-surface maturity work.
+
+This planning step does not implement runtime code and does not generate `.agent/*` files. It records the subphase structure required for a later controlled implementation prompt.
+
+Planned Phase 8.5 scope:
+
+- 8.5.0 — Security, Reliability & Diagnostics Baseline Inspection and Execution Contract
+- 8.5.1 — Sensitive Diagnostics Output Hardening
+- 8.5.2 — Signing Safety Copy and Confirmation Hardening
+- 8.5.3 — Backup and Recovery Warning Reliability
+- 8.5.4 — Lock, Lifecycle, and Sensitive Surface Reliability
+- 8.5.5 — Error Boundary and Invalid State Maturity
+- 8.5.close — Security, Reliability & Diagnostics Maturity Closure
+
+Phase 8.5 remains planned until the runtime implementation subphases are executed and validated from the real working tree.

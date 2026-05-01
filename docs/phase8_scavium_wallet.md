@@ -2616,3 +2616,404 @@ Phase 8.4 deliberately does not introduce:
 - store publication automation changes;
 - shell-owned business state.
 
+---
+
+## 8.5.0 — Security, Reliability & Diagnostics Baseline Inspection and Execution Contract
+
+### Objective
+
+Define the Phase 8.5 security, reliability, and diagnostics maturity contract from the real Phase 8.4-completed codebase before any runtime implementation is attempted.
+
+### Scope
+
+This documentation-only subphase must inspect the current security, signing, backup, diagnostics, lock, routing, and error-handling baseline and lock the execution boundaries for the remaining Phase 8.5 subphases.
+
+The baseline to inspect includes:
+
+- app lifecycle lock behavior;
+- screenshot protection behavior;
+- lock policy defaults;
+- signing request validation and confirmation flow;
+- backup export and restore warnings;
+- RPC diagnostics and RPC health output;
+- app-level exception semantics;
+- settings surface organization after Phase 8.4;
+- tests already covering signing, routing, shell, settings, transaction activity, token safety, and backup payload behavior.
+
+### State
+
+New documentation-only subphase generated from the existing Phase 8.5 parent section.
+
+No runtime code should be modified in this subphase.
+
+### Existing Files Tentatively Intervened
+
+- `docs/phase8_scavium_wallet.md` — record the Phase 8.5 baseline inspection, execution boundaries, and generated subphase map.
+- `docs/index.md` — record Phase 8.5 as the next documented Phase 8 area without marking it implemented.
+
+### New Files Tentatively Created
+
+No new files should be created in this documentation-only baseline subphase.
+
+### Technical Justification
+
+Phase 8.5 touches sensitive wallet behavior. Before changing confirmations, diagnostics, error copy, lock behavior, or backup warnings, the project must distinguish implemented Phase 8.4 runtime truth from planned Phase 8.5 safety hardening so future operational prompts do not mix planning, `.agent` generation, and implementation.
+
+### Expected Validations
+
+- Confirm no `.agent/*` files are generated.
+- Confirm no runtime Dart files are modified.
+- Confirm Phase 8.5 subphases are documented in the phase document.
+- Confirm the documented files are real paths from the current project tree.
+- Confirm the plan preserves Phase 8.1 through Phase 8.4 behavior.
+
+---
+
+## 8.5.1 — Sensitive Diagnostics Output Hardening
+
+### Objective
+
+Harden diagnostics output so RPC and app health information remains useful for troubleshooting without exposing sensitive wallet material, private operational context, or misleading security state.
+
+### Scope
+
+This subphase should review and improve diagnostics around:
+
+- RPC status display;
+- RPC health strings;
+- active RPC ping results;
+- cooldown visibility;
+- diagnostics copy shown to the user;
+- error messages surfaced through diagnostics screens/controllers;
+- avoidance of wallet addresses, private keys, mnemonic material, backup passwords, raw signed messages, signatures, or backup payload contents in diagnostics output.
+
+This subphase must keep diagnostics non-invasive and must not add telemetry, remote logging, analytics, or background reporting.
+
+### State
+
+New subphase generated from the existing Phase 8.5 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/features/blockchain/presentation/rpc_diagnostics_screen.dart` — refine user-facing diagnostics copy and ensure the screen remains RPC-focused and non-invasive.
+- `lib/features/blockchain/application/rpc_health_controller.dart` — normalize health output so failures remain actionable without leaking sensitive context.
+- `lib/features/blockchain/application/rpc_status_controller.dart` — review active RPC selection, ping, and cooldown state output for safe user-facing diagnostics boundaries.
+- `lib/features/blockchain/domain/scavium_rpc_status.dart` — adjust diagnostic state helpers only if safer formatting or cooldown representation requires it.
+- `lib/core/errors/app_exception.dart` — reuse existing exception semantics or extend them only if diagnostics require normalized safe messages.
+- `test/widget_test.dart` — update or add smoke coverage only if existing diagnostics behavior is covered there.
+
+### New Files Tentatively Created
+
+- `test/rpc_diagnostics_safety_test.dart` — optional focused test file if diagnostics safety assertions cannot be cleanly added to existing tests.
+
+### Technical Justification
+
+The current project already exposes an RPC diagnostics screen and health controller. Phase 8.5 should mature that surface by ensuring diagnostics help the user understand RPC state without becoming telemetry, leaking wallet-related data, or presenting raw internal exceptions as trusted security facts.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Validation should confirm diagnostics remain reachable from Settings, do not mutate wallet state, do not expose sensitive wallet material, and still report active RPC, ping, and cooldown information clearly.
+
+---
+
+## 8.5.2 — Signing Safety Copy and Confirmation Hardening
+
+### Objective
+
+Strengthen message-signing safety by improving validation, user-facing copy, confirmation clarity, cancellation behavior, and result handling without changing the Phase 8.3 signing architecture.
+
+### Scope
+
+This subphase should harden the existing signing flow around:
+
+- personal message signing warnings;
+- challenge signing warnings;
+- active account visibility before signing;
+- distinction between signing and sending a transaction;
+- empty or invalid message handling;
+- cancellation paths;
+- signature result display and copy behavior;
+- error messages when the signed account does not match the requested active account.
+
+This subphase must not add dApp connectivity, WalletConnect, automatic challenge ingestion, transaction submission, or background signing.
+
+### State
+
+New subphase generated from the existing Phase 8.5 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/features/signing/domain/signing_request.dart` — tighten request normalization or validation only if the current input contract allows unsafe or unclear states.
+- `lib/features/signing/application/signing_controller.dart` — preserve active-account verification while improving safe error normalization where needed.
+- `lib/features/signing/presentation/signing_screen.dart` — improve warnings, state copy, cancellation behavior, and explicit signing/send distinction.
+- `lib/features/signing/presentation/widgets/signing_confirm_dialog.dart` — make confirmation copy more explicit for message/challenge signing risk.
+- `lib/features/signing/presentation/widgets/signing_result_card.dart` — ensure signature output is clear without implying a transaction was submitted.
+- `lib/shared/widgets/feedback/app_snackbar.dart` — reuse existing feedback style if copy behavior or result messages need refinement.
+- `test/signing_request_test.dart` — expand validation coverage if request normalization is changed.
+- `test/signing_controller_test.dart` — expand mismatch/error/cancellation-safe coverage if controller behavior is changed.
+- `test/signing_screen_test.dart` — expand UX coverage for warning, confirmation, cancellation, and result display behavior.
+
+### New Files Tentatively Created
+
+No new files are expected unless existing signing tests become too broad. If needed, create:
+
+- `test/signing_safety_copy_test.dart` — optional widget/unit coverage for safety copy and confirmation behavior.
+
+### Technical Justification
+
+Phase 8.3 implemented explicit signing. Phase 8.5 should mature that sensitive surface without changing ownership: signing remains a dedicated feature, the wallet feature remains the owner of account identity, and signing must remain separate from transactions and activity history.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Validation should confirm signing still requires explicit preview/confirmation, cancellation does not mutate state, signing does not create transaction history entries, and the UI clearly distinguishes signatures from submitted transactions.
+
+---
+
+## 8.5.3 — Backup and Recovery Warning Reliability
+
+### Objective
+
+Improve backup and recovery safety messaging so users receive consistent, explicit warnings before exporting, restoring, or relying on encrypted backup material.
+
+### Scope
+
+This subphase should review and mature:
+
+- export backup warnings;
+- restore backup warnings;
+- password requirement copy;
+- unrecoverable-password messaging;
+- backup file naming and extension expectations;
+- v1/v2 backup compatibility explanation;
+- multi-account backup/restore clarity after Phase 8.1;
+- error copy for invalid, partial, or unsupported backup payloads.
+
+This subphase must preserve existing backup encryption semantics and must not change the backup payload format unless a defect is found and explicitly documented.
+
+### State
+
+New subphase generated from the existing Phase 8.5 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/features/settings/presentation/export_backup_screen.dart` — improve export warnings, password guidance, cancellation copy, and success/error messages.
+- `lib/features/wallet/presentation/restore_backup_screen.dart` — improve restore warnings and invalid backup/error states.
+- `lib/features/wallet/application/wallet_backup_controller.dart` — normalize restore/export errors only if current messages leak implementation detail or confuse user action.
+- `lib/features/wallet/domain/wallet_backup_payload.dart` — adjust validation messaging or compatibility helpers only if needed without changing payload semantics.
+- `lib/core/services/backup_crypto_service.dart` — review error boundaries only if cryptographic failures are surfaced unsafely.
+- `test/wallet_backup_payload_test.dart` — expand coverage for invalid, partial, v1, and v2 payload behavior if touched.
+
+### New Files Tentatively Created
+
+- `test/backup_recovery_warning_test.dart` — optional focused widget/domain coverage if backup warning behavior cannot be cleanly covered in existing tests.
+
+### Technical Justification
+
+Backup and recovery are high-risk wallet flows. The current export screen already warns about file/password responsibility. Phase 8.5 should make these warnings more consistent across export and restore without weakening the Phase 8.1 multi-account backup compatibility model or changing encryption behavior.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Validation should confirm backup export remains password-gated, restore remains explicit, v1/v2 compatibility remains intact, invalid payloads fail safely, and no secret material appears in UI error text or diagnostics.
+
+---
+
+## 8.5.4 — Lock, Lifecycle, and Sensitive Surface Reliability
+
+### Objective
+
+Improve reliability around app lock, lifecycle transitions, screenshot protection, and sensitive-surface behavior without changing the Phase 8.4 navigation shell or creating hidden state ownership.
+
+### Scope
+
+This subphase should review and harden:
+
+- lifecycle lock on inactive/paused/detached states;
+- refresh restart behavior on resume;
+- lock policy defaults and future-readiness;
+- screenshot protection behavior on Android;
+- sensitive screens that should not accidentally bypass lock-aware routing;
+- route classification for public, onboarding, wallet-entry, action, detail, diagnostics, and shell routes.
+
+This subphase must preserve `GoRouter` as routing owner and must not move lock state into shell widgets.
+
+### State
+
+New subphase generated from the existing Phase 8.5 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/core/security/app_lifecycle_guard.dart` — review lifecycle lock/refresh ordering and make behavior safer if needed.
+- `lib/core/security/lock_policy.dart` — clarify policy defaults only if the current contract creates ambiguous behavior.
+- `lib/core/security/screenshot_guard.dart` — harden platform checks or failure handling if Android screenshot protection errors can affect runtime stability.
+- `lib/app/router/app_route_category.dart` — update route categories only if sensitive route classification requires refinement.
+- `lib/app/router/app_router.dart` — preserve centralized lock-aware redirects while improving guard behavior if needed.
+- `lib/app/shell/app_shell.dart` — adjust only if shell presentation accidentally affects sensitive route handling.
+- `test/app_route_category_test.dart` — expand route-category coverage if classifications change.
+- `test/app_shell_test.dart` — confirm shell behavior remains presentation-only if shell-adjacent changes are required.
+
+### New Files Tentatively Created
+
+- `test/app_lifecycle_guard_test.dart` — optional focused test if lifecycle behavior can be isolated safely.
+- `test/sensitive_route_guard_test.dart` — optional focused test if route-sensitive guard coverage is not sufficient in existing tests.
+
+### Technical Justification
+
+Phase 8.4 introduced a shell-based product surface. Phase 8.5 should verify that sensitive flows remain protected by centralized routing and lifecycle policies rather than by shell presentation. The shell must remain navigation chrome, not a security state owner.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Validation should confirm lock-aware routing remains centralized, onboarding and wallet-entry flows remain outside the authenticated shell, sensitive routes remain explicit, lifecycle transitions fail safely, and screenshot protection failures do not destabilize non-Android platforms.
+
+---
+
+## 8.5.5 — Error Boundary and Invalid State Maturity
+
+### Objective
+
+Normalize user-facing error handling and invalid-state behavior across account-aware assets, activity, signing, backup, diagnostics, and settings surfaces.
+
+### Scope
+
+This subphase should mature invalid-state handling around:
+
+- missing wallet profile;
+- missing or mismatched active account;
+- invalid account address;
+- invalid token or transaction input;
+- unsupported or partial backup payloads;
+- RPC failure messages;
+- signing mismatch errors;
+- settings secondary-action failures;
+- state messages for loading, empty, filtered-empty, error, and retry states.
+
+This subphase must avoid broad architectural rewrites and should reuse existing `AppException`, `StateMessage`, `AppSnackbar`, and controller-level error patterns where possible.
+
+### State
+
+New subphase generated from the existing Phase 8.5 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/core/errors/app_exception.dart` — extend error semantics only if the current single-message exception is insufficient for safe user-facing normalization.
+- `lib/core/utils/async_value_ui.dart` — reuse or refine async error presentation only if it improves consistency without hiding useful errors.
+- `lib/shared/widgets/feedback/state_message.dart` — refine loading/empty/error states only if current copy is inconsistent across Phase 8 surfaces.
+- `lib/shared/widgets/feedback/app_snackbar.dart` — reuse or refine feedback copy conventions for safe error messages.
+- `lib/features/assets/application/assets_controller.dart` — normalize account-aware asset load failures if unsafe or confusing states are found.
+- `lib/features/assets/application/tx_history_controller.dart` — preserve local history while improving receipt/error state copy if required.
+- `lib/features/blockchain/application/send_transaction_controller.dart` — review invalid send state messages without changing transaction semantics.
+- `lib/features/blockchain/application/send_token_controller.dart` — review token send invalid-state handling without changing token-transfer semantics.
+- `lib/features/settings/presentation/settings_screen.dart` — keep secondary actions reachable and explicit while improving failure copy if needed.
+- `test/tx_history_controller_test.dart` — expand error-state coverage if transaction history behavior is touched.
+- `test/token_registry_safety_test.dart` — expand invalid-token safety coverage if token errors are touched.
+- `test/settings_screen_test.dart` — expand secondary-action visibility/error-copy coverage if settings behavior is touched.
+
+### New Files Tentatively Created
+
+- `test/app_error_boundary_test.dart` — optional focused test file if normalized error semantics require dedicated coverage.
+- `test/invalid_state_maturity_test.dart` — optional integration-style widget/domain coverage for invalid wallet/account states if existing tests are insufficient.
+
+### Technical Justification
+
+After Phase 8.1 through Phase 8.4, the wallet has more account-aware and route-aware surfaces. Phase 8.5 should make invalid states fail safely and consistently without hiding real failures, duplicating controller logic, or creating a new global error architecture prematurely.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Validation should confirm invalid states are reported safely, existing local data is not destroyed by read/refresh errors, sensitive values are not included in error text, and retry or cancellation flows remain predictable.
+
+---
+
+## 8.5.close — Security, Reliability & Diagnostics Maturity Closure
+
+### Objective
+
+Close Phase 8.5 by confirming that security, reliability, diagnostics, warning, lock/lifecycle, and invalid-state hardening are implemented, validated against the real codebase, and coherently represented in trunk documentation.
+
+### Scope
+
+This closure should record the actual implementation delivered by Phase 8.5.1 through Phase 8.5.5 and update trunk documentation without changing runtime code.
+
+The closure should confirm:
+
+- diagnostics remain non-invasive;
+- diagnostics do not expose sensitive wallet material;
+- signing warnings remain explicit before confirmation;
+- backup and restore warnings remain consistent and truthful;
+- lifecycle/lock behavior remains centralized and shell-independent;
+- screenshot protection remains platform-safe;
+- invalid states fail safely;
+- user-facing error messages remain actionable without leaking secrets;
+- Phase 8.1 through Phase 8.4 behavior remains compatible.
+
+### State
+
+Planned documentation-only closure to be executed only after the Phase 8.5 runtime subphases are implemented and validated.
+
+### Existing Files Tentatively Intervened
+
+- `docs/phase8_scavium_wallet.md` — close Phase 8.5 from the real implemented runtime state.
+- `docs/index.md` — move Phase 8.5 from planned to completed when implementation is validated.
+- `README.md` — update the project-level Phase 8 status only after Phase 8.5 is actually complete.
+- `docs/features.md` — record implemented safety, diagnostics, signing-warning, backup-warning, and invalid-state behavior only after runtime completion.
+- `docs/architecture.md` — record any final security/reliability boundaries if implementation changes ownership or error semantics.
+- `docs/flows.md` — record final sensitive-flow behavior for diagnostics, signing, backup/restore, lock, and invalid states.
+- `docs/ux.md` — record final warning, confirmation, diagnostics, and error-state UX behavior.
+- `docs/development.md` — record Phase 8.5 execution boundary and validation results.
+
+### New Files Created
+
+No new documentation files are expected for closure.
+
+### Technical Justification
+
+Phase 8.5 is a cross-cutting hardening phase. Its closure must distinguish planned safety improvements from implemented runtime truth so future release/distribution work does not inherit unvalidated assumptions about diagnostics, lock behavior, backup safety, signing warnings, or error boundaries.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Manual diagnostics validation.
+- Manual signing warning/confirmation validation.
+- Manual backup export and restore warning validation.
+- Manual lifecycle/lock validation on supported platforms where possible.
+- Confirmation that `.agent/*` files are not part of the closure deliverable unless a later operational prompt explicitly creates them.
+
+### Phase 8.5 Closure Boundaries
+
+Phase 8.5 must deliberately avoid introducing:
+
+- telemetry;
+- analytics;
+- remote diagnostics reporting;
+- dApp connectivity;
+- WalletConnect;
+- automatic challenge ingestion;
+- background signing;
+- backup payload format changes unless explicitly required by a documented defect;
+- private key, mnemonic, password, signature, or backup payload exposure in diagnostics;
+- shell-owned security state;
+- release pipeline changes reserved for Phase 8.6.
