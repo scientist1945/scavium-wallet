@@ -1544,3 +1544,381 @@ The next planned Phase 8 area is:
 ```
 
 Phase 8.3 should build on the now-completed account-aware and asset-aware foundation.
+
+---
+
+## 8.3.0 — Transaction & Activity Contract Definition and Baseline Inspection
+
+### Objective
+
+Define the Phase 8.3 transaction, activity, and signing contract before implementation, using the real Phase 8.2-completed codebase as the baseline.
+
+### Scope
+
+This documentation-only subphase must inspect the current transaction and activity implementation and lock the intended execution boundaries for the rest of Phase 8.3.
+
+The baseline currently includes:
+
+- locally persisted outgoing transaction history;
+- native and ERC-20 send flows;
+- `TxHistoryEntry` as the stored activity record;
+- `TxStatus` with pending, confirmed, and failed states;
+- `TxKind` with native and ERC-20 send kinds;
+- receipt refresh through `ScaviumRpcService.getReceipt(...)`;
+- a `HistoryScreen` route backed by `TxHistoryController`.
+
+### State
+
+New subphase generated from the existing Phase 8.3 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `docs/phase8_scavium_wallet.md` — document the Phase 8.3 execution contract, subphase map, and expected validation gates.
+- `docs/index.md` — update the documentation index to indicate that Phase 8.3 has a formalized execution plan.
+- `docs/architecture.md` — only if implementation later requires documenting a durable activity/signing boundary.
+- `docs/features.md` — only after runtime capability is actually implemented.
+- `docs/flows.md` — only after transaction detail, activity filtering, or signing flows are implemented.
+- `docs/ux.md` — only after user-facing activity or signing surfaces are implemented.
+
+### New Files Tentatively Created
+
+No new runtime files are expected in this documentation-only subphase.
+
+### Technical Justification
+
+Phase 8.3 expands a sensitive wallet area. Transaction history, receipt interpretation, activity display, and message signing must be planned before code changes so signing is not implemented as a hidden convenience action and activity maturity does not become an uncontrolled explorer/indexer rewrite.
+
+### Expected Validations
+
+- Confirm that Phase 8.3 is documented without modifying runtime code.
+- Confirm that `.agent/*` files are not generated.
+- Confirm that documentation changes are incremental and do not rewrite trunk documents.
+
+---
+
+## 8.3.1 — Transaction History State Model Maturity
+
+### Objective
+
+Mature the transaction history domain model so stored activity records can represent operational transaction states more explicitly and safely.
+
+### Scope
+
+This subphase should focus on transaction/activity domain correctness before UI expansion.
+
+Expected work may include:
+
+- extending transaction status semantics to include an explicit unknown or unresolved state if required;
+- preserving pending, confirmed, and failed behavior;
+- making receipt refresh behavior deterministic for absent receipts;
+- protecting stored transaction history from malformed or older entries;
+- keeping native and ERC-20 send records compatible with the existing local history repository;
+- preparing the model for later transaction detail rendering.
+
+### State
+
+New subphase generated from the existing Phase 8.3 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/features/assets/domain/tx_status.dart` — extend or clarify transaction status values if the implementation requires an explicit unknown/unresolved state.
+- `lib/features/assets/domain/tx_kind.dart` — preserve existing native and ERC-20 send kinds; extend only if later activity categories require it.
+- `lib/features/assets/domain/tx_history_entry.dart` — harden serialization/deserialization and add fields only if needed for detail or receipt maturity.
+- `lib/features/assets/domain/tx_history_repository.dart` — preserve the repository contract while supporting any required model evolution.
+- `lib/features/assets/data/tx_history_repository_impl.dart` — preserve local persistence while safely reading older entries.
+- `lib/features/assets/application/tx_history_controller.dart` — keep receipt refresh logic centralized and prevent UI-owned RPC status mutation.
+- `lib/features/blockchain/data/scavium_rpc_service.dart` — preserve `getReceipt(...)` as the RPC boundary for receipt lookup.
+
+### New Files Tentatively Created
+
+- `test/tx_history_entry_test.dart` — validate history serialization compatibility and status handling if domain model changes are introduced.
+- `test/tx_history_controller_test.dart` — validate pending/confirmed/failed/unknown refresh behavior if controller logic is expanded.
+
+### Technical Justification
+
+The current history model already exists and should be evolved rather than replaced. This preserves the Phase 8.2 asset/account-aware foundation while making transaction state handling safer for real wallet use.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Additional targeted tests should confirm that existing stored entries remain readable and that pending transactions without receipts are not incorrectly marked as failed.
+
+---
+
+## 8.3.2 — Transaction Detail and Receipt-Oriented Activity View
+
+### Objective
+
+Introduce a clearer transaction detail experience for locally tracked activity without adding external indexer or explorer ownership to the app.
+
+### Scope
+
+This subphase should improve activity readability and receipt-oriented display while preserving the current local-history limitation.
+
+Expected work may include:
+
+- transaction detail route or detail presentation;
+- visible transaction hash, destination, amount, symbol, kind, status, and timestamp;
+- receipt-oriented status explanation;
+- safer explorer-link handling;
+- responsive detail layout for mobile, web, and desktop sizes;
+- clear copy/open affordances where appropriate;
+- preservation of the current `HistoryScreen` refresh behavior.
+
+### State
+
+New subphase generated from the existing Phase 8.3 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/features/assets/presentation/history_screen.dart` — change list item navigation from direct-only explorer opening to an explicit detail experience if required.
+- `lib/app/router/route_names.dart` — add a route name for transaction detail only if a dedicated screen is introduced.
+- `lib/app/router/app_router.dart` — register the transaction detail route while preserving GoRouter ownership.
+- `lib/features/assets/domain/tx_history_entry.dart` — expose any detail-safe derived values only if needed by the UI.
+- `lib/core/config/app_config.dart` — preserve explorer path usage and avoid hardcoding environment-specific URLs in UI code.
+- `lib/shared/widgets/feedback/state_message.dart` — reuse existing empty/error feedback patterns where possible.
+- `lib/shared/widgets/scavium_card.dart` — reuse existing visual primitives instead of introducing unrelated UI containers.
+
+### New Files Tentatively Created
+
+- `lib/features/assets/presentation/transaction_detail_screen.dart` — dedicated transaction detail surface, if the implementation chooses a route-based detail view.
+- `test/transaction_detail_screen_test.dart` — optional widget test for rendered transaction detail behavior if practical.
+
+### Technical Justification
+
+Opening an explorer directly from the list is useful but not sufficient for activity maturity. A wallet should show a first-party, explicit interpretation of locally known transaction data before sending users to an external explorer.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Validation should confirm that history remains available, explorer links still work, and no route guard regression is introduced.
+
+---
+
+## 8.3.3 — Activity Filtering, Grouping, and Empty/Error State Maturity
+
+### Objective
+
+Improve the activity surface so users can understand local wallet activity more clearly without introducing unsupported incoming-transaction discovery.
+
+### Scope
+
+This subphase should enhance the current history list around local activity presentation.
+
+Expected work may include:
+
+- filtering by status;
+- filtering or grouping by transaction kind;
+- date grouping foundations;
+- safer empty-state copy;
+- clearer distinction between local outgoing history and full blockchain activity;
+- refresh-state feedback;
+- preservation of locally tracked outgoing transaction scope.
+
+### State
+
+New subphase generated from the existing Phase 8.3 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/features/assets/presentation/history_screen.dart` — add filtering/grouping controls and improved state messaging.
+- `lib/features/assets/application/tx_history_controller.dart` — expose clean state refresh behavior without making the UI own repository mutation.
+- `lib/features/assets/domain/tx_history_entry.dart` — provide grouping-friendly fields only if needed.
+- `lib/features/assets/domain/tx_status.dart` — ensure status labels remain deterministic if status semantics are expanded.
+- `lib/features/assets/domain/tx_kind.dart` — ensure kind labels remain deterministic for native and ERC-20 sends.
+- `lib/shared/widgets/feedback/state_message.dart` — reuse existing feedback conventions for empty/error states.
+
+### New Files Tentatively Created
+
+- `lib/features/assets/domain/tx_history_filter.dart` — optional value object for filter state if inline UI state becomes too large.
+- `test/tx_history_filter_test.dart` — optional unit test if a dedicated filter value object is introduced.
+
+### Technical Justification
+
+The project already has local outgoing transaction history. This subphase makes that surface more understandable while explicitly avoiding unsupported full activity indexing, incoming transaction discovery, or multi-chain aggregation.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Validation should confirm that filters do not hide data permanently, refresh still updates pending entries, and empty/error states remain truthful about current product scope.
+
+---
+
+## 8.3.4 — Message Signing Domain and Service Boundary
+
+### Objective
+
+Introduce the domain and service boundary required for explicit message signing without treating signing as a transaction or background operation.
+
+### Scope
+
+This subphase should add the non-UI signing foundation for:
+
+- `signPersonalMessage(...)`;
+- `signChallengeMessage(...)`;
+- deterministic signing input normalization;
+- active-account-aware signer selection;
+- cancellation-safe execution boundaries;
+- error normalization consistent with the existing wallet and RPC style.
+
+This subphase must not submit blockchain transactions and must not mutate wallet balances or transaction history.
+
+### State
+
+New subphase generated from the existing Phase 8.3 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/features/blockchain/data/scavium_rpc_service.dart` — add signing service methods only if signing belongs at the current RPC/web3 boundary.
+- `lib/features/wallet/domain/wallet_repository.dart` — expose signing capability only if repository ownership of wallet credentials is required.
+- `lib/features/wallet/data/wallet_repository_impl.dart` — use secure wallet material safely without exposing private keys to presentation code.
+- `lib/features/wallet/application/wallet_controller.dart` — provide active-account context required by signing flows if needed.
+- `lib/core/errors/app_exception.dart` — reuse or extend app-level error semantics for signing errors if required.
+- `lib/core/utils/evm_format.dart` — reuse existing EVM formatting utilities only if signing output presentation needs it.
+
+### New Files Tentatively Created
+
+- `lib/features/signing/domain/signing_request.dart` — value object describing message, account/address, and signing mode.
+- `lib/features/signing/domain/signing_result.dart` — value object carrying signature output and metadata required by the UI.
+- `lib/features/signing/domain/signing_mode.dart` — enum distinguishing personal message signing from challenge signing.
+- `lib/features/signing/application/signing_controller.dart` — Riverpod controller for explicit signing execution.
+- `test/signing_request_test.dart` — validate deterministic request construction and input safety.
+- `test/signing_controller_test.dart` — validate success, cancellation-safe behavior, and error paths if controller dependencies can be tested cleanly.
+
+### Technical Justification
+
+Message signing is sensitive wallet behavior. It must be modeled explicitly, tied to the intended active account, and kept separate from transaction submission and activity history. A dedicated signing boundary prevents UI widgets from directly handling private-key-sensitive operations.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Validation should confirm that signing does not create transaction history entries, does not refresh balances, does not submit RPC transactions, and uses the intended active account.
+
+---
+
+## 8.3.5 — Message Signing UX, Confirmation, and Result Display
+
+### Objective
+
+Add the user-facing signing flow with explicit preview, confirmation, cancellation, result display, and error handling.
+
+### Scope
+
+This subphase should introduce signing UX on top of the signing domain/service foundation.
+
+Expected work may include:
+
+- signing entry surface;
+- message/challenge input;
+- active account/address visibility;
+- confirmation dialog or confirmation screen;
+- clear distinction between signing and sending;
+- cancellation path that does not mutate wallet state;
+- signature result display;
+- copy-to-clipboard behavior for signature output;
+- safe error presentation.
+
+### State
+
+New subphase generated from the existing Phase 8.3 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `lib/app/router/route_names.dart` — add a signing route only if a dedicated signing screen is introduced.
+- `lib/app/router/app_router.dart` — register the signing route while preserving existing guarded routing behavior.
+- `lib/features/home/presentation/home_screen.dart` — add a controlled entry point only if Phase 8.4 navigation shell is not yet available.
+- `lib/features/settings/presentation/settings_screen.dart` — optional entry point only if signing is treated as a tool/settings-adjacent action.
+- `lib/features/wallet/presentation/account_switcher.dart` — avoid changing account switching unless active-account display is required by the signing flow.
+- `lib/shared/widgets/feedback/confirm_dialog.dart` — reuse the existing confirmation pattern where appropriate.
+- `lib/shared/widgets/feedback/app_snackbar.dart` — reuse existing feedback style for success/error copy.
+- `lib/shared/widgets/scavium_text_field.dart` — reuse existing input styling for signing message/challenge input.
+
+### New Files Tentatively Created
+
+- `lib/features/signing/presentation/signing_screen.dart` — signing entry and result surface.
+- `lib/features/signing/presentation/widgets/signing_confirm_dialog.dart` — dedicated confirmation dialog if the shared confirm dialog is insufficient for message preview.
+- `lib/features/signing/presentation/widgets/signing_result_card.dart` — reusable result display if the screen would otherwise become too large.
+- `test/signing_screen_test.dart` — optional widget test for confirmation, cancellation, and result display behavior.
+
+### Technical Justification
+
+Signing UX must be explicit because users can confuse signed messages with submitted transactions. The UI must show the message, the account/address, the action type, and the output clearly before and after signing.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Validation should confirm that cancellation leaves wallet state unchanged, success displays a signature without submitting a transaction, and route access remains compatible with existing wallet guards.
+
+---
+
+## 8.3.close — Transaction & Activity Maturity Closure
+
+### Objective
+
+Close Phase 8.3 by confirming that transaction/activity maturity and message-signing behavior are implemented, validated, and coherently represented in trunk documentation.
+
+### Scope
+
+This documentation closure should occur only after the runtime subphases are implemented and validated.
+
+Expected closure work includes:
+
+- confirming final implemented subphases;
+- documenting actual files changed;
+- updating trunk docs based on the real final implementation;
+- recording preserved boundaries;
+- confirming validation results;
+- identifying the next Phase 8 area.
+
+### State
+
+New closure subphase generated from the existing Phase 8.3 parent section.
+
+### Existing Files Tentatively Intervened
+
+- `docs/phase8_scavium_wallet.md` — close Phase 8.3 with actual implemented scope.
+- `docs/index.md` — move Phase 8.3 from planned/formalized to completed once implementation is complete.
+- `README.md` — update only if Phase 8.3 becomes completed product capability.
+- `docs/features.md` — update implemented feature inventory after code completion.
+- `docs/architecture.md` — update durable activity/signing architecture only if implementation adds lasting boundaries.
+- `docs/flows.md` — document actual transaction detail and signing flows.
+- `docs/ux.md` — document user-facing activity/signing UX once implemented.
+- `docs/development.md` — update only if the agent-assisted execution boundary changes from Phase 8.2 conventions.
+
+### New Files Tentatively Created
+
+No new documentation files are expected unless Phase 8.3 introduces a durable standalone signing or activity document, which is not currently required.
+
+### Technical Justification
+
+The project treats Markdown files as trunk documents. Closure must be based on the final real working tree rather than on planned scope so documentation remains cumulative and accurate.
+
+### Expected Validations
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Closure should also verify that the final documentation and any delivery ZIP list exactly the same intervened files.
+
