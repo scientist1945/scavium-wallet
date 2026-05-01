@@ -87,6 +87,10 @@ echo Eliminando scavium-wallet\linux\flutter\ephemeral del temporal...
 if exist "%TEMP_ROOT%\scavium-wallet\linux\flutter\ephemeral" (
     rmdir /s /q "%TEMP_ROOT%\scavium-wallet\linux\flutter\ephemeral"
 )
+@REM echo Eliminando scavium-wallet\.agent del temporal...
+@REM if exist "%TEMP_ROOT%\scavium-wallet\.agent" (
+@REM     rmdir /s /q "%TEMP_ROOT%\scavium-wallet\.agent"
+@REM )
 
 
 if exist "%OUTPUT_FILE%" del /f /q "%OUTPUT_FILE%"
