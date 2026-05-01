@@ -35,12 +35,11 @@ Phase 8 is active and currently completed through:
 - Phase 8.1 — Account Model Expansion
 - Phase 8.2 — Asset & Portfolio Expansion
 - Phase 8.3 — Transaction & Activity Maturity
+- Phase 8.4 — Navigation Shell and Product Surface Scaling
 
-The next planned product-expansion area is Phase 8.4 — Navigation Shell and Product Surface Scaling.
+Phase 8.4 is closed. The completed runtime scope includes the route classification contract, responsive authenticated shell, dashboard segmentation, dedicated account surface placement, and organized settings/diagnostics/secondary-action structure.
 
-Phase 8.3 is closed. The completed runtime scope includes safer local outgoing transaction history state handling, receipt-oriented transaction detail, local activity filtering/grouping, and explicit message-signing flows with preview, confirmation, cancellation, and result display.
-
-Phase 8.4 has now been documented as a planned navigation and product-surface maturity phase. It is not yet implemented. The generated subphase map is:
+Completed Phase 8.4 scope:
 
 - 8.4.0 — Navigation Shell Baseline Inspection and Product Surface Contract
 - 8.4.1 — Route Inventory and Shell Navigation Contract
@@ -121,3 +120,28 @@ Phase 8.4 has now been documented as a planned navigation and product-surface ma
 
 - 8.3.close — Transaction & Activity Maturity Closure  
   Completed final trunk documentation closure from the real implemented Phase 8.3 working tree.
+
+---
+
+## Completed Phase 8.4 UX and product surface maturity
+
+- 8.4.0 — Navigation Shell Baseline Inspection and Product Surface Contract  
+  Completed the documentation-only baseline inspection and locked the navigation-shell/product-surface execution contract from the real Phase 8.3-completed codebase.
+
+- 8.4.1 — Route Inventory and Shell Navigation Contract  
+  Introduced `AppRouteClassifier` and formal route categories so shell eligibility is explicit while `GoRouter` keeps redirect and route ownership.
+
+- 8.4.2 — Responsive App Shell Foundation  
+  Added the authenticated `ShellRoute`, reusable `AppShell`, destination metadata, and responsive navigation chrome for primary authenticated destinations.
+
+- 8.4.3 — Dashboard and Product Surface Segmentation  
+  Segmented Home into a dashboard-style summary surface while preserving full Assets, Activity/History, signing, send, receive, settings, and diagnostics ownership in dedicated routes.
+
+- 8.4.4 — Wallet and Account Surface Placement  
+  Added a dedicated Accounts route for account-oriented controls while preserving active-account state ownership and backup/restore compatibility.
+
+- 8.4.5 — Settings, Diagnostics, and Secondary Action Organization  
+  Organized Settings into explicit Security & recovery, Signing, Diagnostics, Danger zone, and About sections while keeping sensitive flows explicit and confirmation-oriented.
+
+- 8.4.close — UX & Product Surface Maturity Closure  
+  Completed final trunk documentation closure from the real implemented Phase 8.4 working tree and confirmed the navigation shell, product surfaces, and secondary flows are coherently represented across documentation.

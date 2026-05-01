@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/app/shell/app_shell.dart';
 import 'package:scavium_wallet/core/constants/storage_keys.dart';
 import 'package:scavium_wallet/core/services/local_storage_service.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
@@ -25,6 +26,7 @@ import 'package:scavium_wallet/features/settings/presentation/settings_screen.da
 import 'package:scavium_wallet/features/signing/presentation/signing_screen.dart';
 import 'package:scavium_wallet/features/splash/presentation/splash_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/backup_mnemonic_screen.dart';
+import 'package:scavium_wallet/features/wallet/presentation/accounts_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/create_wallet_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/import_wallet_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/confirm_mnemonic_screen.dart';
@@ -71,10 +73,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, _) => const BackupMnemonicScreen(),
       ),
       GoRoute(path: RouteNames.lock, builder: (_, _) => const LockScreen()),
-      GoRoute(path: RouteNames.home, builder: (_, _) => const HomeScreen()),
+      ShellRoute(
+        builder: (_, state, child) {
+          return AppShell(location: state.matchedLocation, child: child);
+        },
+        routes: [
+          GoRoute(path: RouteNames.home, builder: (_, _) => const HomeScreen()),
+          GoRoute(
+            path: RouteNames.assets,
+            builder: (_, _) => const AssetsScreen(),
+          ),
+          GoRoute(
+            path: RouteNames.history,
+            builder: (_, _) => const HistoryScreen(),
+          ),
+          GoRoute(
+            path: RouteNames.settings,
+            builder: (_, _) => const SettingsScreen(),
+          ),
+        ],
+      ),
       GoRoute(
-        path: RouteNames.settings,
-        builder: (_, _) => const SettingsScreen(),
+        path: RouteNames.accounts,
+        builder: (_, _) => const AccountsScreen(),
       ),
       GoRoute(path: RouteNames.send, builder: (_, _) => const SendScreen()),
       GoRoute(
@@ -85,14 +106,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: RouteNames.signing,
         builder: (_, _) => const SigningScreen(),
       ),
-      GoRoute(path: RouteNames.assets, builder: (_, _) => const AssetsScreen()),
       GoRoute(
         path: RouteNames.addToken,
         builder: (_, _) => const AddTokenScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.history,
-        builder: (_, _) => const HistoryScreen(),
       ),
       GoRoute(
         path: RouteNames.transactionDetail,

@@ -9,6 +9,7 @@ abstract final class RouteNames {
   static const confirmMnemonic = '/confirm-mnemonic';
   static const lock = '/lock';
   static const home = '/home';
+  static const accounts = '/accounts';
   static const settings = '/settings';
   static const send = '/send';
   static const receive = '/receive';

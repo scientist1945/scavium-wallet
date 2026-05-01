@@ -392,3 +392,45 @@ The wallet does not claim incoming transaction discovery, external transaction i
 Signing is not transaction submission.
 
 Signing uses active wallet credentials to produce a signature for an explicit message/challenge after preview and confirmation. It does not submit transactions, refresh balances, write transaction-history entries, or alter backup payloads.
+---
+
+## 🧭 Phase 8.4 Navigation Shell Architecture
+
+Phase 8.4 adds a navigation shell layer without changing the ownership model of the wallet features.
+
+The navigation-shell layer is structured as:
+
+```text
+app/router
+  owns route names, route classification, route registration, and redirects
+
+app/shell
+  owns authenticated shell composition, primary destination metadata, and responsive navigation chrome
+
+features/*/presentation
+  continue to own feature-specific screens and user workflows
+
+features/*/application
+  continue to own Riverpod feature state and business coordination
+```
+
+Implemented shell files:
+
+- `lib/app/router/app_route_category.dart`
+- `lib/app/shell/app_shell.dart`
+- `lib/app/shell/app_shell_destination.dart`
+- `lib/app/shell/responsive_navigation.dart`
+
+`GoRouter` remains the only routing owner. `ShellRoute` is used only to compose primary authenticated destinations.
+
+Primary shell destinations are:
+
+- Home
+- Assets
+- Activity
+- Settings
+
+Secondary/action/detail routes remain explicit and outside shell business ownership, including Accounts, Send, Receive, Signing, Add Token, Send Token, Asset Detail, Transaction Detail, RPC Diagnostics, backup export, onboarding, wallet entry, and lock.
+
+The shell does not own wallet identity, account selection, assets, transaction history, signing, backup/restore, RPC diagnostics, or destructive actions. Those remain inside their existing feature boundaries.
+

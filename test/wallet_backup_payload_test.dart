@@ -8,7 +8,8 @@ void main() {
         createdAt: DateTime.utc(2026),
         wallet: const WalletBackupWallet(
           type: 'mnemonic',
-          mnemonic: 'test test test test test test test test test test test junk',
+          mnemonic:
+              'test test test test test test test test test test test junk',
           privateKey: null,
           address: '0x1111111111111111111111111111111111111111',
           accountName: 'Main account',
@@ -37,6 +38,8 @@ void main() {
             name: 'Imported account',
             label: 'Imported account',
             address: '0x2222222222222222222222222222222222222222',
+            privateKey:
+                '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
             accountIndex: 0,
             isImportedByPrivateKey: true,
             isDefault: true,
@@ -58,35 +61,39 @@ void main() {
       expect(decoded.validate, returnsNormally);
     });
 
-    test('rejects v2 payloads whose account list misses the wallet address', () {
-      final payload = WalletBackupPayload.v2(
-        createdAt: DateTime.utc(2026),
-        wallet: const WalletBackupWallet(
-          type: 'mnemonic',
-          mnemonic: 'test test test test test test test test test test test junk',
-          privateKey: null,
-          address: '0x3333333333333333333333333333333333333333',
-          accountName: 'Main account',
-        ),
-        accounts: const <WalletBackupAccount>[
-          WalletBackupAccount(
-            id: '0x4444444444444444444444444444444444444444:0',
-            name: 'Other account',
-            label: 'Other account',
-            address: '0x4444444444444444444444444444444444444444',
-            accountIndex: 0,
-            isImportedByPrivateKey: false,
-            isDefault: true,
-            isActive: true,
-            createdAt: null,
-            updatedAt: null,
+    test(
+      'rejects v2 payloads whose account list misses the wallet address',
+      () {
+        final payload = WalletBackupPayload.v2(
+          createdAt: DateTime.utc(2026),
+          wallet: const WalletBackupWallet(
+            type: 'mnemonic',
+            mnemonic:
+                'test test test test test test test test test test test junk',
+            privateKey: null,
+            address: '0x3333333333333333333333333333333333333333',
+            accountName: 'Main account',
           ),
-        ],
-        activeAccountId: '0x4444444444444444444444444444444444444444:0',
-        defaultAccountId: '0x4444444444444444444444444444444444444444:0',
-      );
+          accounts: const <WalletBackupAccount>[
+            WalletBackupAccount(
+              id: '0x4444444444444444444444444444444444444444:0',
+              name: 'Other account',
+              label: 'Other account',
+              address: '0x4444444444444444444444444444444444444444',
+              accountIndex: 0,
+              isImportedByPrivateKey: false,
+              isDefault: true,
+              isActive: true,
+              createdAt: null,
+              updatedAt: null,
+            ),
+          ],
+          activeAccountId: '0x4444444444444444444444444444444444444444:0',
+          defaultAccountId: '0x4444444444444444444444444444444444444444:0',
+        );
 
-      expect(payload.validate, throwsException);
-    });
+        expect(payload.validate, throwsException);
+      },
+    );
   });
 }

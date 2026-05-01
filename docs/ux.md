@@ -226,3 +226,34 @@ Implemented signing UX improvements:
 The UX remains intentionally bounded.
 
 The activity surface is not a full explorer, and signing is not a transaction workflow. Those distinctions must remain visible in later navigation or product-surface phases.
+---
+
+## 🧭 Phase 8.4 Navigation Shell and Product Surface UX
+
+Phase 8.4 improves the wallet from a mostly one-page product surface into a shell-based product surface while preserving explicit workflows.
+
+Implemented navigation UX:
+
+- compact layouts use bottom navigation for primary destinations;
+- wide layouts use a navigation rail for primary destinations;
+- primary destinations are Home, Assets, Activity, and Settings;
+- action/detail flows remain explicit routes rather than hidden shell behavior.
+
+Implemented product-surface UX:
+
+- Home acts as a dashboard summary instead of the only product map;
+- Assets remains the detailed asset-management surface;
+- Activity remains the full local outgoing-history surface;
+- Accounts provides dedicated placement for active-account controls;
+- Settings groups security/recovery, signing, diagnostics, danger-zone actions, and about information.
+
+Safety UX preserved by this phase:
+
+- signing remains explicit and confirmation-oriented;
+- reset remains confirmation-gated;
+- backup export remains a deliberate settings action;
+- RPC diagnostics remains an explicit diagnostic route;
+- shell navigation does not imply background wallet mutation.
+
+The UX remains intentionally bounded. Phase 8.4 does not add dApp connectivity, automatic token discovery, external activity indexing, account deletion, account label editing, or new backup semantics.
+

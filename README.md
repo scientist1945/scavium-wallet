@@ -23,7 +23,7 @@ Current platform and release scope includes:
 - Windows MSIX packaging
 - GitHub Release automation
 
-The wallet completed Phase 7 stabilization and is currently progressing through Phase 8 product expansion and production maturity.
+The wallet completed Phase 7 stabilization and is currently progressing through Phase 8 product expansion and production maturity, with Phase 8.4 navigation-shell and product-surface maturity now complete.
 
 Phase 8 focuses on controlled product growth from the Phase 7 release-hardened baseline, including:
 
@@ -51,12 +51,14 @@ Completed phases:
 - Phase 7 — Stabilization
 - Phase 8.1 — Account Model Expansion
 - Phase 8.2 — Asset & Portfolio Expansion
+- Phase 8.3 — Transaction & Activity Maturity
+- Phase 8.4 — Navigation Shell and Product Surface Scaling
 
 Current Phase 8 milestone:
 
 - Phase 8.2 completed — Asset & Portfolio Expansion
 - Phase 8.3 completed — Transaction & Activity Maturity
-- Next planned product-expansion area: Phase 8.4 — Navigation Shell and Product Surface Scaling
+- Phase 8.4 completed — Navigation Shell and Product Surface Scaling
 
 Completed Phase 7 stabilization work includes:
 
@@ -86,6 +88,27 @@ Completed Phase 8.2 asset expansion work includes:
 - 8.2.3 — Manual Token Safety & Metadata UX
 - 8.2.4 — Asset Surface Polish
 - 8.2.close — Asset & Portfolio Expansion Closure
+
+Completed Phase 8.3 transaction and activity maturity work includes:
+
+- 8.3.0 — Transaction & Activity Contract Definition and Baseline Inspection
+- 8.3.1 — Transaction History State Model Maturity
+- 8.3.2 — Transaction Detail and Receipt-Oriented Activity View
+- 8.3.3 — Activity Filtering, Grouping, and Empty/Error State Maturity
+- 8.3.4 — Message Signing Domain and Service Boundary
+- 8.3.5 — Message Signing UX, Confirmation, and Result Display
+- 8.3.close — Transaction & Activity Maturity Closure
+
+Completed Phase 8.4 navigation and product-surface work includes:
+
+- 8.4.0 — Navigation Shell Baseline Inspection and Product Surface Contract
+- 8.4.1 — Route Inventory and Shell Navigation Contract
+- 8.4.2 — Responsive App Shell Foundation
+- 8.4.3 — Dashboard and Product Surface Segmentation
+- 8.4.4 — Wallet and Account Surface Placement
+- 8.4.5 — Settings, Diagnostics, and Secondary Action Organization
+- 8.4.close — UX & Product Surface Maturity Closure
+
 
 ---
 
@@ -334,8 +357,35 @@ The implementation remains intentionally bounded:
 - no dApp connectivity;
 - no transaction submission from signing;
 - no backup payload change;
+- no release pipeline change.
+
+---
+
+## 🧭 Phase 8.4 Navigation Shell and Product Surface Scaling
+
+Phase 8.4 completed navigation-shell and product-surface maturity on top of the Phase 8.3 transaction/activity/signing baseline.
+
+Implemented capabilities include:
+
+- formal route classification for primary, public, lock, action, detail, and secondary routes;
+- authenticated `ShellRoute` usage for primary destinations;
+- responsive navigation chrome with compact bottom navigation and wide-layout navigation rail;
+- primary destinations for Home, Assets, Activity, and Settings;
+- Home dashboard segmentation with balance, account context, network/RPC summaries, quick actions, and recent activity preview;
+- dedicated Accounts surface for account-oriented wallet controls;
+- organized Settings sections for security/recovery, signing, diagnostics, danger-zone actions, and about information;
+- explicit preservation of send, receive, signing, add-token, token-send, asset-detail, transaction-detail, RPC diagnostics, backup export, and reset flows as secondary/action/detail destinations.
+
+The implementation remains intentionally bounded:
+
+- no external transaction indexer;
+- no automatic token discovery;
+- no dApp connectivity;
+- no account deletion or account label editing;
+- no backup payload change;
+- no wallet encryption change;
 - no release pipeline change;
-- no Phase 8.4 navigation shell redesign.
+- no shell-owned business state.
 
 ---
 

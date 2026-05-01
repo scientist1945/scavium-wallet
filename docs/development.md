@@ -237,3 +237,40 @@ fvm flutter test
 ```
 
 Documentation closure must be performed after code subphases are reviewed so trunk documents describe the real working tree rather than planned implementation text.
+---
+
+## Phase 8.4 Development Boundary
+
+Phase 8.4 continued the controlled agent-assisted implementation flow and completed navigation-shell/product-surface maturity.
+
+The code subphases were intentionally limited to:
+
+- route classification and shell eligibility;
+- authenticated shell composition for primary destinations;
+- responsive compact and wide navigation chrome;
+- Home dashboard segmentation;
+- dedicated Accounts surface placement;
+- Settings organization for secondary actions and diagnostics.
+
+They did not alter:
+
+- backup payload formats;
+- wallet encryption;
+- transaction submission semantics;
+- release automation;
+- build automation;
+- store publication flow;
+- external transaction indexing;
+- automatic token discovery;
+- dApp connectivity;
+- shell-owned feature state.
+
+Expected local validation remains:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+During documentation closure in this environment, those commands could not be executed because `fvm`, `flutter`, and `dart` were not available in the execution container. The project-local validation expectation remains unchanged.
+
