@@ -37,6 +37,8 @@ Phase 8 is active and currently completed through:
 
 The next planned product-expansion area is Phase 8.3 — Transaction & Activity Maturity.
 
+Phase 8.3 now has a formalized documentation plan and subphase map for controlled future execution. No Phase 8.3 runtime implementation is recorded as completed yet.
+
 ---
 
 ## Completed Phase 8.1 account model foundation
@@ -83,3 +85,28 @@ The next planned product-expansion area is Phase 8.3 — Transaction & Activity 
 
 - 8.2.close — Asset & Portfolio Expansion Closure  
   Consolidated Phase 8.2 documentation across trunk project documents.
+
+---
+
+## Planned Phase 8.3 transaction and activity maturity
+
+- 8.3.0 — Transaction & Activity Contract Definition and Baseline Inspection  
+  Documents the Phase 8.3 execution contract from the real Phase 8.2-completed baseline.
+
+- 8.3.1 — Transaction History State Model Maturity  
+  Plans safer transaction status semantics, local history compatibility, and receipt refresh behavior.
+
+- 8.3.2 — Transaction Detail and Receipt-Oriented Activity View  
+  Plans a clearer first-party transaction detail experience without adding external indexer ownership.
+
+- 8.3.3 — Activity Filtering, Grouping, and Empty/Error State Maturity  
+  Plans local activity filtering and grouping while preserving the current outgoing-history scope.
+
+- 8.3.4 — Message Signing Domain and Service Boundary  
+  Plans explicit `signPersonalMessage(...)` and `signChallengeMessage(...)` foundations separated from transaction submission.
+
+- 8.3.5 — Message Signing UX, Confirmation, and Result Display  
+  Plans explicit signing preview, confirmation, cancellation, result display, and safe error handling.
+
+- 8.3.close — Transaction & Activity Maturity Closure  
+  Reserved for final documentation closure after runtime implementation is completed and validated.
