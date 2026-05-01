@@ -35,9 +35,9 @@ Phase 8 is active and currently completed through:
 - Phase 8.1 — Account Model Expansion
 - Phase 8.2 — Asset & Portfolio Expansion
 
-The next planned product-expansion area is Phase 8.3 — Transaction & Activity Maturity.
+The active product-expansion area is Phase 8.3 — Transaction & Activity Maturity.
 
-Phase 8.3 now has a formalized documentation plan and subphase map for controlled future execution. No Phase 8.3 runtime implementation is recorded as completed yet.
+Phase 8.3 now has a formalized documentation plan and subphase map for controlled future execution. Phase 8.3.0 is completed as a documentation-only baseline inspection and execution contract lock. No Phase 8.3 runtime implementation is recorded as completed yet.
 
 ---
 
@@ -88,10 +88,10 @@ Phase 8.3 now has a formalized documentation plan and subphase map for controlle
 
 ---
 
-## Planned Phase 8.3 transaction and activity maturity
+## Active Phase 8.3 transaction and activity maturity
 
 - 8.3.0 — Transaction & Activity Contract Definition and Baseline Inspection  
-  Documents the Phase 8.3 execution contract from the real Phase 8.2-completed baseline.
+  Completed as a documentation-only baseline inspection and execution contract lock from the real Phase 8.2-completed codebase.
 
 - 8.3.1 — Transaction History State Model Maturity  
   Plans safer transaction status semantics, local history compatibility, and receipt refresh behavior.

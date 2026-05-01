@@ -1569,30 +1569,81 @@ The baseline currently includes:
 
 ### State
 
-New subphase generated from the existing Phase 8.3 parent section.
+Implemented as a documentation-only baseline inspection and execution contract lock.
 
-### Existing Files Tentatively Intervened
+No runtime code was modified in this subphase. The current transaction and activity implementation was inspected and confirmed as the baseline for the remaining Phase 8.3 code subphases.
 
-- `docs/phase8_scavium_wallet.md` — document the Phase 8.3 execution contract, subphase map, and expected validation gates.
-- `docs/index.md` — update the documentation index to indicate that Phase 8.3 has a formalized execution plan.
-- `docs/architecture.md` — only if implementation later requires documenting a durable activity/signing boundary.
-- `docs/features.md` — only after runtime capability is actually implemented.
-- `docs/flows.md` — only after transaction detail, activity filtering, or signing flows are implemented.
-- `docs/ux.md` — only after user-facing activity or signing surfaces are implemented.
+### Existing Files Intervened
 
-### New Files Tentatively Created
+- `docs/phase8_scavium_wallet.md` — records the completed Phase 8.3.0 baseline inspection, confirms the Phase 8.3 execution contract, and preserves the remaining subphase map.
+- `docs/index.md` — records Phase 8.3.0 as completed while keeping Phase 8.3.1 through 8.3.close planned.
 
-No new runtime files are expected in this documentation-only subphase.
+The following documents were reviewed as trunk documentation but did not require modification in this subphase:
+
+- `README.md`
+- `docs/architecture.md`
+- `docs/architecture_deep.md`
+- `docs/decisions.md`
+- `docs/development.md`
+- `docs/features.md`
+- `docs/flows.md`
+- `docs/phase1_scavium_wallet.md`
+- `docs/phase2_scavium_wallet.md`
+- `docs/phase3_scavium_wallet.md`
+- `docs/phase4_scavium_wallet.md`
+- `docs/phase5_scavium_wallet.md`
+- `docs/phase6_scavium_wallet.md`
+- `docs/phase7_scavium_wallet.md`
+- `docs/privacy_policy.md`
+- `docs/release.md`
+- `docs/rpc.md`
+- `docs/s.md`
+- `docs/security.md`
+- `docs/ux.md`
+
+### New Files Created
+
+No new files were created in this documentation-only subphase.
 
 ### Technical Justification
 
 Phase 8.3 expands a sensitive wallet area. Transaction history, receipt interpretation, activity display, and message signing must be planned before code changes so signing is not implemented as a hidden convenience action and activity maturity does not become an uncontrolled explorer/indexer rewrite.
 
+### Baseline Inspection Result
+
+Phase 8.3.0 confirms that the Phase 8.2-completed codebase already contains a local outgoing-transaction baseline suitable for controlled Phase 8.3 expansion. The inspected runtime baseline includes:
+
+- `lib/features/assets/domain/tx_history_entry.dart` as the persisted transaction-history record;
+- `lib/features/assets/domain/tx_status.dart` with `pending`, `confirmed`, and `failed`;
+- `lib/features/assets/domain/tx_kind.dart` with `nativeSend` and `erc20Send`;
+- `lib/features/assets/domain/tx_history_repository.dart` as the persistence contract;
+- `lib/features/assets/data/tx_history_repository_impl.dart` as the local JSON-backed repository implementation;
+- `lib/features/assets/application/tx_history_controller.dart` as the Riverpod state owner for history loading, insertion, and receipt refresh;
+- `lib/features/assets/presentation/history_screen.dart` as the current first-party history route;
+- `lib/features/blockchain/application/send_transaction_controller.dart` as the native-send writer of local history entries;
+- `lib/features/blockchain/application/send_token_controller.dart` as the ERC-20-send writer of local history entries;
+- `lib/features/blockchain/data/scavium_rpc_service.dart` as the owner of receipt reads through `getReceipt(...)`;
+- `lib/features/assets/domain/transaction_feed_item.dart`, `lib/features/assets/domain/transaction_feed_repository.dart`, and `lib/features/assets/data/transaction_feed_repository_impl.dart` as an existing but currently empty transaction-feed boundary.
+
+### Execution Contract Locked for Remaining Phase 8.3 Subphases
+
+The remaining Phase 8.3 implementation must preserve these boundaries:
+
+- local outgoing history remains the current first-party activity source;
+- incoming activity remains out of scope unless a durable explorer/indexer boundary is explicitly introduced later;
+- receipt refresh must stay explicit and must not imply full chain indexing;
+- transaction detail maturity must build on existing local records and available receipts;
+- activity filtering/grouping must operate over locally available data first;
+- message signing must be implemented as a separate domain/service boundary, not as a transaction submission shortcut;
+- signing UX must require explicit preview, confirmation, cancellation, and visible result handling;
+- Phase 8.3 must not change backup payloads, release tooling, or the Phase 8.4 navigation shell scope.
+
 ### Expected Validations
 
-- Confirm that Phase 8.3 is documented without modifying runtime code.
+- Confirm that Phase 8.3.0 is completed without modifying runtime code.
 - Confirm that `.agent/*` files are not generated.
 - Confirm that documentation changes are incremental and do not rewrite trunk documents.
+- Confirm that the remaining Phase 8.3 subphases are still planned and not marked as implemented by this baseline-only step.
 
 ---
 
