@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scavium_wallet/core/config/app_config.dart';
 import 'package:scavium_wallet/features/assets/application/token_registry_controller.dart';
 import 'package:scavium_wallet/features/assets/data/token_registry_repository_impl.dart';
+import 'package:scavium_wallet/features/assets/domain/asset_account_context.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_kind.dart';
 import 'package:scavium_wallet/features/blockchain/data/scavium_rpc_service.dart';
+import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:web3dart/web3dart.dart';
 
 final assetsControllerProvider =
@@ -17,12 +19,14 @@ class AssetsController extends AsyncNotifier<List<AssetItem>> {
   Future<List<AssetItem>> build() async {
     final rpc = ref.read(scaviumRpcServiceProvider);
     final tokens = ref.watch(tokenRegistryControllerProvider).valueOrNull ?? [];
+    final accountContext = _activeAccountContext();
 
     final native = await rpc.getNativeBalance();
 
     final items = <AssetItem>[
       AssetItem(
         kind: AssetKind.native,
+        accountContext: accountContext,
         title: 'SCAVIUM',
         symbol: AppConfig.current.nativeSymbol,
         contractAddress: null,
@@ -39,6 +43,7 @@ class AssetsController extends AsyncNotifier<List<AssetItem>> {
       items.add(
         AssetItem(
           kind: AssetKind.erc20,
+          accountContext: accountContext,
           title: token.name,
           symbol: token.symbol,
           contractAddress: token.contractAddress,
@@ -59,12 +64,14 @@ class AssetsController extends AsyncNotifier<List<AssetItem>> {
       final rpc = ref.read(scaviumRpcServiceProvider);
       final tokens =
           await ref.read(tokenRegistryRepositoryProvider).getTokens();
+      final accountContext = _activeAccountContext();
 
       final native = await rpc.getNativeBalance();
 
       final items = <AssetItem>[
         AssetItem(
           kind: AssetKind.native,
+          accountContext: accountContext,
           title: 'SCAVIUM',
           symbol: AppConfig.current.nativeSymbol,
           contractAddress: null,
@@ -81,6 +88,7 @@ class AssetsController extends AsyncNotifier<List<AssetItem>> {
         items.add(
           AssetItem(
             kind: AssetKind.erc20,
+            accountContext: accountContext,
             title: token.name,
             symbol: token.symbol,
             contractAddress: token.contractAddress,
@@ -93,6 +101,15 @@ class AssetsController extends AsyncNotifier<List<AssetItem>> {
 
       return items;
     });
+  }
+
+  AssetAccountContext? _activeAccountContext() {
+    final account =
+        ref.watch(walletControllerProvider).valueOrNull?.activeAccount;
+    if (account == null) {
+      return null;
+    }
+    return AssetAccountContext.fromWalletAccount(account);
   }
 
   String _formatUnits(BigInt value, int decimals) {

@@ -32,30 +32,42 @@ class TokenRegistryRepositoryImpl implements TokenRegistryRepository {
   @override
   Future<void> saveTokens(List<TokenInfo> tokens) async {
     final storage = ref.read(localStorageProvider);
-    final raw = jsonEncode(tokens.map((e) => e.toJson()).toList());
+    final normalizedTokens = _dedupeTokens(tokens);
+    final raw = jsonEncode(normalizedTokens.map((e) => e.toJson()).toList());
     await storage.setString(StorageKeys.tokenRegistryJson, raw);
   }
 
   @override
   Future<void> addToken(TokenInfo token) async {
     final items = await getTokens();
+    final normalizedToken = token.normalized();
     final exists = items.any(
-      (e) =>
-          e.contractAddress.toLowerCase() ==
-          token.contractAddress.toLowerCase(),
+      (e) => e.contractAddress == normalizedToken.contractAddress,
     );
     if (exists) return;
 
-    items.add(token);
+    items.add(normalizedToken);
     await saveTokens(items);
   }
 
   @override
   Future<void> removeToken(String contractAddress) async {
     final items = await getTokens();
-    items.removeWhere(
-      (e) => e.contractAddress.toLowerCase() == contractAddress.toLowerCase(),
+    final normalizedAddress = TokenInfo.normalizeContractAddress(
+      contractAddress,
     );
+    items.removeWhere((e) => e.contractAddress == normalizedAddress);
     await saveTokens(items);
+  }
+
+  List<TokenInfo> _dedupeTokens(List<TokenInfo> tokens) {
+    final byAddress = <String, TokenInfo>{};
+    for (final token in tokens) {
+      final normalizedToken = token.normalized();
+      byAddress.putIfAbsent(normalizedToken.contractAddress, () {
+        return normalizedToken;
+      });
+    }
+    return byAddress.values.toList(growable: false);
   }
 }
