@@ -26,6 +26,7 @@ Future<void> main(List<String> args) async {
     overrideVersion: options.version,
     noVersionBump: options.noVersionBump,
   );
+  final expectedArtifacts = artifactExpectationsFor(options.platform);
 
   success('Using version ${versionInfo.fullVersion}');
 
@@ -65,7 +66,12 @@ Future<void> main(List<String> args) async {
       break;
   }
 
-  showArtifacts();
+  final artifactReports = resolveArtifactReports(expectedArtifacts);
+  showBuildSummary(
+    platform: options.platform,
+    version: versionInfo,
+    artifactReports: artifactReports,
+  );
 
   logSection('DONE');
   success('Build completed successfully: ${versionInfo.fullVersion}');
@@ -192,6 +198,43 @@ class VersionInfo {
   const VersionInfo({required this.buildName, required this.buildNumber});
 
   String get fullVersion => '$buildName+$buildNumber';
+}
+
+class ArtifactExpectation {
+  final String label;
+  final List<String> paths;
+  final String? searchRoot;
+  final String? latestExtension;
+
+  const ArtifactExpectation({
+    required this.label,
+    required this.paths,
+    this.searchRoot,
+    this.latestExtension,
+  });
+}
+
+class ArtifactReport {
+  final String label;
+  final String path;
+  final bool exists;
+
+  const ArtifactReport({
+    required this.label,
+    required this.path,
+    required this.exists,
+  });
+}
+
+String platformLabel(BuildPlatform platform) {
+  return switch (platform) {
+    BuildPlatform.androidApk => 'android-apk',
+    BuildPlatform.androidBundle => 'android-bundle',
+    BuildPlatform.web => 'web',
+    BuildPlatform.windows => 'windows',
+    BuildPlatform.windowsMsix => 'windows-msix',
+    BuildPlatform.all => 'all',
+  };
 }
 
 void validateExpectedTagAgainstPubspec({
@@ -566,30 +609,34 @@ Future<void> verifyMsixSignature() async {
 }
 
 File? findLatestMsixFile() {
-  final buildDir = Directory('build/windows');
+  return findLatestFile(searchRoot: 'build/windows', extension: '.msix');
+}
+
+File? findLatestFile({required String searchRoot, required String extension}) {
+  final buildDir = Directory(searchRoot);
 
   if (!buildDir.existsSync()) {
     return null;
   }
 
-  final msixFiles =
+  final matches =
       buildDir
           .listSync(recursive: true)
           .whereType<File>()
-          .where((f) => f.path.toLowerCase().endsWith('.msix'))
+          .where((f) => f.path.toLowerCase().endsWith(extension.toLowerCase()))
           .toList();
 
-  if (msixFiles.isEmpty) {
+  if (matches.isEmpty) {
     return null;
   }
 
-  msixFiles.sort((a, b) {
+  matches.sort((a, b) {
     final aModified = a.statSync().modified;
     final bModified = b.statSync().modified;
     return bModified.compareTo(aModified);
   });
 
-  return msixFiles.first;
+  return matches.first;
 }
 
 Future<void> trySignMsix() async {
@@ -646,27 +693,105 @@ Future<void> runCommand(String command, List<String> arguments) async {
   }
 }
 
-void showArtifacts() {
+List<ArtifactExpectation> artifactExpectationsFor(BuildPlatform platform) {
+  final androidApk = ArtifactExpectation(
+    label: 'Android APK',
+    paths: const ['build/app/outputs/flutter-apk/app-release.apk'],
+  );
+  final androidBundle = ArtifactExpectation(
+    label: 'Android App Bundle',
+    paths: const ['build/app/outputs/bundle/release/app-release.aab'],
+  );
+  final web = ArtifactExpectation(label: 'Web', paths: const ['build/web']);
+  final windows = ArtifactExpectation(
+    label: 'Windows runner',
+    paths: const [
+      'build/windows/x64/runner/Release',
+      'build/windows/runner/Release',
+    ],
+  );
+  final windowsMsix = ArtifactExpectation(
+    label: 'Windows MSIX',
+    paths: const ['build/windows/**/*.msix'],
+    searchRoot: 'build/windows',
+    latestExtension: '.msix',
+  );
+
+  return switch (platform) {
+    BuildPlatform.androidApk => [androidApk],
+    BuildPlatform.androidBundle => [androidBundle],
+    BuildPlatform.web => [web],
+    BuildPlatform.windows => [windows],
+    BuildPlatform.windowsMsix => [windows, windowsMsix],
+    BuildPlatform.all => [androidApk, androidBundle, web, windows, windowsMsix],
+  };
+}
+
+List<ArtifactReport> resolveArtifactReports(
+  List<ArtifactExpectation> expectations,
+) {
+  return expectations.map(resolveArtifactReport).toList(growable: false);
+}
+
+ArtifactReport resolveArtifactReport(ArtifactExpectation expectation) {
+  final searchRoot = expectation.searchRoot;
+  final latestExtension = expectation.latestExtension;
+
+  if (searchRoot != null && latestExtension != null) {
+    final latest = findLatestFile(
+      searchRoot: searchRoot,
+      extension: latestExtension,
+    );
+
+    return ArtifactReport(
+      label: expectation.label,
+      path: latest?.path ?? expectation.paths.join(' | '),
+      exists: latest != null && latest.existsSync(),
+    );
+  }
+
+  for (final path in expectation.paths) {
+    final file = File(path);
+    if (file.existsSync()) {
+      return ArtifactReport(label: expectation.label, path: path, exists: true);
+    }
+
+    final dir = Directory(path);
+    if (dir.existsSync()) {
+      return ArtifactReport(label: expectation.label, path: path, exists: true);
+    }
+  }
+
+  return ArtifactReport(
+    label: expectation.label,
+    path: expectation.paths.join(' | '),
+    exists: false,
+  );
+}
+
+void showBuildSummary({
+  required BuildPlatform platform,
+  required VersionInfo version,
+  required List<ArtifactReport> artifactReports,
+}) {
+  logSection('Build Summary');
+  info('Platform: ${platformLabel(platform)}');
+  info('Version: ${version.fullVersion}');
+
   logSection('Artifacts');
 
-  final artifactPaths = <String>[
-    'build/app/outputs/flutter-apk/app-release.apk',
-    'build/app/outputs/bundle/release/app-release.aab',
-    'build/web',
-    'build/windows/x64/runner/Release',
-    'build/windows/runner/Release',
-    'build/windows',
-  ];
-
-  for (final path in artifactPaths) {
-    final file = File(path);
-    final dir = Directory(path);
-
-    if (file.existsSync()) {
-      success(file.path);
-    } else if (dir.existsSync()) {
-      success(dir.path);
+  for (final report in artifactReports) {
+    if (report.exists) {
+      success('${report.label}: ${report.path}');
+    } else {
+      warn('${report.label}: missing expected output (${report.path})');
     }
+  }
+
+  final missing = artifactReports.where((report) => !report.exists).toList();
+  if (missing.isNotEmpty) {
+    final labels = missing.map((report) => report.label).join(', ');
+    fail('Missing expected build artifacts: $labels');
   }
 }
 
