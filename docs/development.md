@@ -317,18 +317,18 @@ Those commands are the correct validation gate for the developer workstation or 
 
 ## Phase 8.6 Development Boundary
 
-Phase 8.6 is active as a release and distribution maturity extension after Phase 8.5. Phase 8.6.0 completed the baseline inspection and execution contract without modifying runtime code, release workflow source, or generated operational files.
+Phase 8.6 is complete as a release and distribution maturity extension after Phase 8.5. It closed without modifying wallet runtime behavior or introducing a new release ownership model.
 
-The phase is intentionally limited to release-tooling and distribution-documentation concerns:
+The phase remained limited to release-tooling and distribution-documentation concerns:
 
 - `tool/build.dart` build automation maturity;
 - `.github/workflows/release.yml` release workflow consistency;
-- version, artifact, checksum, and report consistency;
+- version, artifact, checksum, manifest, and report consistency;
 - release validation and operator reporting;
 - distribution metadata and store-readiness documentation;
 - cross-platform packaging expectations for Android, Web, and Windows.
 
-It must not alter:
+It did not alter:
 
 - wallet account persistence ownership;
 - asset, transaction, signing, backup, restore, diagnostics, routing, or lock runtime behavior;
@@ -338,7 +338,7 @@ It must not alter:
 - telemetry or analytics behavior;
 - automatic Play Store upload, Microsoft Store submission, iOS distribution, or runtime update delivery.
 
-Expected local validation for implementation subphases depends on the exact files touched, but the release-tooling baseline is:
+Expected local validation for release-tooling work remains:
 
 ```bash
 fvm flutter analyze
@@ -350,4 +350,6 @@ dart run tool/build.dart --platform web --no-version-bump
 dart run tool/build.dart --platform windows-msix --no-version-bump
 ```
 
-Documentation-only subphases must not generate `.agent/*` files, must not modify runtime source, and must update only the Markdown files required to keep the documentation trunk coherent. Phase 8.6.0 followed this boundary and confirmed `tool/build.dart`, `.github/workflows/release.yml`, `pubspec.yaml`, and `docs/release.md` as the real release baseline owners for subsequent 8.6 implementation work.
+Phase 8.6 generated release reports under `build/release/` and CI release metadata under the GitHub Release asset directory. Those outputs are generated evidence and must not be confused with committed source files.
+
+Future development phases must preserve the Phase 8.6 boundary unless a later phase explicitly expands release automation. Store upload, store submission, runtime update delivery, analytics, telemetry, iOS distribution, WalletConnect, dApp connectivity, and wallet runtime feature expansion remain out of scope after this closure.

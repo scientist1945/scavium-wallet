@@ -452,36 +452,99 @@ These checks complement existing release validation. They do not replace `fvm fl
 
 ---
 
-## 🚧 Phase 8.6 Release & Distribution Maturity
+## ✅ Phase 8.6 Release & Distribution Maturity
 
-Phase 8.6 is the active release/distribution maturity extension after Phase 8.5 closure. It starts from the existing Phase 7 release-hardening baseline and the current Phase 8.5 runtime-hardening state. Phase 8.6.0 is complete as the baseline inspection and execution contract.
+Phase 8.6 is complete as the release/distribution maturity extension after Phase 8.5 closure. It starts from the existing Phase 7 release-hardening baseline and the Phase 8 runtime-hardening state, but it does not reopen runtime wallet behavior.
 
-The 8.6.0 baseline inspection confirmed that the real baseline already includes:
+The closed Phase 8.6 release baseline now includes:
 
-- `tool/build.dart` for local build automation, version handling, platform selection, MSIX synchronization, CI overrides, artifact discovery, and local signing/verification behavior.
-- `.github/workflows/release.yml` for tag/manual release validation, Android release artifact generation, Windows MSIX generation, SHA256 checksum generation, artifact upload/download, and draft GitHub Release publication.
-- `pubspec.yaml` for semantic version/build-number ownership and MSIX metadata.
+- `tool/build.dart` for local build automation, version handling, platform selection, MSIX synchronization, CI overrides, artifact discovery, artifact expectation checks, generated release reports, and local signing/verification behavior.
+- `.github/workflows/release.yml` for tag/manual release validation, Android release artifact generation, Windows MSIX generation, versioned release asset collection, platform release-report publication, CI-generated `release-manifest.json`, SHA256 checksum generation, artifact upload/download, and draft GitHub Release publication.
+- `pubspec.yaml` as the version and packaging metadata source, currently `version: 0.2.1+12` with `msix_config.msix_version: 0.2.1.12`.
+- this document as the operator-facing release and distribution reference.
 
-Remaining planned 8.6 maturity areas are:
+Phase 8.6 completed work:
 
-- build-tool artifact and version consistency;
-- GitHub Release workflow artifact consistency;
-- release validation and operator reporting;
-- distribution metadata and store-readiness documentation;
-- cross-platform packaging consistency before closure.
+- 8.6.0 — Release & Distribution Baseline Inspection and Execution Contract
+- 8.6.1 — Build Tool Artifact and Version Consistency Maturity
+- 8.6.2 — GitHub Release Workflow Artifact Consistency
+- 8.6.3 — Release Validation and Operator Reporting
+- 8.6.4 — Distribution Metadata and Store-Readiness Documentation
+- 8.6.5 — Cross-Platform Packaging Consistency and Release Closure Readiness
+- 8.6.close — Release & Distribution Maturity Extension Closure
 
-Phase 8.6 must remain bounded. It may mature release tooling and documentation, but it must not claim or implement automatic Play Store upload, automatic Microsoft Store submission, iOS distribution, runtime update delivery, telemetry, analytics, wallet-secret handling, backup format changes, or wallet runtime feature changes.
+### Generated release reports
 
-Expected validation remains grounded in the real release surfaces:
+`tool/build.dart` writes generated release reports under `build/release/` using the selected platform label. These reports are generated evidence, not committed source-controlled documentation.
 
-```bash
-dart run tool/build.dart --check-version --expected-tag v0.2.1
-dart run tool/build.dart --platform android-apk --no-version-bump
-dart run tool/build.dart --platform android-bundle --no-version-bump
-dart run tool/build.dart --platform web --no-version-bump
-dart run tool/build.dart --platform windows-msix --no-version-bump
-```
+A report records:
 
-CI validation must continue to confirm that Android artifacts, Windows MSIX artifacts, and SHA256 checksums are produced and attached to a draft GitHub Release through the existing workflow unless a later 8.6 implementation subphase explicitly changes that behavior.
+- tool identity;
+- generation timestamp;
+- selected platform;
+- semantic version, build number, and full version;
+- artifact labels, paths, existence state, and release-published classification;
+- missing artifact labels;
+- release-published platform labels;
+- local-support-only platform labels;
+- checksum responsibility boundary;
+- sensitive-data exclusion policy.
 
-Phase 8.6.0 did not change release code, workflow code, `pubspec.yaml`, signing material, generated artifacts, or runtime wallet behavior. Its completed purpose is to lock the inspected baseline so 8.6.1 and later subphases can improve release artifact/version consistency, workflow artifact consistency, validation/reporting, metadata documentation, and closure readiness without replacing proven release ownership.
+The report is intended to reduce operator ambiguity during local and CI release generation. It must not contain signing passwords, certificates, private keys, mnemonic data, wallet addresses, signatures, backup payload material, or other wallet-sensitive runtime data.
+
+### Release-published and local-support platform boundary
+
+Phase 8.6 makes the platform boundary explicit:
+
+- Android APK is a release-published artifact.
+- Android App Bundle is a release-published artifact.
+- Windows MSIX is a release-published artifact.
+- Web build output is local-support-only in the current release automation.
+- Unpackaged Windows runner output is local-support-only in the current release automation.
+
+The `all` build path may validate or produce multiple outputs locally, but GitHub Release publication remains limited to the supported release asset set collected by the workflow.
+
+### CI release manifest
+
+The release workflow generates `release-manifest.json` as a GitHub Release asset. It is not a committed source file.
+
+The manifest records:
+
+- application name;
+- version;
+- draft release status;
+- release-published platforms;
+- local-support-only platforms;
+- checksum file name;
+- checksum boundary;
+- sensitive-data policy.
+
+This manifest is operator-facing release metadata. It does not replace `pubspec.yaml`, does not become runtime configuration, and does not authorize automatic store submission.
+
+### Checksum boundary
+
+`SHA256SUMS.txt` is generated by the GitHub Release workflow after Android artifacts, Windows artifacts, platform reports, and `release-manifest.json` are collected under the release asset directory.
+
+Operators should treat checksums as release-asset verification evidence for the draft GitHub Release asset set. The checksum file does not validate source code, signing secrets, store submission state, or runtime wallet behavior.
+
+### Manual distribution boundary
+
+Phase 8.6 improves release readiness but keeps distribution submission manual.
+
+The following remain outside the implemented automation:
+
+- automatic Play Store upload;
+- automatic Microsoft Store submission;
+- iOS distribution;
+- runtime update delivery;
+- telemetry or analytics;
+- remote diagnostics reporting;
+- wallet-secret handling changes;
+- backup format changes;
+- dApp connectivity or WalletConnect.
+
+Before publishing outside GitHub Releases, an operator must still review the draft release, verify attached assets and checksums, confirm signing expectations, prepare store metadata where applicable, and perform the relevant manual distribution action.
+
+### Closure result
+
+Phase 8.6 closes with a clearer release evidence chain from local build execution to CI draft-release publication. The build tool reports expected outputs, the workflow carries generated reports and manifest metadata into the draft release, checksums cover the release asset set, and documentation distinguishes implemented release automation from manual distribution responsibilities.

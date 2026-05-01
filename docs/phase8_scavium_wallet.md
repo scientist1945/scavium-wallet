@@ -3213,7 +3213,9 @@ It must not replace the build tool with a different release system.
 
 ### State
 
-New planned implementation subphase generated from the Phase 8.6 release/distribution maturity scope.
+Completed implementation subphase.
+
+Phase 8.6.1 matured the existing `tool/build.dart` owner instead of introducing a parallel release tool.
 
 ### Existing Files Tentatively Intervenable
 
@@ -3242,6 +3244,24 @@ A deterministic artifact/version report reduces operator error when producing An
 - Artifact reporting does not falsely mark missing artifacts as successful.
 - Build automation remains usable locally and in CI.
 
+### Execution Result
+
+Phase 8.6.1 completed the build-tool artifact and version consistency maturity work.
+
+The implementation strengthened `tool/build.dart` as the single local build automation owner by adding structured artifact expectations, artifact existence checks, deterministic build summary output, and generated JSON release reports under `build/release/`.
+
+The release report records the tool name, generation timestamp, selected platform, semantic version/build number, artifact paths, missing artifact labels, release-published platforms, local-support-only platforms, checksum boundary, and sensitive-data exclusion policy.
+
+The implementation preserved existing platform arguments and version behavior. It did not replace the build tool, did not introduce a separate committed release-manifest source file, and did not change wallet runtime behavior.
+
+### Validation Result
+
+- Confirmed `tool/build.dart` still owns local release build orchestration.
+- Confirmed existing platform options remain represented: `android-apk`, `android-bundle`, `web`, `windows`, `windows-msix`, and `all`.
+- Confirmed generated release reports are build outputs under `build/release/`, not committed source artifacts.
+- Confirmed artifact summary/reporting fails when expected build outputs are missing rather than silently marking the build successful.
+- Confirmed no wallet runtime source was modified for this subphase.
+
 ---
 
 ## 8.6.2 — GitHub Release Workflow Artifact Consistency
@@ -3258,7 +3278,9 @@ It must keep GitHub Releases draft-first unless a later explicitly documented re
 
 ### State
 
-New planned implementation subphase generated from the Phase 8.6 release/distribution maturity scope.
+Completed implementation subphase.
+
+Phase 8.6.2 matured the existing GitHub Release workflow without replacing the draft-first release model.
 
 ### Existing Files Tentatively Intervenable
 
@@ -3289,6 +3311,22 @@ Phase 8.6 should improve consistency around those existing responsibilities rath
 - SHA256 checksum generation remains present and deterministic.
 - GitHub Release publication remains draft-first.
 
+### Execution Result
+
+Phase 8.6.2 completed GitHub Release workflow artifact consistency work.
+
+The workflow now preserves the release reports produced by `tool/build.dart`, renames Android and Windows artifacts into versioned release asset names, includes platform release reports as release assets, creates a `release-manifest.json`, and generates `SHA256SUMS.txt` after Android, Windows, and manifest files are collected.
+
+The implementation keeps GitHub Releases draft-first and keeps Android and Windows release generation inside the existing `.github/workflows/release.yml` owner. It does not introduce a parallel release workflow, automatic store submission, or runtime update delivery.
+
+### Validation Result
+
+- Confirmed `.github/workflows/release.yml` remains the single GitHub Release automation owner.
+- Confirmed tag/pubspec validation remains in the validation job for tag-based releases.
+- Confirmed Android APK, Android App Bundle, Windows MSIX, platform release reports, `release-manifest.json`, and `SHA256SUMS.txt` are represented as release assets.
+- Confirmed the workflow keeps `draft: true`.
+- Confirmed no automatic Play Store or Microsoft Store submission was introduced.
+
 ---
 
 ## 8.6.3 — Release Validation and Operator Reporting
@@ -3305,7 +3343,9 @@ It must not convert local diagnostics into telemetry, and it must not upload run
 
 ### State
 
-New planned implementation subphase generated from the Phase 8.6 release/distribution maturity scope.
+Completed implementation subphase.
+
+Phase 8.6.3 converted release validation evidence into explicit local/CI operator reporting while keeping reporting outside runtime wallet behavior.
 
 ### Existing Files Tentatively Intervenable
 
@@ -3334,6 +3374,22 @@ Release reporting should stay local/CI-only and should not become analytics, tel
 - Generated reports do not include secrets, signing passwords, private keys, mnemonic data, wallet addresses, signatures, or backup payload data.
 - CI can preserve reports without changing runtime application behavior.
 
+### Execution Result
+
+Phase 8.6.3 completed release validation and operator reporting maturity.
+
+The build tool now emits structured release reports per selected platform, and the release workflow carries those reports into the GitHub Release asset set. The reports make artifact presence, release-published boundary, local-support-only boundary, version data, checksum responsibility, and sensitive-data exclusion explicit for operators reviewing a release.
+
+The reporting remains generated build/release evidence. It does not become telemetry, analytics, diagnostics upload, runtime monitoring, or a committed source-of-truth artifact.
+
+### Validation Result
+
+- Confirmed release reports are generated under `build/release/`.
+- Confirmed report payloads exclude secrets, signing passwords, private keys, mnemonic data, wallet addresses, signatures, and backup payload data.
+- Confirmed CI release assets include platform reports for Android bundle, Android APK, and Windows MSIX paths.
+- Confirmed checksum ownership remains in the workflow through `SHA256SUMS.txt`.
+- Confirmed operator reporting does not change wallet runtime behavior.
+
 ---
 
 ## 8.6.4 — Distribution Metadata and Store-Readiness Documentation
@@ -3350,7 +3406,9 @@ It must not add automatic Play Store upload, Microsoft Store submission, iOS dis
 
 ### State
 
-New planned implementation/documentation subphase generated from the Phase 8.6 release/distribution maturity scope.
+Completed implementation/documentation subphase.
+
+Phase 8.6.4 clarified distribution metadata, release manifest semantics, checksum expectations, and manual store-readiness boundaries without claiming automated store publication.
 
 ### Existing Files Tentatively Intervenable
 
@@ -3378,6 +3436,22 @@ This subphase keeps documentation honest: the project may become more release-re
 - Automatic Microsoft Store submission is still out of scope unless later implemented by a dedicated phase.
 - Version, artifact, and checksum expectations remain consistent with the build tool and workflow.
 
+### Execution Result
+
+Phase 8.6.4 completed distribution metadata and store-readiness documentation maturity.
+
+The release workflow now emits a release manifest describing the application name, version, draft-release status, published platform set, local-support-only platform set, checksum file, checksum boundary, and sensitive-data policy. Release documentation records how operators should interpret the build reports, manifest, checksums, draft GitHub Release assets, signing boundaries, and manual distribution responsibilities.
+
+The implementation keeps store-readiness honest: Android and Windows release assets can be prepared and attached to a draft GitHub Release, but store upload/submission remains manual and outside Phase 8.6 automation.
+
+### Validation Result
+
+- Confirmed `release-manifest.json` is generated by CI as a release asset, not committed as source.
+- Confirmed the manifest excludes secrets and wallet-sensitive data.
+- Confirmed release documentation distinguishes generated assets from source-controlled files.
+- Confirmed Android App Bundle readiness does not imply automatic Play Store upload.
+- Confirmed Windows MSIX readiness does not imply automatic Microsoft Store submission.
+
 ---
 
 ## 8.6.5 — Cross-Platform Packaging Consistency and Release Closure Readiness
@@ -3394,7 +3468,9 @@ It must prepare the project for a clean 8.6 closure without introducing new prod
 
 ### State
 
-New planned implementation/documentation subphase generated from the Phase 8.6 release/distribution maturity scope.
+Completed implementation/documentation subphase.
+
+Phase 8.6.5 aligned the final Android, Web, Windows runner, and Windows MSIX packaging boundaries before closure.
 
 ### Existing Files Tentatively Intervenable
 
@@ -3427,6 +3503,22 @@ This prevents the release maturity phase from closing on Android-only or Windows
 - Local and CI release flows do not contradict each other.
 - No new runtime wallet behavior is introduced by packaging consistency work.
 
+### Execution Result
+
+Phase 8.6.5 completed cross-platform packaging consistency and release closure readiness.
+
+The final Phase 8.6 state distinguishes release-published artifacts from local-support-only outputs: Android APK, Android App Bundle, and Windows MSIX are release-published outputs; Web and unpackaged Windows runner builds remain local support outputs. `tool/build.dart` reports this distinction locally, and `.github/workflows/release.yml` publishes the supported release asset set through the draft GitHub Release path.
+
+This subphase prepared closure by ensuring operators can identify which artifacts are expected, where generated release reports live, how checksums are produced, and which distribution actions remain manual.
+
+### Validation Result
+
+- Confirmed Android APK and Android App Bundle remain release-published outputs.
+- Confirmed Windows MSIX remains the Windows release-published output.
+- Confirmed Web and unpackaged Windows runner output remain local-support-only paths.
+- Confirmed build reports and CI manifest make the platform boundary explicit.
+- Confirmed Phase 8.6 can close without introducing new wallet runtime surfaces.
+
 ---
 
 ## 8.6.close — Release & Distribution Maturity Extension Closure
@@ -3441,7 +3533,7 @@ This closure must record the actual implementation delivered by Phase 8.6.1 thro
 
 ### State
 
-Planned documentation-only closure to be executed only after the Phase 8.6 implementation subphases are completed and validated.
+Completed documentation-only closure executed after validating the Phase 8.6.1 through Phase 8.6.5 implementation subphases from the real project ZIP.
 
 ### Existing Files Tentatively Intervenable
 
@@ -3485,3 +3577,31 @@ Phase 8.6 closure must deliberately avoid introducing:
 - release-time access to wallet secrets;
 - backup format changes;
 - transaction, signing, asset, account, or navigation feature changes.
+
+### Execution Result
+
+Phase 8.6.close completed the release and distribution maturity extension closure from the real implemented codebase.
+
+The closure confirms that Phase 8.6 matured the existing release owners rather than replacing them:
+
+- `tool/build.dart` now provides stricter artifact expectations, deterministic build summaries, generated release reports, release-published/local-support platform classification, version data, checksum boundary language, and sensitive-data exclusion metadata.
+- `.github/workflows/release.yml` now carries versioned Android and Windows release assets, platform release reports, a CI-generated `release-manifest.json`, and `SHA256SUMS.txt` into the draft GitHub Release path.
+- `pubspec.yaml` remains the version and MSIX metadata source, with `version: 0.2.1+12` and `msix_config.msix_version: 0.2.1.12` preserved during closure.
+- `docs/release.md` remains the operator-facing release and distribution reference and now reflects the Phase 8.6 artifact/report/manifest/checksum boundaries.
+
+Phase 8.6 closes as a tooling and distribution maturity phase. It does not reopen account, asset, transaction, signing, backup, restore, diagnostics, routing, lifecycle, security-state, telemetry, analytics, dApp, WalletConnect, runtime update, Play Store upload, Microsoft Store submission, or iOS distribution scope.
+
+### Validation Result
+
+- Confirmed all 8.6 implementation subphases are represented in this document.
+- Confirmed the release-published artifact set is Android APK, Android App Bundle, and Windows MSIX.
+- Confirmed Web and unpackaged Windows runner outputs remain local-support-only paths.
+- Confirmed release reports and release manifest are generated outputs, not committed source files.
+- Confirmed checksum generation remains CI-owned through `SHA256SUMS.txt`.
+- Confirmed documentation closure changed only trunk documentation and did not modify code, workflow source, `.agent/*`, `pubspec.yaml`, signing material, or generated artifacts.
+
+### Phase 8.6 Final Status
+
+Status: Completed.
+
+Phase 8.6 is closed as a release and distribution maturity extension over the Phase 8 wallet product surface. The project now has a clearer release evidence chain from local build execution to CI draft-release publication: build outputs are checked, build reports are generated, release assets are versioned, CI release metadata is emitted, checksums cover the release asset set, and manual distribution boundaries are explicit.
