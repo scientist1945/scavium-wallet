@@ -254,3 +254,44 @@ The implementation remains explicit and local. It does not introduce automatic t
 Phase 8.2 is complete as an asset and portfolio foundation phase.
 
 The product now has an account-aware asset surface that can support later activity, signing, navigation, and broader portfolio maturity work without requiring a disruptive redesign.
+
+---
+
+## 🧾 Phase 8.3 Implemented Transaction, Activity, and Signing Features
+
+Phase 8.3 converts the transaction/activity maturity plan into implemented product capability while preserving the local outgoing-history boundary.
+
+Implemented transaction and activity capabilities:
+
+- defensive local transaction-history entry deserialization;
+- safe fallback behavior for older or malformed stored entries;
+- centralized receipt refresh through `TxHistoryController`;
+- pending transactions remain pending when no receipt is available;
+- transaction detail route for locally tracked outgoing activity;
+- receipt-oriented status explanation for pending, confirmed, and failed transactions;
+- explicit explorer opening from transaction detail;
+- status filtering for all, pending, confirmed, and failed entries;
+- kind filtering for native and ERC-20 sends;
+- local-day grouping with newest-first entry ordering;
+- distinct empty, filtered-empty, and error states.
+
+Implemented signing capabilities:
+
+- dedicated signing domain model and controller boundary;
+- personal-message signing;
+- challenge-message signing;
+- active-account validation before signing;
+- explicit signing preview and confirmation;
+- cancellation path without wallet-state mutation;
+- visible signature result display;
+- signature copy feedback.
+
+The implementation does not introduce external activity indexing, incoming transaction discovery, dApp connectivity, automatic wallet-connect behavior, or transaction submission from signing.
+
+---
+
+## Phase 8.3 Completion State
+
+Phase 8.3 is complete as a transaction/activity/signing maturity phase.
+
+The product now has safer local outgoing activity handling and explicit signing behavior that can support later navigation-shell and product-surface expansion without moving ownership away from the existing assets, signing, wallet, and RPC boundaries.

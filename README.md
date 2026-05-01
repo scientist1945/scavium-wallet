@@ -55,7 +55,8 @@ Completed phases:
 Current Phase 8 milestone:
 
 - Phase 8.2 completed — Asset & Portfolio Expansion
-- Next planned product-expansion area: Phase 8.3 — Transaction & Activity Maturity
+- Phase 8.3 completed — Transaction & Activity Maturity
+- Next planned product-expansion area: Phase 8.4 — Navigation Shell and Product Surface Scaling
 
 Completed Phase 7 stabilization work includes:
 
@@ -309,6 +310,35 @@ The implementation remains intentionally bounded:
 
 ---
 
+## 🧾 Phase 8.3 Transaction & Activity Maturity
+
+Phase 8.3 completed transaction/activity maturity and message-signing implementation on top of the Phase 8.2 asset and portfolio foundation.
+
+Implemented capabilities include:
+
+- safer local outgoing transaction-history deserialization;
+- deterministic pending/confirmed/failed receipt refresh behavior;
+- transaction detail route with receipt-oriented status explanation;
+- explicit explorer opening from transaction detail;
+- local activity filtering by status and transaction kind;
+- local-day activity grouping;
+- distinct empty, filtered-empty, loading, and error states;
+- personal-message and challenge-message signing service boundary;
+- signing preview and confirmation before signature creation;
+- visible signing result display and signature copy feedback.
+
+The implementation remains intentionally bounded:
+
+- no external transaction indexer;
+- no incoming transaction discovery;
+- no dApp connectivity;
+- no transaction submission from signing;
+- no backup payload change;
+- no release pipeline change;
+- no Phase 8.4 navigation shell redesign.
+
+---
+
 ## 🚧 Out of Scope
 
 The current release engineering and Phase 8 product expansion scope does not yet include:
@@ -320,7 +350,6 @@ The current release engineering and Phase 8 product expansion scope does not yet
 - runtime updates
 - automatic git tagging
 - advanced changelog generation
-- implemented message signing runtime behavior
 - automatic token discovery
 - multi-chain portfolio aggregation
 - external dApp connectivity

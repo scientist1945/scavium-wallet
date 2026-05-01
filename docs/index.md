@@ -34,10 +34,11 @@ Phase 8 is active and currently completed through:
 
 - Phase 8.1 — Account Model Expansion
 - Phase 8.2 — Asset & Portfolio Expansion
+- Phase 8.3 — Transaction & Activity Maturity
 
-The active product-expansion area is Phase 8.3 — Transaction & Activity Maturity.
+The next planned product-expansion area is Phase 8.4 — Navigation Shell and Product Surface Scaling.
 
-Phase 8.3 now has a formalized documentation plan and subphase map for controlled future execution. Phase 8.3.0 is completed as a documentation-only baseline inspection and execution contract lock. No Phase 8.3 runtime implementation is recorded as completed yet.
+Phase 8.3 is closed. The completed runtime scope includes safer local outgoing transaction history state handling, receipt-oriented transaction detail, local activity filtering/grouping, and explicit message-signing flows with preview, confirmation, cancellation, and result display.
 
 ---
 
@@ -88,25 +89,25 @@ Phase 8.3 now has a formalized documentation plan and subphase map for controlle
 
 ---
 
-## Active Phase 8.3 transaction and activity maturity
+## Completed Phase 8.3 transaction and activity maturity
 
 - 8.3.0 — Transaction & Activity Contract Definition and Baseline Inspection  
   Completed as a documentation-only baseline inspection and execution contract lock from the real Phase 8.2-completed codebase.
 
 - 8.3.1 — Transaction History State Model Maturity  
-  Plans safer transaction status semantics, local history compatibility, and receipt refresh behavior.
+  Implemented safer transaction-history deserialization and receipt refresh behavior while preserving local history compatibility.
 
 - 8.3.2 — Transaction Detail and Receipt-Oriented Activity View  
-  Plans a clearer first-party transaction detail experience without adding external indexer ownership.
+  Implemented a first-party transaction detail route with receipt-oriented status explanation and explicit explorer opening.
 
 - 8.3.3 — Activity Filtering, Grouping, and Empty/Error State Maturity  
-  Plans local activity filtering and grouping while preserving the current outgoing-history scope.
+  Implemented local status/type filtering, local-day grouping, and distinct empty/error states over outgoing history.
 
 - 8.3.4 — Message Signing Domain and Service Boundary  
-  Plans explicit `signPersonalMessage(...)` and `signChallengeMessage(...)` foundations separated from transaction submission.
+  Implemented explicit personal-message and challenge-message signing boundaries separated from transaction submission.
 
 - 8.3.5 — Message Signing UX, Confirmation, and Result Display  
-  Plans explicit signing preview, confirmation, cancellation, result display, and safe error handling.
+  Implemented signing preview, confirmation, cancellation, visible result display, and signature copy feedback.
 
 - 8.3.close — Transaction & Activity Maturity Closure  
-  Reserved for final documentation closure after runtime implementation is completed and validated.
+  Completed final trunk documentation closure from the real implemented Phase 8.3 working tree.

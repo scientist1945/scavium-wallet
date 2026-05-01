@@ -285,3 +285,74 @@ Phase 8.2 does not add:
 - backup format changes;
 - route redesign;
 - navigation shell redesign.
+
+---
+
+## 🧾 Phase 8.3 Transaction Activity and Signing Flows
+
+Phase 8.3 matures the existing local outgoing transaction flow and adds explicit message-signing flows.
+
+### Local Transaction History Refresh Flow
+
+```text
+HistoryScreen
+  -> TxHistoryController.refreshStatuses()
+    -> TxHistoryRepository.getEntries()
+    -> for each pending TxHistoryEntry
+      -> ScaviumRpcService.getReceipt(txHash)
+      -> no receipt: keep pending
+      -> receipt success: mark confirmed
+      -> receipt failure: mark failed
+    -> TxHistoryRepository.saveEntries(updated)
+```
+
+### Transaction Detail Flow
+
+```text
+HistoryScreen transaction row
+  -> GoRouter transactionDetail route
+    -> TransactionDetailScreen(TxHistoryEntry)
+      -> show amount, symbol, kind, status, destination, hash, timestamp
+      -> explain receipt-oriented status
+      -> optional explicit external explorer open
+```
+
+### Activity Filtering and Grouping Flow
+
+```text
+HistoryScreen
+  -> selected status filter
+  -> selected kind filter
+  -> TxHistoryFilter.apply(entries)
+  -> TxHistoryFilter.groupByLocalDay(filtered entries)
+  -> render local day sections newest-first
+```
+
+### Message Signing Flow
+
+```text
+SigningScreen
+  -> read active account from WalletController
+  -> user selects signing mode
+  -> user enters message/challenge
+  -> SigningRequest.normalized()
+  -> SigningConfirmDialog preview
+  -> user confirms
+  -> SigningController.sign(request)
+    -> SigningService
+    -> ScaviumRpcService.signPersonalMessage(...) or signChallengeMessage(...)
+    -> validate returned account matches requested active account
+  -> SigningResultCard displays signature
+```
+
+### Explicit Boundaries
+
+Phase 8.3 does not add:
+
+- incoming transaction discovery;
+- external transaction indexing;
+- automatic activity aggregation;
+- transaction submission from signing;
+- dApp connectivity;
+- backup payload changes;
+- navigation shell redesign.
