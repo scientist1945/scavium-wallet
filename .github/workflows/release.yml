@@ -90,15 +90,22 @@ jobs:
       - name: Rename Android artifacts
         shell: bash
         run: |
-          VERSION=$(grep '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)\+[0-9]+/\1/')
+          VERSION=$(grep '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)\+([0-9]+)/\1+\2/')
           mkdir -p release-artifacts
-          cp build/app/outputs/bundle/release/app-release.aab "release-artifacts/scavium_wallet-${VERSION}-android.aab"
-          cp build/app/outputs/flutter-apk/app-release.apk "release-artifacts/scavium_wallet-${VERSION}-android.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "release-artifacts/scavium_wallet-${VERSION}-android-bundle.aab"
+          cp build/app/outputs/flutter-apk/app-release.apk "release-artifacts/scavium_wallet-${VERSION}-android-apk.apk"
+          cp build/release/release-report-android-bundle.json "release-artifacts/scavium_wallet-${VERSION}-android-bundle-report.json"
+          cp build/release/release-report-android-apk.json "release-artifacts/scavium_wallet-${VERSION}-android-apk-report.json"
+
+          test -f "release-artifacts/scavium_wallet-${VERSION}-android-bundle.aab"
+          test -f "release-artifacts/scavium_wallet-${VERSION}-android-apk.apk"
+          test -f "release-artifacts/scavium_wallet-${VERSION}-android-bundle-report.json"
+          test -f "release-artifacts/scavium_wallet-${VERSION}-android-apk-report.json"
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: android-release-artifacts
+          name: scavium-wallet-android-release-artifacts
           path: release-artifacts/*
 
   build_windows_msix:
@@ -146,8 +153,8 @@ jobs:
         shell: pwsh
         run: |
           $pubspec = Get-Content pubspec.yaml -Raw
-          if ($pubspec -match 'version:\s*([0-9]+\.[0-9]+\.[0-9]+)\+\d+') {
-            $version = $matches[1]
+          if ($pubspec -match 'version:\s*([0-9]+\.[0-9]+\.[0-9]+)\+(\d+)') {
+            $version = "$($matches[1])+$($matches[2])"
           } else {
             Write-Error "Could not resolve semantic version from pubspec.yaml"
             exit 1
@@ -162,11 +169,21 @@ jobs:
           }
 
           Copy-Item $msix.FullName "release-artifacts\scavium_wallet-$version-windows.msix"
+          Copy-Item "build\release\release-report-windows-msix.json" "release-artifacts\scavium_wallet-$version-windows-report.json"
+
+          if (-not (Test-Path "release-artifacts\scavium_wallet-$version-windows.msix")) {
+            Write-Error "Renamed Windows MSIX artifact not found"
+            exit 1
+          }
+          if (-not (Test-Path "release-artifacts\scavium_wallet-$version-windows-report.json")) {
+            Write-Error "Windows release report not found"
+            exit 1
+          }
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-release-artifacts
+          name: scavium-wallet-windows-release-artifacts
           path: release-artifacts\*
 
   publish_release:
@@ -183,22 +200,41 @@ jobs:
       - name: Download Android artifacts
         uses: actions/download-artifact@v4
         with:
-          name: android-release-artifacts
+          name: scavium-wallet-android-release-artifacts
           path: release-assets/android
 
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
-          name: windows-release-artifacts
+          name: scavium-wallet-windows-release-artifacts
           path: release-assets/windows
+
+      - name: Create release manifest
+        shell: bash
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)\+([0-9]+)/\1+\2/')
+          cat > release-assets/release-manifest.json <<EOF
+          {
+            "name": "SCAVIUM Wallet",
+            "version": "${VERSION}",
+            "draft": true,
+            "published_platforms": ["android-apk", "android-bundle", "windows-msix"],
+            "local_supported_only_platforms": ["web", "windows"],
+            "checksum_file": "SHA256SUMS.txt",
+            "checksum_boundary": "Checksums are generated over release-assets after Android, Windows, and release manifest files are collected.",
+            "sensitive_data_policy": "Release manifest excludes secrets, signing passwords, private keys, mnemonic data, wallet addresses, signatures, and backup payload data."
+          }
+          EOF
+          test -s release-assets/release-manifest.json
 
       - name: Create SHA256 checksums
         shell: bash
         run: |
           cd release-assets
-          find . -type f -print0 | while IFS= read -r -d '' file; do
+          find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | while IFS= read -r -d '' file; do
             sha256sum "$file" >> SHA256SUMS.txt
           done
+          test -s SHA256SUMS.txt
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
@@ -208,4 +244,5 @@ jobs:
           files: |
             release-assets/android/*
             release-assets/windows/*
+            release-assets/release-manifest.json
             release-assets/SHA256SUMS.txt

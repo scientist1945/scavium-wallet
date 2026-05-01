@@ -38,7 +38,9 @@ Phase 8 is active and currently completed through:
 - Phase 8.4 — Navigation Shell and Product Surface Scaling
 - Phase 8.5 — Security, Reliability & Diagnostics Maturity
 
-Phase 8.5 is closed. The completed Phase 8 runtime scope now includes account expansion, asset and portfolio expansion, transaction and activity maturity, navigation-shell and product-surface maturity, and security/reliability/diagnostics hardening.
+Phase 8.6 — Release & Distribution Maturity Extension is now complete.
+
+Phase 8.6 is closed. The completed Phase 8 scope now includes account expansion, asset and portfolio expansion, transaction and activity maturity, navigation-shell and product-surface maturity, security/reliability/diagnostics hardening, and release/distribution maturity. Phase 8.6 did not reopen runtime surfaces; it completed the release tooling, artifact consistency, validation/reporting, metadata, checksum, and distribution documentation boundary.
 
 Completed Phase 8.4 scope:
 
@@ -177,3 +179,30 @@ Phase 8.5 completed scope:
 The closure confirms that Phase 8.5 remains bounded: it does not add telemetry, analytics, remote diagnostics reporting, dApp connectivity, WalletConnect, automatic challenge ingestion, background signing, shell-owned security state, backup payload format changes, or release pipeline changes.
 
 The documentation trunk now reflects Phase 8.5 in `README.md`, this index, the Phase 8 plan, architecture, deep architecture notes, feature inventory, flows, UX, development notes, RPC notes, security notes, release validation expectations, and design decisions.
+
+---
+
+## Completed Phase 8.6 release and distribution maturity extension
+
+Phase 8.6 is complete after Phase 8.5 closure and is documented as a release/distribution maturity phase, not a product-surface expansion phase.
+
+This closure confirms that the project matured the existing release owners rather than replacing them:
+
+- `tool/build.dart` owns local build automation, version bumping, platform selection, MSIX version synchronization, CI overrides, local signing/verification behavior, artifact discovery, artifact expectation checks, build summaries, and generated release reports.
+- `.github/workflows/release.yml` owns GitHub Release automation, tag/manual validation, Android artifact generation, Windows MSIX generation, versioned release asset collection, CI-generated `release-manifest.json`, checksum generation, artifact upload/download, and draft release publication.
+- `pubspec.yaml` owns the semantic version/build number and `msix_config` metadata used by packaging.
+- `docs/release.md` remains the trunk release/distribution reference for operator-facing release behavior.
+
+Phase 8.6 completed scope:
+
+- 8.6.0 — Release & Distribution Baseline Inspection and Execution Contract
+- 8.6.1 — Build Tool Artifact and Version Consistency Maturity
+- 8.6.2 — GitHub Release Workflow Artifact Consistency
+- 8.6.3 — Release Validation and Operator Reporting
+- 8.6.4 — Distribution Metadata and Store-Readiness Documentation
+- 8.6.5 — Cross-Platform Packaging Consistency and Release Closure Readiness
+- 8.6.close — Release & Distribution Maturity Extension Closure
+
+The final release-published artifact set is Android APK, Android App Bundle, and Windows MSIX. Web and unpackaged Windows runner builds remain local-support-only outputs. Build reports and the CI release manifest are generated release evidence, not committed source files. Checksums remain CI-owned through `SHA256SUMS.txt`.
+
+Phase 8.6 remains bounded after closure. It did not introduce automatic Play Store upload, automatic Microsoft Store submission, iOS distribution, runtime update delivery, telemetry, analytics, backup format changes, WalletConnect, dApp connectivity, or wallet runtime feature changes.

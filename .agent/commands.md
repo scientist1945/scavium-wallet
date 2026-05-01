@@ -19,7 +19,7 @@ fvm flutter analyze
 ## Scoped Test
 
 ```bash
-fvm flutter test test/signing_request_test.dart test/signing_controller_test.dart test/signing_screen_test.dart test/wallet_backup_payload_test.dart
+fvm flutter test test/widget_test.dart
 ```
 
 ---
@@ -43,8 +43,11 @@ fvm flutter test
 ## Fallback
 
 ```bash
-flutter analyze
-flutter test
+dart run tool/build.dart --check-version --expected-tag v0.2.1
+# Optional release-tool checks only when secrets/platform prerequisites exist:
+# dart run tool/build.dart --platform android-apk --no-version-bump
+# dart run tool/build.dart --platform android-bundle --no-version-bump
+# dart run tool/build.dart --platform windows-msix --no-version-bump
 ```
 
 ---
@@ -54,14 +57,14 @@ flutter test
 ```bash
 git checkout main
 git pull
-git checkout -b feature/phase-8.5-security-reliability-diagnostics-maturity
+git checkout -b phase-8.6-release-distribution-maturity-extension
 
 git status
 git add <modified-files>
-git commit -m "Phase 8.5 - Security reliability and diagnostics maturity"
+git commit -m "phase 8.6 release distribution maturity"
 
 git checkout main
 git pull
-git merge feature/phase-8.5-security-reliability-diagnostics-maturity
-git branch -d feature/phase-8.5-security-reliability-diagnostics-maturity
+git merge phase-8.6-release-distribution-maturity-extension
+git branch -d phase-8.6-release-distribution-maturity-extension
 ```

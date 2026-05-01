@@ -23,7 +23,7 @@ Current platform and release scope includes:
 - Windows MSIX packaging
 - GitHub Release automation
 
-The wallet completed Phase 7 stabilization and is now in Phase 8 product expansion and production maturity. Phase 8.5 security, reliability, and diagnostics maturity is complete and extends the expanded wallet surface with safer diagnostics, clearer signing and backup warnings, centralized lifecycle/lock reliability, and normalized invalid-state handling.
+The wallet completed Phase 7 stabilization and is now in Phase 8 product expansion and production maturity. Phase 8.5 security, reliability, and diagnostics maturity is complete and extends the expanded wallet surface with safer diagnostics, clearer signing and backup warnings, centralized lifecycle/lock reliability, and normalized invalid-state handling. Phase 8.6 release and distribution maturity is now complete, closing the release-tooling extension with clearer artifact reporting, CI release metadata, checksum boundaries, and manual distribution expectations.
 
 Phase 8 focuses on controlled product growth from the Phase 7 release-hardened baseline, including:
 
@@ -55,12 +55,17 @@ Completed phases:
 - Phase 8.4 — Navigation Shell and Product Surface Scaling
 - Phase 8.5 — Security, Reliability & Diagnostics Maturity
 
+Active Phase 8 work:
+- None currently active after Phase 8.6 closure.
+
+
 Current Phase 8 milestone:
 
 - Phase 8.2 completed — Asset & Portfolio Expansion
 - Phase 8.3 completed — Transaction & Activity Maturity
 - Phase 8.4 completed — Navigation Shell and Product Surface Scaling
 - Phase 8.5 completed — Security, Reliability & Diagnostics Maturity
+- Phase 8.6 completed — Release & Distribution Maturity Extension
 
 Completed Phase 7 stabilization work includes:
 
@@ -122,6 +127,20 @@ Completed Phase 8.5 security, reliability, and diagnostics maturity work include
 - 8.5.close — Security, Reliability & Diagnostics Maturity Closure
 
 
+Completed Phase 8.6 release and distribution maturity work includes:
+
+- 8.6.0 — Release & Distribution Baseline Inspection and Execution Contract
+- 8.6.1 — Build Tool Artifact and Version Consistency Maturity
+- 8.6.2 — GitHub Release Workflow Artifact Consistency
+- 8.6.3 — Release Validation and Operator Reporting
+- 8.6.4 — Distribution Metadata and Store-Readiness Documentation
+- 8.6.5 — Cross-Platform Packaging Consistency and Release Closure Readiness
+- 8.6.close — Release & Distribution Maturity Extension Closure
+
+Phase 8.6 completed as a release-tooling and distribution-documentation maturity phase. It did not reopen wallet runtime behavior, account state, asset state, signing, backup semantics, routing, diagnostics, security ownership, telemetry, analytics, Play Store upload, Microsoft Store submission, iOS distribution, or runtime update delivery.
+
+The closed Phase 8.6 state keeps release ownership concentrated in the existing surfaces: `tool/build.dart` owns local build automation, version/MSIX synchronization, artifact expectations, build summaries, and generated release reports; `.github/workflows/release.yml` owns tag/manual release validation, Android and Windows artifact jobs, versioned release assets, CI-generated release manifest, checksum generation, and draft GitHub Release publication; `pubspec.yaml` owns `0.2.1+12` and `msix_config.msix_version: 0.2.1.12`; `docs/release.md` owns operator-facing release and distribution guidance.
+
 
 
 ---
@@ -138,6 +157,7 @@ Completed Phase 8.5 security, reliability, and diagnostics maturity work include
 - portfolio summary foundation
 - multiplatform build orchestration through `tool/build.dart`
 - GitHub Actions-based release artifact generation
+- generated release reports, CI release manifest, and SHA256 checksum publication
 - draft GitHub Release publication with attached assets
 - controlled Phase 8 product expansion path
 
