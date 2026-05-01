@@ -1,0 +1,1 @@
+enum SigningMode { personalMessage, challengeMessage }

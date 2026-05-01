@@ -44,4 +44,5 @@ abstract class WalletRepository {
   Future<void> clearWallet();
 
   EthPrivateKey credentialsFromMnemonic(String mnemonic);
+  Future<EthPrivateKey> credentialsForActiveAccount();
 }

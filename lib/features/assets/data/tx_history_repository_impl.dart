@@ -21,8 +21,13 @@ class TxHistoryRepositoryImpl implements TxHistoryRepository {
     final raw = await storage.getString(StorageKeys.txHistoryJson);
     if (raw == null || raw.isEmpty) return [];
 
-    final decoded = jsonDecode(raw) as List<dynamic>;
+    final decoded = jsonDecode(raw);
+    if (decoded is! List) {
+      return [];
+    }
+
     return decoded
+        .whereType<Map>()
         .map((e) => TxHistoryEntry.fromJson(Map<String, dynamic>.from(e)))
         .toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));

@@ -63,16 +63,59 @@ class TxHistoryEntry {
   }
 
   factory TxHistoryEntry.fromJson(Map<String, dynamic> json) {
+    final txHash = _readString(json['txHash']);
+    final createdAt = _readDateTime(json['createdAt']);
+
     return TxHistoryEntry(
-      id: json['id'] as String,
-      kind: TxKind.values.firstWhere((e) => e.name == json['kind']),
-      status: TxStatus.values.firstWhere((e) => e.name == json['status']),
-      symbol: json['symbol'] as String,
-      tokenAddress: json['tokenAddress'] as String?,
-      toAddress: json['toAddress'] as String,
-      amountDisplay: json['amountDisplay'] as String,
-      txHash: json['txHash'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      id: _readString(json['id'], fallback: txHash),
+      kind: _readKind(json['kind']),
+      status: _readStatus(json['status']),
+      symbol: _readString(json['symbol']),
+      tokenAddress: _readNullableString(json['tokenAddress']),
+      toAddress: _readString(json['toAddress']),
+      amountDisplay: _readString(json['amountDisplay']),
+      txHash: txHash,
+      createdAt: createdAt,
     );
+  }
+
+  static TxKind _readKind(Object? value) {
+    final raw = _readString(value);
+    return TxKind.values.firstWhere(
+      (kind) => kind.name == raw,
+      orElse: () => TxKind.nativeSend,
+    );
+  }
+
+  static TxStatus _readStatus(Object? value) {
+    final raw = _readString(value);
+    return TxStatus.values.firstWhere(
+      (status) => status.name == raw,
+      orElse: () => TxStatus.pending,
+    );
+  }
+
+  static String _readString(Object? value, {String fallback = ''}) {
+    if (value is String && value.trim().isNotEmpty) {
+      return value;
+    }
+    return fallback;
+  }
+
+  static String? _readNullableString(Object? value) {
+    if (value is String && value.trim().isNotEmpty) {
+      return value;
+    }
+    return null;
+  }
+
+  static DateTime _readDateTime(Object? value) {
+    if (value is String) {
+      final parsed = DateTime.tryParse(value);
+      if (parsed != null) {
+        return parsed;
+      }
+    }
+    return DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
   }
 }

@@ -890,6 +890,39 @@ class WalletRepositoryImpl implements WalletRepository {
   EthPrivateKey credentialsFromMnemonic(String mnemonic) {
     return _credentialsFromMnemonic(_normalizeMnemonic(mnemonic));
   }
+
+  @override
+  Future<EthPrivateKey> credentialsForActiveAccount() async {
+    final profile = await loadWalletProfile();
+    if (profile == null) {
+      throw StateError('No wallet profile is loaded');
+    }
+
+    final activeAccount = profile.activeAccount;
+
+    if (activeAccount.isImportedByPrivateKey) {
+      final importedPrivateKeys = await readImportedPrivateKeys();
+      final privateKey =
+          importedPrivateKeys[activeAccount.id] ??
+          await secureStorage.read(StorageKeys.walletPrivateKey);
+
+      if (privateKey == null || privateKey.trim().isEmpty) {
+        throw StateError('No private key available for active account');
+      }
+
+      return EthPrivateKey.fromHex(_normalizePrivateKey(privateKey));
+    }
+
+    final mnemonic = await secureStorage.read(StorageKeys.walletMnemonic);
+    if (mnemonic == null || mnemonic.trim().isEmpty) {
+      throw StateError('No mnemonic available for active account');
+    }
+
+    return _credentialsFromMnemonicAtIndex(
+      mnemonic,
+      activeAccount.accountIndex,
+    );
+  }
 }
 
 class _StoredAccountState {

@@ -52,6 +52,18 @@ class SettingsScreen extends ConsumerWidget {
           ScaviumCard(
             child: ListTile(
               contentPadding: EdgeInsets.zero,
+              title: const Text('Sign message'),
+              subtitle: const Text(
+                'Sign a message or challenge with the active account without sending a transaction.',
+              ),
+              trailing: const Icon(Icons.draw_outlined),
+              onTap: () => context.push(RouteNames.signing),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ScaviumCard(
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
               title: const Text('Reset wallet'),
               subtitle: const Text(
                 'Delete locally stored wallet, token list and local transaction history.',
