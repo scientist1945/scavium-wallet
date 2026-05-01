@@ -13,9 +13,18 @@
 
 ## Command Execution Rules
 
-- Do not execute any shell commands.
-- Do not run `dart`, `flutter`, `fvm`, or any CLI tools.
-- Only report commands for the user to run manually.
+- Do not execute build, validation, formatting, test, git write, install, package, or destructive shell commands.
+- Do not run `dart format`, `flutter analyze`, `flutter test`, `fvm`, `pub get`, `git add`, `git commit`, `git merge`, `git checkout`, `git reset`, `git clean`, or any command that modifies files or project state.
+- Read-only inspection commands are allowed only for files explicitly listed in the active `.agent/current*.md`.
+- Allowed read-only commands include:
+  - `Get-Content <allowed-file>`
+  - `type <allowed-file>`
+  - `cat <allowed-file>`
+  - `git diff -- <allowed-file>`
+  - `git status --short`
+- Do not use broad discovery commands unless the active task requires them.
+- Do not run project-wide scans.
+- Only report validation/build/test/git commands for the user to run manually.
 - The user will run validation commands in the VSCode terminal.
 
 ## Formatting Rules
@@ -64,3 +73,4 @@ Report:
 - Do not scan entire repo unless needed.
 - Read only necessary files.
 - Prioritize paths in `.agent/current*.md`.
+- Reading explicitly allowed source/test files is permitted; executing project commands is not.
