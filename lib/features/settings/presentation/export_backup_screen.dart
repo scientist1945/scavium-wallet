@@ -96,9 +96,12 @@ class _ExportBackupScreenState extends ConsumerState<ExportBackupScreen> {
       final file = File('${dir.path}/$fileName');
       await file.writeAsString(backupJson);
 
-      await Share.shareXFiles([
-        XFile(file.path),
-      ], text: 'SCAVIUM Wallet encrypted backup');
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: 'SCAVIUM Wallet encrypted backup',
+        ),
+      );
 
       if (mounted) {
         AppSnackbar.showInfo(

@@ -492,7 +492,7 @@ class ScaviumRpcService {
 
     final activeAccount = profile.activeAccount;
     final credentials = await walletRepository.credentialsForActiveAccount();
-    final signatureBytes = await credentials.signPersonalMessageToUint8List(
+    final signatureBytes = credentials.signPersonalMessageToUint8List(
       Uint8List.fromList(utf8.encode(normalizedMessage)),
     );
 

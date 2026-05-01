@@ -33,7 +33,7 @@ import 'package:scavium_wallet/app/router/router_refresh_notifier.dart';
 final routerRefreshNotifierProvider = Provider<RouterRefreshNotifier>((ref) {
   final notifier = RouterRefreshNotifier();
 
-  ref.listen<bool>(appLockStateControllerProvider, (_, __) {
+  ref.listen<bool>(appLockStateControllerProvider, (_, _) {
     notifier.refresh();
   });
 
@@ -41,66 +41,58 @@ final routerRefreshNotifierProvider = Provider<RouterRefreshNotifier>((ref) {
 });
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final storage = LocalStorageService();
-
   return GoRouter(
     refreshListenable: ref.read(routerRefreshNotifierProvider),
     initialLocation: RouteNames.splash,
     routes: [
-      GoRoute(
-        path: RouteNames.splash,
-        builder: (_, __) => const SplashScreen(),
-      ),
+      GoRoute(path: RouteNames.splash, builder: (_, _) => const SplashScreen()),
       GoRoute(
         path: RouteNames.onboarding,
-        builder: (_, __) => const OnboardingScreen(),
+        builder: (_, _) => const OnboardingScreen(),
       ),
       GoRoute(
         path: RouteNames.welcome,
-        builder: (_, __) => const WelcomeScreen(),
+        builder: (_, _) => const WelcomeScreen(),
       ),
       GoRoute(
         path: RouteNames.walletEntry,
-        builder: (_, __) => const WalletEntryScreen(),
+        builder: (_, _) => const WalletEntryScreen(),
       ),
       GoRoute(
         path: RouteNames.createWallet,
-        builder: (_, __) => const CreateWalletScreen(),
+        builder: (_, _) => const CreateWalletScreen(),
       ),
       GoRoute(
         path: RouteNames.importWallet,
-        builder: (_, __) => const ImportWalletScreen(),
+        builder: (_, _) => const ImportWalletScreen(),
       ),
       GoRoute(
         path: RouteNames.backupMnemonic,
-        builder: (_, __) => const BackupMnemonicScreen(),
+        builder: (_, _) => const BackupMnemonicScreen(),
       ),
-      GoRoute(path: RouteNames.lock, builder: (_, __) => const LockScreen()),
-      GoRoute(path: RouteNames.home, builder: (_, __) => const HomeScreen()),
+      GoRoute(path: RouteNames.lock, builder: (_, _) => const LockScreen()),
+      GoRoute(path: RouteNames.home, builder: (_, _) => const HomeScreen()),
       GoRoute(
         path: RouteNames.settings,
-        builder: (_, __) => const SettingsScreen(),
+        builder: (_, _) => const SettingsScreen(),
       ),
-      GoRoute(path: RouteNames.send, builder: (_, __) => const SendScreen()),
+      GoRoute(path: RouteNames.send, builder: (_, _) => const SendScreen()),
       GoRoute(
         path: RouteNames.receive,
-        builder: (_, __) => const ReceiveScreen(),
+        builder: (_, _) => const ReceiveScreen(),
       ),
       GoRoute(
         path: RouteNames.signing,
-        builder: (_, __) => const SigningScreen(),
+        builder: (_, _) => const SigningScreen(),
       ),
-      GoRoute(
-        path: RouteNames.assets,
-        builder: (_, __) => const AssetsScreen(),
-      ),
+      GoRoute(path: RouteNames.assets, builder: (_, _) => const AssetsScreen()),
       GoRoute(
         path: RouteNames.addToken,
-        builder: (_, __) => const AddTokenScreen(),
+        builder: (_, _) => const AddTokenScreen(),
       ),
       GoRoute(
         path: RouteNames.history,
-        builder: (_, __) => const HistoryScreen(),
+        builder: (_, _) => const HistoryScreen(),
       ),
       GoRoute(
         path: RouteNames.transactionDetail,
@@ -119,11 +111,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RouteNames.confirmMnemonic,
-        builder: (_, __) => const ConfirmMnemonicScreen(),
+        builder: (_, _) => const ConfirmMnemonicScreen(),
       ),
       GoRoute(
         path: RouteNames.rpcDiagnostics,
-        builder: (_, __) => const RpcDiagnosticsScreen(),
+        builder: (_, _) => const RpcDiagnosticsScreen(),
       ),
     ],
     redirect: (context, state) async {
