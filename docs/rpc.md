@@ -76,3 +76,20 @@ The RPC system ensures:
 - high availability
 - graceful degradation
 - user transparency
+---
+
+## 🛡️ Phase 8.5 RPC Diagnostics Safety
+
+Phase 8.5 keeps RPC diagnostics observable without making diagnostics invasive.
+
+The RPC diagnostics surface may show useful non-sensitive state such as:
+
+- active endpoint context;
+- chain and block information when available;
+- cooldown state;
+- connectivity or availability status;
+- safe, actionable failure copy.
+
+It must not show raw exception dumps or sensitive wallet material. Diagnostics remain local to the application and are not telemetry, analytics, remote reporting, or support upload.
+
+This preserves the original RPC goal: help operators and users understand network/RPC health while keeping wallet custody and sensitive data isolated.

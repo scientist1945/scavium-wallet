@@ -431,3 +431,21 @@ Deliver a stable, secure, production-oriented and operationally reproducible bui
 - Windows distribution readiness
 - GitHub-based release artifact publication
 - lower operator error during release generation and distribution
+---
+
+## 🛡️ Phase 8.5 Release-Quality Validation Expectations
+
+Phase 8.5 does not change the release pipeline, build tool, GitHub Actions workflow, artifact format, or distribution automation.
+
+It does, however, add runtime behaviors that should be treated as release-quality validation expectations before broader distribution:
+
+- RPC diagnostics should display safe normalized failures rather than raw exception dumps.
+- Signing should reject empty/oversized messages and show explicit warnings before confirmation.
+- Signing results should be presented as signatures, not transactions or receipts.
+- Backup export and restore should display clear password/file responsibility warnings.
+- Backup and restore failures should not expose raw backup payloads, mnemonic text, passwords, ciphertext, private keys, addresses, or signatures.
+- Lifecycle lock behavior should prevent refresh restart while locked.
+- Android screenshot protection failures should be non-fatal.
+- Invalid send, token-send, asset-refresh, transaction-history, and async UI states should fail safely with actionable user-facing copy.
+
+These checks complement existing release validation. They do not replace `fvm flutter analyze`, `fvm flutter test`, platform packaging checks, or the later Phase 8.6 release/distribution maturity scope.

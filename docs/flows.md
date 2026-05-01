@@ -428,3 +428,83 @@ Phase 8.4 does not add:
 - external activity indexing;
 - dApp connectivity.
 
+
+---
+
+## 🛡️ Phase 8.5 Security, Reliability, and Diagnostics Flows
+
+Phase 8.5 matures sensitive flows without changing their owners. The routing model, shell model, wallet ownership, RPC ownership, signing ownership, backup ownership, and controller boundaries remain the same as in the previous Phase 8 baseline.
+
+RPC diagnostics flow:
+
+```text
+Settings
+  -> RPC diagnostics
+  -> read RPC health/status
+  -> keep diagnostics local and non-invasive
+  -> show useful chain/block/endpoint/cooldown information when available
+  -> show safe normalized error copy when unavailable
+  -> never expose private key, mnemonic, password, backup payload, signature material, or raw exception dumps
+```
+
+Signing safety flow:
+
+```text
+Signing screen
+  -> user chooses personal-message or challenge signing
+  -> user enters bounded non-empty message
+  -> app shows active account and safety copy
+  -> user previews exact message
+  -> user sees mode-specific warning copy
+  -> user confirms or cancels
+  -> cancellation does not mutate wallet/activity state
+  -> signature result is displayed as a signature, not a transaction receipt
+```
+
+Backup/restore warning flow:
+
+```text
+Export or restore backup
+  -> app displays password/file responsibility warnings
+  -> user provides password and file/input
+  -> app performs encrypted backup operation
+  -> successful operation preserves existing encrypted backup semantics
+  -> failures use safe normalized copy without exposing raw secret material
+```
+
+Lifecycle and sensitive-surface flow:
+
+```text
+App moves inactive/paused/detached
+  -> centralized lock controller locks the app
+  -> auto-refresh stops
+App resumes
+  -> if locked, refresh remains stopped
+  -> if unlocked, refresh resumes and refreshes immediately
+Android screenshot protection
+  -> app requests native protection
+  -> plugin failure is non-fatal
+  -> non-Android platforms are not destabilized by the guard
+```
+
+Invalid-state and error-boundary flow:
+
+```text
+Controller or async surface receives invalid/partial/failing state
+  -> domain/controller ownership remains unchanged
+  -> user-facing message is normalized
+  -> sensitive material is suppressed
+  -> local cached/history data is preserved when applicable
+  -> retry or correction path remains explicit
+```
+
+Phase 8.5 does not add:
+
+- telemetry or remote diagnostics;
+- analytics;
+- dApp connectivity or WalletConnect;
+- automatic signing/challenge ingestion;
+- background signing;
+- backup payload format changes;
+- shell-owned security state;
+- release-pipeline changes.

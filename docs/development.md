@@ -274,3 +274,41 @@ fvm flutter test
 
 During documentation closure in this environment, those commands could not be executed because `fvm`, `flutter`, and `dart` were not available in the execution container. The project-local validation expectation remains unchanged.
 
+
+---
+
+## Phase 8.5 Development Boundary
+
+Phase 8.5 continued the controlled agent-assisted implementation flow and completed security, reliability, diagnostics, warning, lock/lifecycle, and invalid-state maturity.
+
+The code subphases were intentionally limited to:
+
+- safe RPC diagnostics output;
+- signing request limits, warnings, confirmation copy, cancellation behavior, and result copy;
+- backup/export and restore warning consistency plus safe backup error normalization;
+- lifecycle refresh behavior while locked and platform-safe screenshot protection;
+- safe user-facing error helpers for invalid state, refresh, send, token, and async UI surfaces;
+- pending transaction-history preservation when receipt refresh cannot complete;
+- focused tests for diagnostics, signing, backup warnings, route boundaries, error safety, and pending transaction-history preservation.
+
+They did not alter:
+
+- wallet account persistence ownership;
+- encrypted backup payload format semantics;
+- route ownership by `GoRouter`;
+- shell presentation-only ownership;
+- release automation;
+- build automation;
+- telemetry or analytics behavior;
+- dApp or WalletConnect scope.
+
+### Phase 8.5 Closure Validation Boundary
+
+The closure was processed as a documentation-only close over the implemented runtime work. The expected project-local validation commands remain:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Those commands are the correct validation gate for the developer workstation or CI environment. The closure documentation does not replace those commands; it records the real implementation scope and keeps the next Phase 8 work from inheriting ambiguous assumptions.

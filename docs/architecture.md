@@ -434,3 +434,27 @@ Secondary/action/detail routes remain explicit and outside shell business owners
 
 The shell does not own wallet identity, account selection, assets, transaction history, signing, backup/restore, RPC diagnostics, or destructive actions. Those remain inside their existing feature boundaries.
 
+
+---
+
+## 🛡️ Phase 8.5 Security, Reliability, and Diagnostics Architecture
+
+Phase 8.5 hardens sensitive wallet behavior without replacing the established feature-driven architecture.
+
+The architectural point of the phase is that safety is improved at existing ownership boundaries rather than by creating a new cross-cutting owner that would obscure responsibility.
+
+Architectural ownership remains unchanged:
+
+- `GoRouter` owns route and redirect behavior.
+- the authenticated shell owns navigation presentation only.
+- wallet identity, active account, lock, and backup ownership remain inside their existing wallet/security feature boundaries.
+- RPC execution and diagnostics remain inside the blockchain feature.
+- signing remains inside the signing feature, with active-account validation against wallet state.
+- lifecycle lock state remains centralized in the lock/security layer rather than shell widgets.
+- asset, send, token-send, transaction-history, and async UI surfaces keep their controller-level ownership.
+
+The new error-boundary helpers are intentionally small shared utilities. They normalize user-facing messages and suppress sensitive material, but they do not introduce a new global error architecture or change domain ownership. This is important because Phase 8.5 touches many surfaces; the implementation improves copy and failure behavior without making every feature depend on a new monolithic error subsystem.
+
+Diagnostics are also intentionally local. They expose useful non-sensitive runtime state, but they are not telemetry, not analytics, not remote reporting, and not a support-upload pipeline.
+
+Phase 8.5 deliberately does not add telemetry, analytics, remote diagnostics reporting, dApp connectivity, WalletConnect, background signing, automatic challenge ingestion, backup payload migrations, shell-owned security state, or release-pipeline changes.

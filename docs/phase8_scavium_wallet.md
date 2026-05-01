@@ -3071,3 +3071,54 @@ Phase 8.5 must deliberately avoid introducing:
 - private key, mnemonic, password, signature, or backup payload exposure in diagnostics;
 - shell-owned security state;
 - release pipeline changes reserved for Phase 8.6.
+
+### Phase 8.5 Closure Implementation Result
+
+Phase 8.5 is complete. The implemented runtime work was validated from the real post-8.5.1-through-8.5.5 working tree before this closure was recorded.
+
+This closure is intentionally narrative because Phase 8.5 is a cross-cutting maturity phase. Its value is not a single new screen, route, or service. Its value is that the product surface created by Phase 8.1 through Phase 8.4 now behaves more safely when users interact with sensitive actions, partial state, failed RPCs, failed refreshes, backup warnings, signing confirmations, lock transitions, and diagnostics.
+
+Implemented closure confirmations:
+
+- **8.5.1 — Sensitive Diagnostics Output Hardening** hardened RPC diagnostics by replacing raw RPC status and health exception output with safe, actionable diagnostics text while keeping useful non-sensitive chain, block, endpoint, active RPC, and cooldown information.
+- **8.5.2 — Signing Safety Copy and Confirmation Hardening** hardened signing request validation, confirmation warnings, cancellation behavior, and signature-result language. Signing remains explicit and local; it is not transaction submission, not a receipt workflow, not dApp connectivity, and not automatic challenge ingestion.
+- **8.5.3 — Backup and Recovery Warning Reliability** hardened backup/export and restore warnings and normalized backup failure copy while preserving the existing encrypted backup payload semantics and v1/v2 compatibility boundary.
+- **8.5.4 — Lock, Lifecycle, and Sensitive Surface Reliability** hardened lifecycle and screenshot-protection behavior by keeping lock ownership centralized, preventing refresh restart while locked, preserving route classification, and making Android screenshot protection plugin failures non-fatal.
+- **8.5.5 — Error Boundary and Invalid State Maturity** introduced safe user-facing error helpers and applied them to invalid state, transaction send, token send, asset refresh, transaction-history refresh, and async error surfaces without creating a new global error architecture.
+
+### Phase 8.5 Validation Summary
+
+The code review confirmed that Phase 8.5 stayed within the existing architecture:
+
+- `GoRouter` remains the routing owner.
+- the authenticated shell remains navigation chrome only.
+- wallet identity and active account ownership remain in the wallet feature.
+- RPC execution remains in the blockchain data/application layer.
+- signing remains explicit, previewed, confirmable, cancellable, and separated from transaction history.
+- backup/restore remains password-gated and encrypted without a payload-format migration.
+- diagnostics remain local and non-invasive.
+- invalid-state copy is normalized without hiding the underlying feature ownership.
+- no telemetry, analytics, remote diagnostics reporting, WalletConnect, dApp connectivity, background signing, or release-pipeline changes were introduced.
+
+Focused tests were added or expanded for RPC diagnostics safety, signing request limits and signing UX copy, backup/restore warning/error normalization, route category boundaries, safe user-facing errors, and pending transaction-history refresh behavior.
+
+Expected local validation remains:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+During this documentation closure environment, `fvm`, `flutter`, and `dart` were not available, so those commands could not be executed here. The closure is therefore based on source/documentation review and the reported successful agent execution of subphases 8.5.1 through 8.5.5.
+
+### Phase 8.5 Documentation Closure
+
+The documentation trunk now records Phase 8.5 as completed across the project-level README, documentation index, phase plan, architecture references, deep architecture notes, feature inventory, flow documentation, UX notes, development boundary, RPC notes, security notes, release validation expectations, and design decisions.
+
+This matters for the next Phase 8 work because later release/distribution maturity must not assume that diagnostics are telemetry, that signing is a dApp flow, that backup warnings imply a new backup format, or that shell navigation owns sensitive state. Phase 8.5 closes those boundaries explicitly.
+
+### Phase 8.5 Final Status
+
+Status: Completed.
+
+Phase 8.5 is closed as a security, reliability, diagnostics, warning, lock/lifecycle, and invalid-state maturity phase over the Phase 8 wallet product surface. Future release/distribution maturation remains reserved for later Phase 8 work.

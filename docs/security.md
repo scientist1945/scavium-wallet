@@ -214,3 +214,23 @@ Account-aware asset presentation improves user clarity by showing which account 
 Phase 8.2 does not scan for unknown user holdings, connect to external indexers, or infer assets automatically.
 
 This keeps asset expansion deterministic and avoids introducing external data-dependency or privacy assumptions during this phase.
+
+---
+
+## 🛡️ Phase 8.5 Security, Reliability, and Diagnostics Boundary
+
+Phase 8.5 hardens sensitive runtime behavior without changing the self-custody model.
+
+The phase reinforces the following security expectations:
+
+- diagnostics must never expose private keys, mnemonic text, passwords, encrypted backup payloads, raw backup contents, or signature material;
+- signing must remain explicit, previewed, confirmable, and separated from transaction submission;
+- backup export and restore warnings must clearly communicate password/file responsibility;
+- backup failure copy must be safe and must not leak raw payload or secret material;
+- lifecycle lock behavior must remain centralized rather than being owned by shell presentation widgets;
+- screenshot protection must be requested where supported without destabilizing unsupported or failing platforms;
+- invalid-state messages must be useful without revealing sensitive internals.
+
+Phase 8.5 does not add remote diagnostics, telemetry, analytics, dApp connectivity, WalletConnect, background signing, or automatic challenge ingestion.
+
+The result is a more mature security posture over the expanded Phase 8 product surface while preserving the original self-custody principle: the user controls the wallet, the app does not gain a remote recovery path, and sensitive material does not leave the device.

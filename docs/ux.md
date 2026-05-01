@@ -257,3 +257,26 @@ Safety UX preserved by this phase:
 
 The UX remains intentionally bounded. Phase 8.4 does not add dApp connectivity, automatic token discovery, external activity indexing, account deletion, account label editing, or new backup semantics.
 
+
+---
+
+## 🛡️ Phase 8.5 Security, Reliability, and Diagnostics UX
+
+Phase 8.5 improves safety-oriented UX on sensitive surfaces while keeping user actions explicit. The UX goal is not to hide risk. The goal is to remove misleading or overly technical failure text, reinforce self-custody responsibility, and make sensitive actions easier to understand before the user confirms them.
+
+Implemented UX improvements:
+
+- diagnostics errors are actionable and safe rather than raw exception dumps;
+- diagnostics still preserve useful non-sensitive context when it helps the user understand RPC/network state;
+- signing explains that signatures are not transactions, do not move funds, and are not receipts;
+- signing mode warnings distinguish personal messages from challenge messages;
+- confirmation copy reminds users to approve only recognized messages/challenges;
+- cancellation remains visible and non-destructive;
+- backup export and restore screens explain password responsibility, file privacy, and safe failure behavior;
+- restore/export failures avoid exposing raw backup, mnemonic, password, ciphertext, private-key, address, or signature material;
+- invalid states fail safely with retry-oriented copy where appropriate;
+- transaction-history refresh failures do not imply that existing local history was deleted or overwritten.
+
+The UX deliberately stays conservative. Phase 8.5 does not create automated signing prompts, dApp prompts, WalletConnect prompts, hidden challenge ingestion, or telemetry consent surfaces. Sensitive actions remain user-initiated, visible, confirmable, and cancellable.
+
+The Phase 8.5 UX remains intentionally bounded. It does not introduce telemetry, dApp prompts, WalletConnect, background signing, automatic challenge ingestion, or hidden shell-owned security behavior.

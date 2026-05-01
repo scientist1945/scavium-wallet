@@ -23,7 +23,7 @@ Current platform and release scope includes:
 - Windows MSIX packaging
 - GitHub Release automation
 
-The wallet completed Phase 7 stabilization and is currently progressing through Phase 8 product expansion and production maturity, with Phase 8.4 navigation-shell and product-surface maturity now complete.
+The wallet completed Phase 7 stabilization and is now in Phase 8 product expansion and production maturity. Phase 8.5 security, reliability, and diagnostics maturity is complete and extends the expanded wallet surface with safer diagnostics, clearer signing and backup warnings, centralized lifecycle/lock reliability, and normalized invalid-state handling.
 
 Phase 8 focuses on controlled product growth from the Phase 7 release-hardened baseline, including:
 
@@ -53,12 +53,14 @@ Completed phases:
 - Phase 8.2 — Asset & Portfolio Expansion
 - Phase 8.3 — Transaction & Activity Maturity
 - Phase 8.4 — Navigation Shell and Product Surface Scaling
+- Phase 8.5 — Security, Reliability & Diagnostics Maturity
 
 Current Phase 8 milestone:
 
 - Phase 8.2 completed — Asset & Portfolio Expansion
 - Phase 8.3 completed — Transaction & Activity Maturity
 - Phase 8.4 completed — Navigation Shell and Product Surface Scaling
+- Phase 8.5 completed — Security, Reliability & Diagnostics Maturity
 
 Completed Phase 7 stabilization work includes:
 
@@ -108,6 +110,18 @@ Completed Phase 8.4 navigation and product-surface work includes:
 - 8.4.4 — Wallet and Account Surface Placement
 - 8.4.5 — Settings, Diagnostics, and Secondary Action Organization
 - 8.4.close — UX & Product Surface Maturity Closure
+
+Completed Phase 8.5 security, reliability, and diagnostics maturity work includes:
+
+- 8.5.0 — Security, Reliability & Diagnostics Baseline Inspection and Execution Contract
+- 8.5.1 — Sensitive Diagnostics Output Hardening
+- 8.5.2 — Signing Safety Copy and Confirmation Hardening
+- 8.5.3 — Backup and Recovery Warning Reliability
+- 8.5.4 — Lock, Lifecycle, and Sensitive Surface Reliability
+- 8.5.5 — Error Boundary and Invalid State Maturity
+- 8.5.close — Security, Reliability & Diagnostics Maturity Closure
+
+
 
 
 ---
@@ -386,6 +400,40 @@ The implementation remains intentionally bounded:
 - no wallet encryption change;
 - no release pipeline change;
 - no shell-owned business state.
+
+---
+
+## 🛡️ Phase 8.5 Security, Reliability & Diagnostics Maturity
+
+Phase 8.5 completed the first cross-cutting hardening pass over the expanded Phase 8 product surface.
+
+Unlike Phase 8.1 through 8.4, this phase did not add a new primary product surface. It hardened the already-expanded wallet by revisiting the places where production users can be most affected by unclear behavior: diagnostics, signing confirmation, backup/export and restore warnings, lifecycle locking, screenshot protection, refresh failures, send errors, token errors, transaction-history receipt refresh, and generic async error presentation.
+
+Implemented capabilities include:
+
+- safe RPC diagnostics copy that preserves useful chain, block, endpoint, and cooldown information without exposing raw exception text;
+- signing request validation for empty or oversized messages;
+- explicit signing copy that makes clear a signature is not a transaction, does not move funds, and is not a receipt;
+- personal-message and challenge-message warning copy before confirmation;
+- backup export and restore warnings that reinforce password responsibility, file privacy, and self-custody consequences;
+- safe backup/export and restore failure copy that avoids leaking raw payload, mnemonic, password, ciphertext, private-key, address, or signature material;
+- centralized lifecycle lock behavior that prevents background refresh restart while the app is locked;
+- platform-safe Android screenshot protection behavior where plugin failures are non-fatal;
+- safe user-facing error helpers reused by send, token-send, asset refresh, transaction-history refresh, and async UI states;
+- pending transaction-history preservation when receipt refresh is unavailable or fails.
+
+The implementation remains intentionally bounded:
+
+- no telemetry or analytics;
+- no remote diagnostics reporting;
+- no dApp connectivity or WalletConnect;
+- no automatic challenge ingestion;
+- no background signing;
+- no backup payload format change;
+- no release pipeline change;
+- no shell-owned security state.
+
+Phase 8.5 is therefore a maturity layer over the existing architecture, not a replacement of the architecture.
 
 ---
 

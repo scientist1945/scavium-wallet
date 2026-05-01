@@ -273,3 +273,42 @@ Benefits:
 - keeps account switching centralized;
 - allows assets to be presented in the correct account context;
 - prepares later activity and transaction maturity work without broad refactoring.
+
+---
+
+### 22. Diagnostics remain local and non-invasive
+
+Phase 8.5 confirms that RPC diagnostics are a local operational aid, not telemetry.
+
+Benefits:
+
+- keeps diagnostics useful for chain/RPC visibility;
+- avoids remote reporting assumptions;
+- prevents raw exception dumps from becoming user-facing security risk;
+- preserves the wallet's self-custody and privacy posture.
+
+---
+
+### 23. Signing safety copy is explicit but signing scope remains bounded
+
+Phase 8.5 improves signing validation, warning copy, confirmation copy, cancellation behavior, and result language.
+
+Benefits:
+
+- users see that signatures are not transactions;
+- users are reminded that signatures do not move funds and are not receipts;
+- challenge-message and personal-message signing remain distinct;
+- signing does not become dApp connectivity, WalletConnect, or automatic challenge ingestion.
+
+---
+
+### 24. Error normalization does not create a new global error architecture
+
+Phase 8.5 introduces safer user-facing error helpers and applies them across selected invalid-state and async surfaces.
+
+Benefits:
+
+- sensitive material is suppressed from user-facing failures;
+- users receive clearer retry/correction copy;
+- local data such as pending transaction history is preserved when refresh fails;
+- existing feature/controller ownership remains intact.

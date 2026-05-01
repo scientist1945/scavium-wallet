@@ -323,3 +323,44 @@ Phase 8.4 is complete as a navigation-shell and product-surface maturity phase.
 
 The product now has a scalable authenticated navigation structure that can support later UX, diagnostics, security, and product-surface phases without overloading Home or moving ownership away from existing feature boundaries.
 
+
+---
+
+## 🛡️ Phase 8.5 Implemented Security, Reliability, and Diagnostics Features
+
+Phase 8.5 converts the security/reliability/diagnostics maturity plan into implemented hardening over existing wallet surfaces. It is not a product-surface expansion like Phase 8.4 and it is not a release-pipeline phase like the later Phase 8.6 scope. It is a runtime maturity layer applied to sensitive flows that were already present: diagnostics, signing, backup/export, restore, lifecycle lock, screenshot protection, send, token send, asset refresh, transaction-history refresh, and generic async state presentation.
+
+Implemented diagnostics hardening:
+
+- RPC health errors are normalized into safe user-facing copy.
+- RPC status UI no longer displays raw exception contents.
+- diagnostics remain local, non-invasive, and RPC-focused.
+- useful operational context such as chain, block, endpoint, active RPC, and cooldown state remains visible when available.
+
+Implemented signing safety hardening:
+
+- signing requests reject empty messages and messages over the configured safety limit.
+- signing copy explicitly distinguishes signatures from transactions, fund movement, and transaction receipts.
+- personal-message and challenge-message warnings are shown before confirmation.
+- confirmation and cancellation remain explicit and non-mutating.
+- signature results are presented as signatures only, not as submitted transactions.
+
+Implemented backup and recovery hardening:
+
+- export and restore screens use stronger password/file responsibility warnings.
+- backup errors are normalized so raw payload, mnemonic, password, ciphertext, private-key, address, or signature details are not exposed.
+- encrypted backup payload semantics and compatibility remain unchanged.
+- v1/v2 restore compatibility remains part of the self-custody safety baseline.
+
+Implemented reliability and error-boundary hardening:
+
+- lifecycle refresh does not restart while the app is locked.
+- Android screenshot-protection plugin failures are non-fatal.
+- invalid asset, transaction, token-send, native-send, and async error states use safer user-facing messages.
+- pending transaction-history refresh preserves local entries when receipts are unavailable or RPC refresh fails.
+
+## Phase 8.5 Completion State
+
+Phase 8.5 is complete as a security, reliability, diagnostics, warning, lock/lifecycle, and invalid-state maturity phase.
+
+The product now has safer diagnostics, clearer signing and backup warning surfaces, more reliable lifecycle behavior, and normalized error handling without adding telemetry, analytics, remote diagnostics reporting, dApp connectivity, WalletConnect, automatic challenge ingestion, backup format changes, shell-owned security state, or release-pipeline changes.
