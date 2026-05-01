@@ -2667,7 +2667,61 @@ Phase 8.5 touches sensitive wallet behavior. Before changing confirmations, diag
 - Confirm the documented files are real paths from the current project tree.
 - Confirm the plan preserves Phase 8.1 through Phase 8.4 behavior.
 
+### Phase 8.5.0 Implementation Result
+
+Phase 8.5.0 is complete as a documentation-only baseline inspection and execution contract lock. The real working tree was inspected after Phase 8.4 closure, and Phase 8.5 remains correctly scoped as a hardening phase over the existing security, reliability, diagnostics, signing, backup, lock, routing, and invalid-state surfaces.
+
+The inspected baseline confirms that:
+
+- `lib/core/security/app_lifecycle_guard.dart` already centralizes lifecycle-triggered locking and home refresh coordination;
+- `lib/core/security/lock_policy.dart` defines the current lock policy defaults without making Phase 8.5 responsible for changing the policy model during baseline lock;
+- `lib/core/security/screenshot_guard.dart` provides Android screenshot-protection hooks through the existing platform channel boundary;
+- `lib/app/router/app_router.dart` keeps onboarding, wallet-entry, lock, shell, secondary action, detail, signing, and diagnostics routes explicit under `GoRouter`;
+- `lib/features/settings/presentation/settings_screen.dart` exposes Security & recovery, Signing, Diagnostics, Danger zone, and About sections introduced by Phase 8.4;
+- `lib/features/blockchain/presentation/rpc_diagnostics_screen.dart`, `lib/features/blockchain/application/rpc_health_controller.dart`, and `lib/features/blockchain/application/rpc_status_controller.dart` form the current diagnostics baseline;
+- `lib/features/signing/application/signing_controller.dart`, `lib/features/signing/domain/signing_request.dart`, `lib/features/signing/presentation/signing_screen.dart`, `lib/features/signing/presentation/widgets/signing_confirm_dialog.dart`, and `lib/features/signing/presentation/widgets/signing_result_card.dart` form the current signing safety baseline;
+- `lib/features/settings/presentation/export_backup_screen.dart`, `lib/features/wallet/presentation/restore_backup_screen.dart`, `lib/features/wallet/application/wallet_backup_controller.dart`, and `lib/features/wallet/domain/wallet_backup_payload.dart` form the current backup and recovery warning baseline;
+- `lib/core/errors/app_exception.dart` remains the current shared application exception boundary;
+- focused tests already exist for shell/settings/signing/token/transaction-history/backup payload behavior and should be preserved as the starting validation surface for later Phase 8.5 implementation subphases.
+
+No runtime Dart files were modified by this subphase. No `.agent/*` files were generated or modified by this subphase.
+
+### Phase 8.5.0 Completion Validation
+
+The baseline is coherent with the documented Phase 8.5 contract because the hardening targets already exist as real project files, the planned subphases map to existing architectural owners, and no new global security, diagnostics, or error architecture is required before beginning implementation.
+
+Phase 8.5.0 validates the following execution boundaries for the remaining subphases:
+
+- diagnostics hardening must stay inside the blockchain diagnostics/application surfaces unless a shared safe-message helper becomes justified by implementation;
+- signing hardening must preserve the Phase 8.3 signing service/controller/domain/presentation separation;
+- backup and recovery warning hardening must not change backup encryption, backup payload compatibility, or restore compatibility semantics;
+- lock and lifecycle hardening must preserve centralized `GoRouter` redirects and existing lock-state ownership;
+- invalid-state maturity must reuse existing feature ownership and avoid introducing a premature global error framework;
+- settings remains an entry surface for sensitive flows, not the owner of wallet, signing, backup, diagnostics, or lock state.
+
+Automated validation commands were not executed in this environment because the local container does not provide the project Flutter/FVM toolchain. The expected project-local validation remains:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+### Phase 8.5.0 Closure Boundaries
+
+Phase 8.5.0 deliberately does not introduce:
+
+- runtime code changes;
+- `.agent/*` generation;
+- diagnostics telemetry;
+- remote logging;
+- signing service changes;
+- backup payload or encryption changes;
+- lock policy behavior changes;
+- route ownership changes;
+- release pipeline changes.
+
 ---
+
 
 ## 8.5.1 — Sensitive Diagnostics Output Hardening
 

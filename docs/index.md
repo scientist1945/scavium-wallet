@@ -37,7 +37,7 @@ Phase 8 is active and currently completed through:
 - Phase 8.3 — Transaction & Activity Maturity
 - Phase 8.4 — Navigation Shell and Product Surface Scaling
 
-Phase 8.4 is closed. The completed runtime scope includes the route classification contract, responsive authenticated shell, dashboard segmentation, dedicated account surface placement, and organized settings/diagnostics/secondary-action structure.
+Phase 8.4 is closed. Phase 8.5 has started with its documentation-only baseline inspection and execution contract completed in 8.5.0. The completed Phase 8.4 runtime scope includes the route classification contract, responsive authenticated shell, dashboard segmentation, dedicated account surface placement, and organized settings/diagnostics/secondary-action structure.
 
 Completed Phase 8.4 scope:
 
@@ -148,15 +148,15 @@ Completed Phase 8.4 scope:
 
 ---
 
-## Planned Phase 8.5 security, reliability, and diagnostics maturity
+## Active Phase 8.5 security, reliability, and diagnostics maturity
 
-Phase 8.5 is documented as the next Phase 8 area after the completed Phase 8.4 navigation-shell and product-surface maturity work.
+Phase 8.5 is the active Phase 8 area after the completed Phase 8.4 navigation-shell and product-surface maturity work.
 
-This planning step does not implement runtime code and does not generate `.agent/*` files. It records the subphase structure required for a later controlled implementation prompt.
+Phase 8.5.0 is complete as a documentation-only baseline inspection and execution contract lock. It did not implement runtime code and did not generate or modify `.agent/*` files. It confirmed that the remaining Phase 8.5 subphases map to real security, signing, backup, diagnostics, lock, routing, settings, and error-boundary surfaces in the current working tree.
 
-Planned Phase 8.5 scope:
+Phase 8.5 scope:
 
-- 8.5.0 — Security, Reliability & Diagnostics Baseline Inspection and Execution Contract
+- 8.5.0 — Security, Reliability & Diagnostics Baseline Inspection and Execution Contract — Completed documentation-only baseline lock
 - 8.5.1 — Sensitive Diagnostics Output Hardening
 - 8.5.2 — Signing Safety Copy and Confirmation Hardening
 - 8.5.3 — Backup and Recovery Warning Reliability
@@ -164,4 +164,4 @@ Planned Phase 8.5 scope:
 - 8.5.5 — Error Boundary and Invalid State Maturity
 - 8.5.close — Security, Reliability & Diagnostics Maturity Closure
 
-Phase 8.5 remains planned until the runtime implementation subphases are executed and validated from the real working tree.
+Phase 8.5 runtime implementation remains pending until subphases 8.5.1 through 8.5.5 are executed and validated from the real working tree.
