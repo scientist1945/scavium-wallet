@@ -1,22 +1,23 @@
-# Current Task — 8.6.3
+# Current Task — 8.6.5
 
 Project: SCAVIUM Wallet
 Phase: 8.6 — Release & Distribution Maturity Extension
-Subphase: 8.6.3 — Release Validation and Operator Reporting
+Subphase: 8.6.5 — Cross-Platform Packaging Consistency and Release Closure Readiness
 Type: code
 
 ## Goal
 
-Add or mature release validation/reporting so operators can see what was built, validated, skipped, or missing for a release.
+Consolidate cross-platform packaging expectations before Phase 8.6 closure so Android, Web, and Windows release paths stay coherent.
 
 ## Scope
 
-Introduce focused release reports, validation summaries, missing-artifact checks, or generated manifest output only where supported by the existing release pipeline.
+Apply final consistency adjustments for artifact discovery, platform build reporting, checksum expectations, and local/CI release alignment. Do not introduce new product surfaces.
 
 ## Allowed Files
 
 - `tool/build.dart`
 - `.github/workflows/release.yml`
+- `pubspec.yaml`
 
 ## Forbidden
 
@@ -29,11 +30,13 @@ Introduce focused release reports, validation summaries, missing-artifact checks
 
 ## Implementation Requirements
 
-- Read only allowed release-tool/workflow files before proposing edits.
-- Prefer extending existing `tool/build.dart` unless separation is technically necessary.
-- A new `tool/release_validate.dart` may be proposed only if validation logic would make `tool/build.dart` too large or unclear.
-- Reports must not include secrets, signing passwords, private keys, mnemonic data, wallet addresses, signatures, or backup payload data.
-- Generated reports must be treated as build/distribution outputs, not runtime wallet data.
+- Read only allowed release and metadata files before proposing edits.
+- Preserve Android APK and App Bundle behavior.
+- Preserve Windows MSIX behavior.
+- Preserve Web build support in `tool/build.dart` even if Web is not currently published as a GitHub Release asset.
+- Keep local and CI release flows consistent.
+- Touch `pubspec.yaml` only for a real packaging metadata correction.
+- Do not modify docs in this code-only flow.
 
 ## Validation (manual)
 
@@ -44,4 +47,4 @@ dart run tool/build.dart --check-version --expected-tag v0.2.1
 
 ## Acceptance
 
-Release output/reporting identifies version, build number, expected artifacts, missing artifacts, and checksum/report boundaries without exposing sensitive data.
+Android, Web, and Windows packaging behavior is consistently represented in release tooling; checksums remain coherent; no runtime wallet behavior changes.

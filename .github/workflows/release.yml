@@ -209,6 +209,24 @@ jobs:
           name: scavium-wallet-windows-release-artifacts
           path: release-assets/windows
 
+      - name: Create release manifest
+        shell: bash
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)\+([0-9]+)/\1+\2/')
+          cat > release-assets/release-manifest.json <<EOF
+          {
+            "name": "SCAVIUM Wallet",
+            "version": "${VERSION}",
+            "draft": true,
+            "published_platforms": ["android-apk", "android-bundle", "windows-msix"],
+            "local_supported_only_platforms": ["web", "windows"],
+            "checksum_file": "SHA256SUMS.txt",
+            "checksum_boundary": "Checksums are generated over release-assets after Android, Windows, and release manifest files are collected.",
+            "sensitive_data_policy": "Release manifest excludes secrets, signing passwords, private keys, mnemonic data, wallet addresses, signatures, and backup payload data."
+          }
+          EOF
+          test -s release-assets/release-manifest.json
+
       - name: Create SHA256 checksums
         shell: bash
         run: |
@@ -226,4 +244,5 @@ jobs:
           files: |
             release-assets/android/*
             release-assets/windows/*
+            release-assets/release-manifest.json
             release-assets/SHA256SUMS.txt
