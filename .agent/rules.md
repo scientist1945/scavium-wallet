@@ -44,7 +44,7 @@
 ## Git Rules
 
 - Use a single accumulative branch per phase.
-- Current branch: `feature/phase-8.5-security-reliability-diagnostics-maturity`
+- Current branch: `phase-8.6-release-distribution-maturity-extension`
 - Commit per subphase.
 - Merge only after full phase completion.
 
