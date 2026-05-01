@@ -312,3 +312,42 @@ fvm flutter test
 ```
 
 Those commands are the correct validation gate for the developer workstation or CI environment. The closure documentation does not replace those commands; it records the real implementation scope and keeps the next Phase 8 work from inheriting ambiguous assumptions.
+
+---
+
+## Phase 8.6 Development Boundary
+
+Phase 8.6 is planned as a release and distribution maturity extension after Phase 8.5.
+
+The phase is intentionally limited to release-tooling and distribution-documentation concerns:
+
+- `tool/build.dart` build automation maturity;
+- `.github/workflows/release.yml` release workflow consistency;
+- version, artifact, checksum, and report consistency;
+- release validation and operator reporting;
+- distribution metadata and store-readiness documentation;
+- cross-platform packaging expectations for Android, Web, and Windows.
+
+It must not alter:
+
+- wallet account persistence ownership;
+- asset, transaction, signing, backup, restore, diagnostics, routing, or lock runtime behavior;
+- encrypted backup payload semantics;
+- GoRouter ownership;
+- Riverpod feature-state ownership;
+- telemetry or analytics behavior;
+- automatic Play Store upload, Microsoft Store submission, iOS distribution, or runtime update delivery.
+
+Expected local validation for implementation subphases depends on the exact files touched, but the release-tooling baseline is:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+dart run tool/build.dart --check-version --expected-tag v0.2.1
+dart run tool/build.dart --platform android-apk --no-version-bump
+dart run tool/build.dart --platform android-bundle --no-version-bump
+dart run tool/build.dart --platform web --no-version-bump
+dart run tool/build.dart --platform windows-msix --no-version-bump
+```
+
+Documentation-only subphases must not generate `.agent/*` files, must not modify runtime source, and must update only the Markdown files required to keep the documentation trunk coherent.

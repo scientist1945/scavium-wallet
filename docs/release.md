@@ -449,3 +449,37 @@ It does, however, add runtime behaviors that should be treated as release-qualit
 - Invalid send, token-send, asset-refresh, transaction-history, and async UI states should fail safely with actionable user-facing copy.
 
 These checks complement existing release validation. They do not replace `fvm flutter analyze`, `fvm flutter test`, platform packaging checks, or the later Phase 8.6 release/distribution maturity scope.
+
+---
+
+## 🚧 Phase 8.6 Release & Distribution Maturity Planning
+
+Phase 8.6 is the next planned release/distribution maturity extension after Phase 8.5 closure. It starts from the existing Phase 7 release-hardening baseline and the current Phase 8.5 runtime-hardening state.
+
+The real baseline already includes:
+
+- `tool/build.dart` for local build automation, version handling, platform selection, MSIX synchronization, CI overrides, artifact discovery, and local signing/verification behavior.
+- `.github/workflows/release.yml` for tag/manual release validation, Android release artifact generation, Windows MSIX generation, SHA256 checksum generation, artifact upload/download, and draft GitHub Release publication.
+- `pubspec.yaml` for semantic version/build-number ownership and MSIX metadata.
+
+Planned 8.6 maturity areas are:
+
+- build-tool artifact and version consistency;
+- GitHub Release workflow artifact consistency;
+- release validation and operator reporting;
+- distribution metadata and store-readiness documentation;
+- cross-platform packaging consistency before closure.
+
+Phase 8.6 must remain bounded. It may mature release tooling and documentation, but it must not claim or implement automatic Play Store upload, automatic Microsoft Store submission, iOS distribution, runtime update delivery, telemetry, analytics, wallet-secret handling, backup format changes, or wallet runtime feature changes.
+
+Expected validation remains grounded in the real release surfaces:
+
+```bash
+dart run tool/build.dart --check-version --expected-tag v0.2.1
+dart run tool/build.dart --platform android-apk --no-version-bump
+dart run tool/build.dart --platform android-bundle --no-version-bump
+dart run tool/build.dart --platform web --no-version-bump
+dart run tool/build.dart --platform windows-msix --no-version-bump
+```
+
+CI validation must continue to confirm that Android artifacts, Windows MSIX artifacts, and SHA256 checksums are produced and attached to a draft GitHub Release through the existing workflow unless a later 8.6 implementation subphase explicitly changes that behavior.
