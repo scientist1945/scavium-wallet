@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:cryptography_flutter/cryptography_flutter.dart';
 import 'package:scavium_wallet/features/wallet/domain/encrypted_wallet_backup.dart';
 import 'package:scavium_wallet/features/wallet/domain/wallet_backup_payload.dart';
 
@@ -13,10 +12,7 @@ class BackupCryptoService {
   static const int _nonceLength = 12;
   static const int _aesKeyLength = 32;
 
-  final Cryptography _cryptography;
-
-  BackupCryptoService({Cryptography? cryptography})
-    : _cryptography = cryptography ?? FlutterCryptography.defaultInstance;
+  BackupCryptoService({Cryptography? cryptography});
 
   Future<EncryptedWalletBackup> encryptPayload({
     required WalletBackupPayload payload,

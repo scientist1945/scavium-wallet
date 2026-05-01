@@ -35,6 +35,6 @@ class BackupFileService {
         '${date.month.toString().padLeft(2, '0')}-'
         '${date.day.toString().padLeft(2, '0')}';
 
-    return 'scavium_wallet_${network}_$shortAddress\_$dateStr.scwb';
+    return 'scavium_wallet_${network}_${shortAddress}_$dateStr.scwb';
   }
 }
