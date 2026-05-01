@@ -26,6 +26,7 @@ import 'package:scavium_wallet/features/settings/presentation/settings_screen.da
 import 'package:scavium_wallet/features/signing/presentation/signing_screen.dart';
 import 'package:scavium_wallet/features/splash/presentation/splash_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/backup_mnemonic_screen.dart';
+import 'package:scavium_wallet/features/wallet/presentation/accounts_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/create_wallet_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/import_wallet_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/confirm_mnemonic_screen.dart';
@@ -91,6 +92,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (_, _) => const SettingsScreen(),
           ),
         ],
+      ),
+      GoRoute(
+        path: RouteNames.accounts,
+        builder: (_, _) => const AccountsScreen(),
       ),
       GoRoute(path: RouteNames.send, builder: (_, _) => const SendScreen()),
       GoRoute(

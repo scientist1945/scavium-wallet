@@ -1,30 +1,30 @@
-# Current Task — 8.4.3
+# Current Task — 8.4.4
 
 Project: SCAVIUM Wallet
 Phase: 8.4 — UX & Product Surface Maturity
-Subphase: 8.4.3 — Dashboard and Product Surface Segmentation
+Subphase: 8.4.4 — Wallet and Account Surface Placement
 Type: code
 
 ## Goal
 
-Reduce Home overload by making Home a summary dashboard while product surfaces own detailed workflows.
+Place account-oriented wallet controls deliberately within the navigation model while preserving wallet ownership and backup compatibility.
 
 ## Scope
 
-Keep balance/account/network summary and recent activity preview on Home. Avoid duplicating shell navigation. Preserve intentional quick actions for send, receive, signing, and explorer flows.
+Decide whether account management remains on Home or becomes a dedicated Wallet/Accounts surface. Do not expand account deletion/label editing unless already present in code.
 
 ## Allowed Files
 
-- `lib/features/home/presentation/home_screen.dart`
 - `lib/features/wallet/presentation/account_switcher.dart`
-- `lib/features/assets/presentation/assets_screen.dart`
-- `lib/features/assets/presentation/history_screen.dart`
-- `lib/features/assets/presentation/transaction_detail_screen.dart`
-- `test/portfolio_summary_test.dart`
-- `test/transaction_detail_screen_test.dart`
-- `lib/features/home/presentation/widgets/dashboard_balance_card.dart`
-- `lib/features/home/presentation/widgets/dashboard_recent_activity_card.dart`
-- `test/home_screen_test.dart`
+- `lib/features/wallet/presentation/add_account_sheet.dart`
+- `lib/features/wallet/application/wallet_controller.dart`
+- `lib/features/home/presentation/home_screen.dart`
+- `lib/app/router/route_names.dart`
+- `lib/app/router/app_router.dart`
+- `test/asset_account_context_test.dart`
+- `test/wallet_backup_payload_test.dart`
+- `lib/features/wallet/presentation/accounts_screen.dart`
+- `test/accounts_screen_test.dart`
 
 ## Forbidden
 
@@ -37,19 +37,19 @@ Keep balance/account/network summary and recent activity preview on Home. Avoid 
 
 ## Implementation Requirements
 
-- Keep Home as summary, not a replacement for Assets/Activity/Settings.
-- Preserve account switching unless 8.4.4 moves it deliberately.
-- Recent activity preview must be read-only and open details intentionally.
-- Do not duplicate feature state in Home-specific controllers.
-- Extract widgets only if Home becomes too large.
+- Keep `WalletController` as account-state owner.
+- Preserve derived/imported account behavior.
+- Preserve backup/restore compatibility.
+- Add a Wallet/Accounts route only if it improves product clarity and follows 8.4.1/8.4.2 shell rules.
+- Do not move reset/backup into shell chrome.
 
 ## Validation (manual)
 
 ```bash
 fvm flutter analyze
-fvm flutter test test/portfolio_summary_test.dart test/transaction_detail_screen_test.dart
+fvm flutter test test/asset_account_context_test.dart test/wallet_backup_payload_test.dart
 ```
 
 ## Acceptance
 
-Home is usable on compact and wide layouts; feature routes remain reachable; no feature ownership moved into Home.
+Active account selection works; account-aware assets remain correct; backup payload compatibility unchanged.

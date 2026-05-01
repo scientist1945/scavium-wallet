@@ -203,6 +203,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       onTap: () => context.push(RouteNames.assets),
                     ),
                     _QuickAction(
+                      title: 'Accounts',
+                      icon: Icons.manage_accounts_outlined,
+                      onTap: () => context.push(RouteNames.accounts),
+                    ),
+                    _QuickAction(
                       title: 'History',
                       icon: Icons.receipt_long,
                       onTap: () => context.push(RouteNames.history),

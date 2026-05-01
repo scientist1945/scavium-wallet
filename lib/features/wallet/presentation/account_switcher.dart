@@ -101,17 +101,9 @@ class _AccountOption extends StatelessWidget {
             ? account.name
             : account.label!;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(label, overflow: TextOverflow.ellipsis),
-        Text(
-          _shortAddress(account.address),
-          style: Theme.of(context).textTheme.bodySmall,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
+    return Text(
+      '$label - ${_shortAddress(account.address)}',
+      overflow: TextOverflow.ellipsis,
     );
   }
 
