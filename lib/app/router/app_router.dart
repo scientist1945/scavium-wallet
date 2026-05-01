@@ -5,11 +5,13 @@ import 'package:scavium_wallet/core/constants/storage_keys.dart';
 import 'package:scavium_wallet/core/services/local_storage_service.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
 import 'package:scavium_wallet/features/assets/domain/token_info.dart';
+import 'package:scavium_wallet/features/assets/domain/tx_history_entry.dart';
 import 'package:scavium_wallet/features/assets/presentation/add_token_screen.dart';
 import 'package:scavium_wallet/features/assets/presentation/asset_detail_screen.dart';
 import 'package:scavium_wallet/features/assets/presentation/assets_screen.dart';
 import 'package:scavium_wallet/features/assets/presentation/history_screen.dart';
 import 'package:scavium_wallet/features/assets/presentation/send_token_screen.dart';
+import 'package:scavium_wallet/features/assets/presentation/transaction_detail_screen.dart';
 import 'package:scavium_wallet/features/blockchain/presentation/receive_screen.dart';
 import 'package:scavium_wallet/features/blockchain/presentation/rpc_diagnostics_screen.dart';
 import 'package:scavium_wallet/features/blockchain/presentation/send_screen.dart';
@@ -20,6 +22,7 @@ import 'package:scavium_wallet/features/onboarding/presentation/onboarding_scree
 import 'package:scavium_wallet/features/onboarding/presentation/wallet_entry_screen.dart';
 import 'package:scavium_wallet/features/onboarding/presentation/welcome_screen.dart';
 import 'package:scavium_wallet/features/settings/presentation/settings_screen.dart';
+import 'package:scavium_wallet/features/signing/presentation/signing_screen.dart';
 import 'package:scavium_wallet/features/splash/presentation/splash_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/backup_mnemonic_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/create_wallet_screen.dart';
@@ -84,6 +87,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const ReceiveScreen(),
       ),
       GoRoute(
+        path: RouteNames.signing,
+        builder: (_, __) => const SigningScreen(),
+      ),
+      GoRoute(
         path: RouteNames.assets,
         builder: (_, __) => const AssetsScreen(),
       ),
@@ -94,6 +101,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.history,
         builder: (_, __) => const HistoryScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.transactionDetail,
+        builder:
+            (_, state) =>
+                TransactionDetailScreen(entry: state.extra as TxHistoryEntry),
       ),
       GoRoute(
         path: RouteNames.assetDetail,
