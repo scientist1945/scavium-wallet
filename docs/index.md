@@ -256,3 +256,12 @@ Phase 9.3 is closed as the visual-system foundation sequence:
 
 The closed 9.3 result confirms that token ownership belongs to `lib/app/theme/tokens/`, with `scavo_colors.dart`, `scavo_spacing.dart`, `scavo_radius.dart`, `scavo_elevation.dart`, `scavo_typography.dart`, and `scavo_tokens.dart` as the normalized namespace. `lib/app/theme/app_colors.dart` and `lib/app/theme/app_text_styles.dart` remain compatibility facades, `lib/app/theme/app_theme.dart` consumes token names for the existing dark theme, and shared visual widgets now consume token spacing, surface, action, feedback, and dialog values. 9.3 still does not expose light mode, change `themeMode`, add persisted appearance selection, alter Settings controls, generate `.agent/*`, or reopen wallet/release behavior. The next implementation phase is 9.4 — Light/Dark Theme Implementation.
 
+Phase 9.4 is now formally documented for execution as the light/dark theme implementation bridge after the closed 9.3 token foundation. Its planned subphase sequence is:
+
+- 9.4.1 — Light/Dark Theme Baseline and Token Boundary
+- 9.4.2 — AppTheme Light and Dark ThemeData Construction
+- 9.4.3 — Component and Navigation Theme Coherence
+- 9.4.4 — Light/Dark Theme Validation and Documentation Closure
+
+The documented 9.4 boundary is intentionally narrow: add first-class paired light/dark theme definitions from the token namespace, keep `AppTheme.darkTheme` compatible with the 9.3 result, validate shared components and navigation surfaces, and leave runtime theme-mode selection, persistence, and Settings appearance controls to 9.5 and 9.6. The current app root still uses `ThemeMode.dark`, so 9.4 should not be treated as a user-facing theme selector phase.
+

@@ -1187,29 +1187,226 @@ Phase 9.3 is therefore closed as the visual-system foundation required by Phase 
 
 ### Objective
 
-Implement first-class light and dark SCAVIUM themes using the normalized token system.
+Implement first-class light and dark SCAVIUM themes using the normalized token system produced by 9.3, while keeping runtime theme selection outside this phase.
 
 ### Scope
 
-- Add `AppTheme.lightTheme`.
-- Refine `AppTheme.darkTheme` from token values.
-- Ensure Material 3 `ColorScheme`, card, input, app bar, navigation, dialog, list, snackbar, and button behavior remain coherent.
-- Validate core screens visually and through widget tests where practical.
+- Add `AppTheme.lightTheme` as a complete Material 3 theme definition.
+- Preserve and refine `AppTheme.darkTheme` from the same normalized token vocabulary.
+- Introduce a light/dark token boundary only where the current dark-only `ScavoColors` model cannot represent both appearances safely.
+- Ensure Material 3 `ColorScheme`, scaffold, card, input, app bar, navigation, dialog, list, snackbar, and button behavior remain coherent in both themes.
+- Validate core screens visually and through focused theme/widget tests where practical.
+- Keep `MaterialApp.router` forced to dark mode until 9.5 introduces runtime theme-mode selection and persistence.
+
+### State
+
+Planned and now formally subdivided from the real 9.3 ZIP baseline.
 
 ### Existing Files Tentatively Intervenable
 
-- `lib/app/theme/app_theme.dart`
-- `lib/app/theme/app_colors.dart`
-- Shared components and shell/navigation widgets if they require theme alignment.
-- Relevant widget tests.
+- `lib/app/theme/app_theme.dart` — current owner of `AppTheme.darkTheme`; must become the owner of both dark and light `ThemeData` definitions.
+- `lib/app/theme/tokens/scavo_colors.dart` — current semantic color-token owner; may need mode-specific semantic values or a structured palette boundary to avoid forcing dark constants into the light theme.
+- `lib/app/theme/tokens/scavo_tokens.dart` — barrel export to update only if 9.4 introduces a new token/palette file under the existing token namespace.
+- `lib/app/theme/app_colors.dart` — compatibility facade to inspect if new token names require stable aliases without breaking existing imports.
+- `lib/app/theme/app_text_styles.dart` — compatibility facade to inspect if typography color ownership must remain valid across both themes.
+- `lib/app/shell/responsive_navigation.dart` — navigation rail/bar surface to inspect because light/dark `NavigationBarThemeData` and `NavigationRailThemeData` should be centralized instead of screen-local.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — shared Settings card surface to inspect because it relies on theme text and surface colors and is a high-signal visual review target.
+- `lib/shared/widgets/scavium_card.dart` — shared surface/card component that must remain coherent under both theme definitions.
+- `lib/shared/widgets/scavium_primary_button.dart` — shared primary action component to validate against theme-owned button styles.
+- `lib/shared/widgets/scavium_secondary_button.dart` — shared secondary action component to validate border/foreground behavior across both themes.
+- `lib/shared/widgets/scavium_text_field.dart` — shared input component to validate fill, border, focus, label, and hint behavior across both themes.
+- `lib/shared/widgets/feedback/app_snackbar.dart` — feedback surface to validate snackbar color and contrast behavior across both themes.
+- `lib/shared/widgets/feedback/confirm_dialog.dart` — confirmation and destructive-action dialog surface to validate dialog and danger-state behavior across both themes.
+- `test/app_theme_tokens_test.dart` — existing token/theme contract coverage; should be expanded or complemented to prove both themes are built from the intended token contract.
+- Existing widget tests for shell, Settings, cards, inputs, dialogs, and shared visual surfaces if the implementation changes theme-owned behavior that they cover.
 
 ### New Files Tentatively Creatable
 
-None expected by default unless theme token separation was introduced in 9.3.
+- `lib/app/theme/tokens/scavo_theme_colors.dart` — optional token-layer file if the implementation needs explicit mode-aware color groups while preserving `ScavoColors` compatibility.
+- `test/app_theme_light_dark_test.dart` — optional focused test file if keeping light/dark theme assertions separate from the existing token-normalization tests improves readability.
 
 ### Technical Justification
 
-The application currently exposes only a dark theme and forces it globally. Light/dark support should be implemented as a product-level theme contract, not as a per-screen override.
+The real baseline still has `MaterialApp.router` hardcoded to `ThemeMode.dark`, `theme: AppTheme.darkTheme`, and no `AppTheme.lightTheme`. The 9.3 implementation successfully centralized token ownership under `lib/app/theme/tokens/`, but the concrete `ScavoColors` values are still dark appearance values. 9.4 must therefore implement light/dark themes as an app-level theme contract, not by scattering conditional colors through screens. Runtime selection, persistence, and Settings controls remain deferred to 9.5 and 9.6.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Focused theme assertions proving `AppTheme.lightTheme` and `AppTheme.darkTheme` expose coherent Material 3 color schemes and component themes.
+- Manual visual smoke review of shell/navigation, Settings/About, dashboard, cards, inputs, buttons, snackbars, and confirmation dialogs in both theme definitions where practical.
+- Confirm `lib/app/app.dart` still does not expose runtime theme switching during 9.4.
+
+---
+
+### 9.4.1 — Light/Dark Theme Baseline and Token Boundary
+
+#### Objective
+
+Establish the exact token and theme boundary required to support both SCAVIUM light and dark appearances without destabilizing the 9.3 token contract.
+
+#### Scope
+
+- Inspect the current dark-only `ScavoColors` values and identify which semantic tokens need mode-specific values.
+- Confirm which visual responsibilities belong in `ThemeData` versus shared widgets.
+- Preserve the existing dark visual identity as the compatibility baseline.
+- Document that 9.4 does not introduce runtime theme selection, persistence, or Settings controls.
+
+#### State
+
+New planned nested subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/tokens/scavo_colors.dart` — baseline token owner; must be inspected before deciding whether mode-aware values are needed.
+- `lib/app/theme/tokens/scavo_tokens.dart` — barrel export to update only if a new token file is introduced.
+- `lib/app/theme/app_theme.dart` — current theme owner; must be inspected to map existing component-theme coverage before adding light mode.
+- `lib/app/theme/app_colors.dart` — compatibility facade to inspect before renaming or moving token values.
+- `test/app_theme_tokens_test.dart` — current token contract test; must remain compatible with 9.3 expectations.
+
+#### New Files Tentatively Creatable
+
+- `lib/app/theme/tokens/scavo_theme_colors.dart` — optional, only if the implementation needs a clean mode-aware color object instead of overloading `ScavoColors` with paired constants.
+
+#### Technical Justification
+
+9.3 normalized token names but intentionally kept runtime behavior dark-only. Before adding a light theme, 9.4 must avoid treating the dark token values as universal values. This baseline subphase protects the token namespace and prevents later implementation from solving light mode through ad hoc screen overrides.
+
+#### Expected Validations
+
+- Confirm all proposed files exist before intervention except explicitly optional new files.
+- Confirm no `.agent/*` file, code execution prompt, runtime selector, or persisted preference is generated by this documentation phase.
+- Confirm 9.4 remains bounded to theme implementation and visual validation.
+
+---
+
+### 9.4.2 — AppTheme Light and Dark ThemeData Construction
+
+#### Objective
+
+Implement `AppTheme.lightTheme` and refine `AppTheme.darkTheme` as paired Material 3 theme definitions built from the SCAVIUM token vocabulary.
+
+#### Scope
+
+- Add `AppTheme.lightTheme` beside the existing `AppTheme.darkTheme`.
+- Keep `AppTheme.darkTheme` visually compatible with the 9.3 result.
+- Ensure both themes define coherent `ColorScheme` values, scaffold backgrounds, text themes, card themes, app bars, dividers, inputs, buttons, dialogs, and snackbars.
+- Centralize theme construction helpers where needed inside the theme layer.
+- Avoid changing `lib/app/app.dart` theme mode behavior until 9.5.
+
+#### State
+
+New planned nested subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_theme.dart` — primary implementation target for paired `ThemeData` definitions.
+- `lib/app/theme/tokens/scavo_colors.dart` — may receive mode-aware values required by the paired themes.
+- `lib/app/theme/tokens/scavo_tokens.dart` — update only if new token files are added.
+- `lib/app/theme/app_text_styles.dart` — inspect if text style colors need theme-safe ownership rather than dark-only static colors.
+- `lib/app/theme/app_colors.dart` — inspect if compatibility aliases need to remain stable after the light/dark split.
+
+#### New Files Tentatively Creatable
+
+- `lib/app/theme/tokens/scavo_theme_colors.dart` — optional owner for paired theme color sets if this keeps `AppTheme` readable and preserves the compatibility facade.
+
+#### Technical Justification
+
+The current app root can only reference `AppTheme.darkTheme`. Adding a first-class light theme at the same ownership level is the minimum product-level step required before runtime theme selection can be introduced safely in 9.5.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- Focused test or assertion coverage confirming `AppTheme.lightTheme.brightness == Brightness.light` and `AppTheme.darkTheme.brightness == Brightness.dark` through their color schemes.
+- Confirm dark theme token expectations from 9.3 remain valid.
+
+---
+
+### 9.4.3 — Component and Navigation Theme Coherence
+
+#### Objective
+
+Ensure shared components and shell/navigation surfaces consume the paired theme definitions coherently without duplicating light/dark logic inside screens.
+
+#### Scope
+
+- Inspect shared cards, inputs, primary/secondary buttons, snackbars, confirmation dialogs, section cards, and shell navigation against the new theme definitions.
+- Move reusable component colors into `ThemeData` where appropriate.
+- Keep local widget styling only where it expresses component structure, spacing, radius, or semantic intent not already owned by the theme.
+- Preserve wallet, asset, transaction, signing, backup, diagnostics, routing, and release behavior.
+
+#### State
+
+New planned nested subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_theme.dart` — likely receives navigation, list, icon, button, dialog, snackbar, and component-theme refinements.
+- `lib/app/shell/responsive_navigation.dart` — inspect for navigation rail/bar reliance on default colors that may need centralized theme definitions.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — inspect Settings card readability and divider behavior in both themes.
+- `lib/shared/widgets/scavium_card.dart` — inspect shared surface behavior under light and dark themes.
+- `lib/shared/widgets/scavium_primary_button.dart` — inspect action foreground/background behavior under both themes.
+- `lib/shared/widgets/scavium_secondary_button.dart` — inspect secondary action border/foreground behavior under both themes.
+- `lib/shared/widgets/scavium_text_field.dart` — inspect input border/fill/focus behavior under both themes.
+- `lib/shared/widgets/feedback/app_snackbar.dart` — inspect feedback surface contrast under both themes.
+- `lib/shared/widgets/feedback/confirm_dialog.dart` — inspect dialog and destructive action contrast under both themes.
+
+#### New Files Tentatively Creatable
+
+None expected by default.
+
+#### Technical Justification
+
+Light/dark support is only credible if common surfaces render coherently without each screen carrying its own color branch. The current codebase already has shared widgets and a centralized shell, so 9.4 should reinforce those owners instead of broadening visual responsibility into feature screens.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test` or focused widget tests touching the changed shared components.
+- Manual smoke review of navigation rail/bar, Settings sections, cards, inputs, buttons, snackbars, and confirmation dialogs in both theme definitions.
+
+---
+
+### 9.4.4 — Light/Dark Theme Validation and Documentation Closure
+
+#### Objective
+
+Close 9.4 by validating the paired theme contract and documenting the final implementation boundary for later 9.5 runtime selection.
+
+#### Scope
+
+- Add or expand focused tests for the paired light/dark theme contract.
+- Confirm `AppTheme.lightTheme` exists and `AppTheme.darkTheme` remains compatible with 9.3 expectations.
+- Confirm `MaterialApp.router` still does not expose runtime switching until 9.5.
+- Update Phase 9 documentation from the real implemented state after code execution.
+- Update README/index only if 9.4 has been actually implemented and the Phase 9 ledger needs to advance.
+
+#### State
+
+New planned nested subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `test/app_theme_tokens_test.dart` — expand if paired-theme assertions belong with token contract coverage.
+- `docs/phase9_scavium_wallet.md` — required closure record after 9.4 implementation.
+- `README.md` — update only after implementation if the Phase 9 status ledger should record 9.4 as implemented/closed.
+- `docs/index.md` — update only after implementation if the active Phase 9 narrative should advance beyond 9.3.
+- `docs/architecture.md`, `docs/architecture_deep.md`, `docs/ux.md`, `docs/features.md`, `docs/development.md`, and `docs/decisions.md` — inspect only after implementation and update only where paired light/dark theme ownership becomes a durable trunk rule.
+
+#### New Files Tentatively Creatable
+
+- `test/app_theme_light_dark_test.dart` — optional focused test owner if introduced by the implementation.
+
+#### Technical Justification
+
+9.4 is the bridge between token normalization and user-selectable appearance. Its closure must make the paired theme contract explicit so 9.5 can wire runtime selection and persistence without rediscovering theme ownership.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Confirm modified documentation matches the real files changed by the implementation.
+- Confirm the next implementation phase remains `9.5 — Theme Mode Runtime Selection and Persistence`.
 
 ---
 

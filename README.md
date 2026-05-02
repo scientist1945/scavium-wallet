@@ -162,7 +162,11 @@ Planned Phase 9 identity and visual-theme maturity work includes:
   - 9.3.2 — Core SCAVIUM Token Model Implementation — closed
   - 9.3.3 — ThemeData and Shared Widget Token Adoption — closed
   - 9.3.4 — Token Documentation and Implementation Closure — closed
-- 9.4 — Light/Dark Theme Implementation
+- 9.4 — Light/Dark Theme Implementation — planned/documented for execution
+  - 9.4.1 — Light/Dark Theme Baseline and Token Boundary
+  - 9.4.2 — AppTheme Light and Dark ThemeData Construction
+  - 9.4.3 — Component and Navigation Theme Coherence
+  - 9.4.4 — Light/Dark Theme Validation and Documentation Closure
 - 9.5 — Theme Mode Runtime Selection and Persistence
 - 9.6 — Settings and About UX Alignment
 - 9.close — Application Identity, Versioning, and Visual Theme Maturity Closure
