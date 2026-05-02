@@ -1791,62 +1791,66 @@ This closes 9.5 as the runtime selection and persistence bridge between the 9.4 
 
 ### Objective
 
-Align Settings/About as the stable application identity and appearance control surface, based on the real post-9.5 ZIP state.
+Align Settings/About as the stable application identity and appearance-control surface now that the real post-9.5 codebase already includes runtime theme-mode selection, local persistence, app-root reactive wiring, and a Settings Appearance selector.
 
 ### Scope
 
-- Reconcile the Settings/About UX plan with the actual runtime implementation present in the ZIP.
+- Reconcile the 9.6 plan with the actual post-9.5 implementation present in the ZIP.
+- Preserve the completed app-root theme-mode bridge: `ScaviumWalletApp` consumes `themeModeControllerProvider` and applies `AppTheme.lightTheme`, `AppTheme.darkTheme`, and the selected `ThemeMode` through `MaterialApp.router`.
+- Preserve the completed Settings Appearance surface: Settings exposes `ThemeModeSelector` with `system`, `light`, and `dark` options.
 - Display app name and dynamic version clearly, using the existing `lib/core/app_identity` boundary.
-- Surface appearance selection coherently inside Settings without moving persistence, serialization, or theme construction into the presentation layer.
-- Keep destructive actions, security/recovery actions, diagnostics, signing, and about information visually separated.
-- Improve Settings readability, grouping, hierarchy, and responsive behavior across mobile and desktop/web.
-- Preserve wallet, account, asset, transaction, signing, backup, diagnostics, routing, release, CI, and token ownership boundaries.
+- Keep destructive actions, security/recovery actions, diagnostics, signing, appearance, and about information visually separated.
+- Improve Settings readability, grouping, hierarchy, accessibility, and responsive behavior across mobile and desktop/web.
+- Preserve wallet, account, asset, transaction, signing, backup, diagnostics, routing, release, CI, token, theme-construction, and persistence ownership boundaries.
 
 ### State
 
-Defined from the real updated ZIP as a documentation-only planning phase. The phase is not executed by this prompt. No Dart source, test, `.agent/*`, build, release, platform, generated artifact, or operational file is modified by this documentation pass.
+Open as a reconciliation-first UX alignment phase from the real updated ZIP. The phase starts with 9.6.1 as a documentation-only baseline correction because the previous 9.6 planning text described an obsolete physical baseline. The current ZIP already contains the runtime appearance bridge and Settings Appearance selector, so 9.6 must not re-plan those pieces as missing implementation. The remaining implementation work is Settings/About UX alignment and polish around the completed Phase 9.5 runtime preference boundary.
 
 ### Real Baseline Validation
 
-The real ZIP confirms that Phase 9.4 theme construction is present: `lib/app/theme/app_theme.dart` exposes `AppTheme.darkTheme` and `AppTheme.lightTheme`, both built through the same `_buildTheme(ScavoThemeColors colors)` path. The theme-mode preference primitives are also present: `ThemeModePreference`, `ThemeModeRepository`, `LocalThemeModeRepository`, and `StorageKeys.themeModePreference` exist.
+The real ZIP confirms that Phase 9.4 theme construction is present: `lib/app/theme/app_theme.dart` exposes `AppTheme.darkTheme` and `AppTheme.lightTheme`, both built through the centralized theme path and the mode-specific `ScavoThemeColors` boundary.
 
-The real ZIP also shows that the 9.5 runtime/UI bridge is not fully present in code despite prior documentation describing it as closed. `lib/app/app.dart` still configures `MaterialApp.router` with `themeMode: ThemeMode.dark` and `theme: AppTheme.darkTheme`, without passing `darkTheme: AppTheme.darkTheme` or watching a reactive theme-mode controller. `lib/features/settings/presentation/settings_screen.dart` still contains Security & recovery, Signing, Diagnostics, Danger zone, and About sections, but no Appearance section and no compact theme-mode selector widget exists under `lib/features/settings/presentation/widgets/`.
+The real ZIP also confirms that Phase 9.5 runtime selection and persistence are physically present in code:
 
-Therefore 9.6 must be documented as an alignment and reconciliation phase over the real codebase, not as a pure polish-only phase over a selector that is already visible. The implementation prompt that consumes this documentation must first complete the missing runtime/UI bridge if it remains absent, and then polish Settings/About around that bridge.
+- `lib/app/theme/theme_mode_preference.dart` owns the supported `system`, `light`, and `dark` preference values, labels/descriptions, serialization, fallback behavior, and Flutter `ThemeMode` mapping.
+- `lib/app/theme/theme_mode_repository.dart` and `lib/app/theme/theme_mode_repository_impl.dart` own local persistence through the existing storage abstraction.
+- `lib/app/theme/theme_mode_controller.dart` owns the Riverpod runtime state boundary.
+- `lib/core/constants/storage_keys.dart` owns `StorageKeys.themeModePreference`.
+- `lib/core/providers/service_providers.dart` exposes the theme-mode repository provider.
+- `lib/app/app.dart` watches `themeModeControllerProvider` and configures `MaterialApp.router` with `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, and `themeMode: themeModePreference.themeMode`.
+- `lib/features/settings/presentation/settings_screen.dart` contains the `Appearance` section before the existing Settings sections and imports `theme_mode_selector.dart`.
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` owns the compact appearance selector used by Settings.
+
+Therefore 9.6 is not a bridge-completion phase. It is a Settings/About alignment phase over an already-working runtime appearance preference. Any agent generated from this documentation must not recreate `ThemeModeController`, duplicate persistence, or move theme-mode ownership into Settings.
 
 ### Existing Files Tentatively Intervenable
 
-- `lib/app/app.dart` — apply the selected runtime `ThemeMode` at the app root if the code still remains dark-only at execution time.
-- `lib/app/theme/theme_mode_preference.dart` — reuse supported `system`, `light`, and `dark` values; extend only with presentation labels if needed and if this remains the correct ownership point.
-- `lib/app/theme/theme_mode_repository.dart` — preserve the repository contract for local preference loading and saving.
-- `lib/app/theme/theme_mode_repository_impl.dart` — preserve `LocalStorageService` persistence ownership; modify only if the provider wiring requires a small correction.
-- `lib/core/constants/storage_keys.dart` — preserve the centralized `themeModePreference` key.
-- `lib/core/providers/service_providers.dart` — use existing service-provider ownership for local storage access if a controller/provider needs repository construction.
-- `lib/features/settings/presentation/settings_screen.dart` — reorganize Settings/About hierarchy, add Appearance surface, and preserve the existing Security & recovery, Signing, Diagnostics, Danger zone, and About actions.
-- `lib/features/settings/presentation/widgets/settings_section_card.dart` — refine reusable section hierarchy, spacing, and responsive behavior if the current component needs polish for the final 9.6 layout.
-- `lib/core/app_identity/app_version_provider.dart` — consume the existing runtime identity boundary only; do not duplicate version resolution in Settings.
-- `test/settings_screen_test.dart` — validate Settings grouping, About/version display, and appearance selector behavior if available.
-- `test/theme_mode_preference_test.dart` — extend focused coverage only if the value model gains labels or UI-facing metadata.
-- `test/app_theme_tokens_test.dart` — keep existing paired-theme coverage intact; extend only if the 9.6 implementation touches theme construction, which is not expected.
+- `lib/features/settings/presentation/settings_screen.dart` — refine Settings/About section ordering, hierarchy, responsive layout, copy, and visual grouping while preserving existing actions and the existing Appearance selector.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — refine reusable section spacing, header hierarchy, divider behavior, and responsive readability if needed.
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` — polish labels, descriptions, layout density, accessibility semantics, or narrow/wide behavior only; do not move persistence or app-root theme selection here.
+- `lib/core/app_identity/app_version_provider.dart` — consume only; do not duplicate version resolution in Settings.
+- `lib/app/theme/theme_mode_preference.dart` — consume existing labels/descriptions; update only if a presentation label correction is required and covered by tests.
+- `test/settings_screen_test.dart` — validate Settings section hierarchy, About/version display, Appearance visibility, and existing actions.
+- `test/theme_mode_selector_test.dart` — extend only if selector layout/semantics change.
+- `test/theme_mode_preference_test.dart` — extend only if preference labels/descriptions change.
 
 ### New Files Tentatively Creatable
 
-- `lib/app/theme/theme_mode_controller.dart` — create if the real execution baseline still lacks the Riverpod controller that loads, exposes, updates, and persists the selected theme mode.
-- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` — create if the real execution baseline still lacks a compact reusable selector for `system`, `light`, and `dark`.
-- `test/theme_mode_controller_test.dart` — create if a controller is introduced or completed during 9.6 execution.
+None expected by default. A small Settings-specific presentation widget may be introduced under `lib/features/settings/presentation/widgets/` only if it materially improves readability or testability and does not duplicate theme-mode ownership.
 
 ### Technical Justification
 
-Settings already owns secondary application controls and About identity. Phase 9.6 should make that surface coherent and production-ready, but it must not move theme construction, storage serialization, or runtime app-root ownership into `settings_screen.dart`. The real ZIP shows the required model and repository primitives already exist, while app-root reactivity and the visible Appearance selector are not physically present. Documenting 9.6 as a reconciliation-first UX alignment prevents later prompts from assuming a completed bridge that the code does not contain.
+Phase 9.5 completed the runtime preference bridge. Phase 9.6 should now improve the user-facing Settings/About experience without re-opening architecture that is already correctly layered: app identity remains under `lib/core/app_identity`, appearance state remains under `lib/app/theme`, local persistence remains below the provider/repository boundary, and Settings remains a presentation surface.
 
 ### Expected Validations
 
 - `fvm flutter analyze`
 - `fvm flutter test`
-- Focused tests for Settings section hierarchy, dynamic About/version display, appearance selector state, theme-mode persistence, and app-root runtime theme selection if the missing bridge is completed during implementation.
+- Focused tests for Settings section hierarchy, dynamic About/version display, Appearance selector visibility, selector state if polished, and route/action availability.
 - Manual smoke review of Settings/About in mobile width and desktop/web width.
-- Manual smoke review of Settings/About in system, light, and dark modes after runtime selection is present.
-- Confirm destructive reset, backup export, signing navigation, diagnostics navigation, and About/version display remain available after the Settings layout changes.
+- Manual smoke review of Settings/About in system, light, and dark modes.
+- Confirm destructive reset, backup export, signing navigation, diagnostics navigation, appearance selection, and About/version display remain available after the Settings layout changes.
 - Confirm no token, palette, wallet, account, asset, transaction, signing, backup payload, diagnostics behavior, routing contract, release tooling, CI workflow, generated artifact, or `.agent/*` file is modified unless explicitly required by the executing implementation phase.
 
 ---
@@ -1855,174 +1859,181 @@ Settings already owns secondary application controls and About identity. Phase 9
 
 #### Objective
 
-Lock the real Settings/About and theme-mode baseline before any 9.6 UX work, with special attention to the discrepancy between prior 9.5 documentation and the actual code present in the ZIP.
+Lock the real post-9.5 Settings/About and theme-mode baseline before any 9.6 UX polish, and correct the obsolete 9.6 planning text that treated the runtime bridge and Settings selector as missing.
 
 #### Scope
 
-- Confirm the physical state of `lib/app/app.dart`, `lib/features/settings/presentation/settings_screen.dart`, and Settings widgets.
-- Confirm whether `ThemeModeController` and `theme_mode_selector.dart` exist at execution time.
-- Confirm the existing theme-mode preference model and local repository are still present and reusable.
-- Record the exact files that need implementation in the next subphases.
-- Avoid code changes if this subphase is executed as documentation-only; otherwise keep any implementation strictly limited to baseline correction required by the executing prompt.
+- Confirm the physical state of `lib/app/app.dart`, `lib/app/theme/theme_mode_controller.dart`, `lib/features/settings/presentation/settings_screen.dart`, and `lib/features/settings/presentation/widgets/theme_mode_selector.dart`.
+- Confirm the existing theme-mode preference model, repository, storage key, provider wiring, app-root reactive wiring, and Settings Appearance selector are present and reusable.
+- Record the exact implementation baseline for the next 9.6 subphases.
+- Avoid code, test, `.agent/*`, generated-artifact, build, release, platform, and operational changes.
 
 #### State
 
-New planning subphase generated from the real ZIP.
+Closed as documentation-only baseline reconciliation from the real 9.6 step ZIP. No Dart source, test, `.agent/*`, build, release, platform, generated artifact, or operational file was modified by this subphase.
 
-#### Existing Files Tentatively Intervenable
+#### Existing Files Intervened
 
-- `docs/phase9_scavium_wallet.md` — records the reconciliation baseline and protects later prompts from relying on stale documentation.
-- `lib/app/app.dart` — inspect to confirm whether the app root still forces `ThemeMode.dark`.
-- `lib/features/settings/presentation/settings_screen.dart` — inspect to confirm existing Settings sections and absence/presence of Appearance controls.
-- `lib/features/settings/presentation/widgets/settings_section_card.dart` — inspect current reusable Settings section layout.
-- `lib/app/theme/theme_mode_preference.dart` — inspect supported values and Flutter `ThemeMode` mapping.
-- `lib/app/theme/theme_mode_repository.dart` — inspect persistence abstraction.
-- `lib/app/theme/theme_mode_repository_impl.dart` — inspect `LocalStorageService` implementation ownership.
-- `lib/core/constants/storage_keys.dart` — inspect the persisted key.
-- `lib/core/providers/service_providers.dart` — inspect local storage provider availability.
+- `docs/phase9_scavium_wallet.md` — corrected the 9.6 phase baseline and subphase plan so it reflects the real post-9.5 implementation instead of the obsolete dark-only/no-selector baseline.
+- `README.md` — corrected the Phase 9 summary so it no longer says the app root still appears dark-only or that Settings lacks a physical Appearance selector.
+- `docs/index.md` — corrected the Phase 9 active narrative and next-step framing so 9.6 is documented as UX polish over the completed 9.5 runtime preference bridge.
+- `docs/architecture_deep.md` — corrected the historical theme-boundary note so it no longer implies the app remains dark-only at runtime after the later Phase 9 work.
 
-#### New Files Tentatively Creatable
+#### New Files Created
 
-None expected for a pure baseline reconciliation step.
+None.
+
+#### Execution Record
+
+Phase 9.6.1 was executed as a documentation-only reconciliation pass from the corrected 9.6 step ZIP. The ZIP confirms that the runtime appearance bridge is already implemented:
+
+- `lib/app/app.dart` imports `theme_mode_controller.dart`, watches `themeModeControllerProvider`, and passes `AppTheme.lightTheme`, `AppTheme.darkTheme`, and `themeModePreference.themeMode` to `MaterialApp.router`.
+- `lib/app/theme/theme_mode_controller.dart` exists as the Riverpod state boundary for runtime theme-mode preference.
+- `lib/app/theme/theme_mode_preference.dart` exists as the supported-value and Flutter `ThemeMode` mapping boundary.
+- `lib/app/theme/theme_mode_repository.dart` and `lib/app/theme/theme_mode_repository_impl.dart` exist as the persistence boundary.
+- `lib/core/constants/storage_keys.dart` includes the theme-mode preference key.
+- `lib/features/settings/presentation/settings_screen.dart` contains an `Appearance` section before the existing Security & recovery, Signing, Diagnostics, Danger zone, and About sections.
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` exists and is consumed by Settings.
+
+This reconciles the documentary record with the real codebase. The next 9.6 subphases must treat app-root theme selection and the Settings Appearance selector as completed baseline, not as missing work.
+
+#### Documentation Validation
+
+- Confirmed this subphase modified documentation only.
+- Confirmed no `.agent/*` files were generated or modified.
+- Confirmed no Dart source, test, dependency, build, release, platform, generated artifact, or operational file was modified.
+- Confirmed the 9.5 runtime theme-mode implementation is physically present in the ZIP.
+- Confirmed Settings already exposes the Appearance selector and preserves Security & recovery, Signing, Diagnostics, Danger zone, and About sections.
+- Confirmed the next executable 9.6 work is Settings/About UX polish, not runtime bridge reconstruction.
 
 #### Technical Justification
 
-The project documentation must remain grounded in the real ZIP. Because the code currently contains theme-mode primitives but not the full runtime/UI bridge described by prior 9.5 closure text, 9.6 needs an explicit reconciliation checkpoint before UX polishing.
+The documentation must remain grounded in the real ZIP. Because the corrected ZIP already contains the runtime preference bridge and Settings selector, 9.6.1 closes as a baseline correction that prevents later agent prompts from duplicating existing architecture or planning obsolete bridge-completion work.
 
 #### Expected Validations
 
 - Confirm the real baseline without modifying `.agent/*`.
-- Confirm no runtime code is changed by a documentation-only baseline execution.
-- Confirm the next subphase can safely complete missing runtime selection if still absent.
+- Confirm no runtime code is changed by this documentation-only baseline execution.
+- Confirm the next implementation subphase can safely focus on Settings/About polish.
 
 ---
 
-### 9.6.2 — Runtime Appearance Bridge Completion
+### 9.6.2 — Settings/About Information Architecture Polish
 
 #### Objective
 
-Complete the runtime application bridge for `system`, `light`, and `dark` appearance selection if the execution baseline still matches the current ZIP state.
+Refine Settings/About section hierarchy now that Appearance, app identity, security/recovery, signing, diagnostics, and destructive actions all coexist in one Settings surface.
 
 #### Scope
 
-- Add or complete a Riverpod controller/provider that loads the persisted theme-mode preference and exposes the selected `ThemeModePreference`.
-- Update the app root to consume the selected preference reactively.
-- Pass `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, and the selected Flutter `themeMode` into `MaterialApp.router`.
-- Keep router, lifecycle guard, app lock behavior, wallet behavior, onboarding behavior, release tooling, diagnostics behavior, and token construction unchanged.
+- Improve Settings section order, spacing, copy, and grouping without changing behavior.
+- Keep Appearance visible and understandable as a local preference control.
+- Keep About/version information clear and dynamic through the existing app identity boundary.
+- Keep destructive actions visually separated from ordinary controls.
+- Preserve existing routes and actions for backup export, signing, diagnostics, and reset.
 
 #### State
 
-New implementation-planning subphase generated from the real ZIP.
+New code-only implementation-planning subphase generated from the real post-9.5 ZIP.
 
 #### Existing Files Tentatively Intervenable
 
-- `lib/app/app.dart` — replace the dark-only root configuration with provider-driven runtime selection while preserving router and lifecycle guard behavior.
-- `lib/app/theme/theme_mode_preference.dart` — consume the existing `themeMode` mapping; avoid changing storage values unless a test-proven correction is required.
-- `lib/app/theme/theme_mode_repository.dart` — preserve the load/save abstraction.
-- `lib/app/theme/theme_mode_repository_impl.dart` — preserve local storage implementation.
-- `lib/core/providers/service_providers.dart` — use existing local storage provider wiring if the controller needs repository construction.
-- `test/theme_mode_preference_test.dart` — keep existing model/repository behavior covered.
-- `test/app_theme_tokens_test.dart` — ensure paired light/dark themes remain valid after app-root wiring.
+- `lib/features/settings/presentation/settings_screen.dart` — refine section ordering, copy, layout, and hierarchy while preserving current actions.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — refine reusable card/header/spacing behavior if needed.
+- `test/settings_screen_test.dart` — validate the visible section model and route/action availability.
 
 #### New Files Tentatively Creatable
 
-- `lib/app/theme/theme_mode_controller.dart` — owns reactive preference loading, updating, and persistence if still missing.
-- `test/theme_mode_controller_test.dart` — validates default loading, persistence calls, selected value updates, and invalid stored value fallback if a controller is introduced.
+None expected.
 
 #### Technical Justification
 
-The app root is the only correct place to apply Flutter `ThemeMode`. Settings can request a preference change, but `settings_screen.dart` must not own root theme selection or persistence serialization. Completing this bridge preserves the 9.4 paired-theme boundary and the existing local persistence primitives.
+The runtime appearance preference is already implemented. The remaining product work is to make Settings read as a coherent identity/control surface rather than a growing list of independent cards.
 
 #### Expected Validations
 
 - `fvm flutter analyze`
 - `fvm flutter test`
-- Focused tests for controller default state, persistence, update behavior, and app-root availability of both light and dark themes.
-- Manual smoke check that the app can run in system, light, and dark modes without changing route behavior.
-
----
-
-### 9.6.3 — Settings Appearance Selector Integration
-
-#### Objective
-
-Expose the appearance preference inside Settings as a bounded, understandable user-facing control.
-
-#### Scope
-
-- Add an Appearance section to Settings.
-- Provide clear labels for `System`, `Light`, and `Dark`.
-- Reuse the runtime controller/provider from 9.6.2 if introduced or already present.
-- Keep Settings presentation free of direct storage reads/writes.
-- Preserve Security & recovery, Signing, Diagnostics, Danger zone, and About actions.
-
-#### State
-
-New implementation-planning subphase generated from the real ZIP.
-
-#### Existing Files Tentatively Intervenable
-
-- `lib/features/settings/presentation/settings_screen.dart` — add the Appearance section and wire selector state through Riverpod.
-- `lib/features/settings/presentation/widgets/settings_section_card.dart` — reuse or lightly refine section layout to host the selector cleanly.
-- `lib/app/theme/theme_mode_preference.dart` — optionally expose stable presentation labels/descriptions if that is preferable to duplicating labels in UI.
-- `test/settings_screen_test.dart` — validate the Appearance section, selector labels, and existing Settings actions.
-
-#### New Files Tentatively Creatable
-
-- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` — compact reusable selector widget for `ThemeModePreference` values if the UI should remain separated from the full Settings screen.
-
-#### Technical Justification
-
-The appearance selector belongs in Settings because Settings already owns secondary controls and About identity. A small reusable widget keeps the selector testable and prevents the main screen from becoming a state-management and layout monolith.
-
-#### Expected Validations
-
-- `fvm flutter analyze`
-- `fvm flutter test`
-- Focused widget tests for selector rendering and state changes.
-- Manual Settings smoke review in system, light, and dark modes.
-
----
-
-### 9.6.4 — Settings/About Hierarchy and Responsive Polish
-
-#### Objective
-
-Polish Settings/About hierarchy so identity, appearance, operational diagnostics, security/recovery, signing, and destructive actions remain visually separated and responsive.
-
-#### Scope
-
-- Improve ordering and grouping of Settings sections around identity and appearance.
-- Keep About information clear and dynamic, using `appVersionInfoProvider`.
-- Keep destructive reset visually separated from non-destructive controls.
-- Preserve mobile-friendly vertical behavior and desktop/web readability.
-- Avoid introducing a separate About route unless the implementation evidence shows the Settings screen can no longer remain readable.
-
-#### State
-
-New implementation-planning subphase generated from the real ZIP.
-
-#### Existing Files Tentatively Intervenable
-
-- `lib/features/settings/presentation/settings_screen.dart` — adjust section ordering, content hierarchy, and responsive layout.
-- `lib/features/settings/presentation/widgets/settings_section_card.dart` — refine spacing, dividers, or section header hierarchy using existing tokens/theme values.
-- `lib/core/app_identity/app_version_provider.dart` — consume only; do not duplicate version resolution.
-- `test/settings_screen_test.dart` — validate visible section labels, dynamic About/version display, and route/action availability.
-
-#### New Files Tentatively Creatable
-
-None expected by default. If the Settings layout grows too much, a small Settings-specific widget may be introduced under `lib/features/settings/presentation/widgets/`, but only with a clear reuse or readability justification.
-
-#### Technical Justification
-
-9.6 is a UX alignment phase, not a theme-token redesign. The polish should make existing controls easier to understand while keeping ownership boundaries stable: identity remains under `lib/core/app_identity`, appearance state remains under `lib/app/theme`, and Settings remains a presentation surface.
-
-#### Expected Validations
-
-- `fvm flutter analyze`
-- `fvm flutter test`
-- Widget tests proving Settings still exposes Security & recovery, Signing, Diagnostics, Danger zone, Appearance, and About sections.
+- Focused Settings widget tests for section visibility and preserved actions.
 - Manual review at narrow and wide widths.
+
+---
+
+### 9.6.3 — Appearance Selector UX and Accessibility Polish
+
+#### Objective
+
+Polish the existing Settings Appearance selector for clarity, accessibility, and responsive behavior without changing persistence ownership.
+
+#### Scope
+
+- Review labels, descriptions, selected-state feedback, tap targets, and narrow/wide layout.
+- Keep `ThemeModeSelector` as a presentation widget over `themeModeControllerProvider`.
+- Keep serialization, storage, fallback, and app-root theme application outside Settings widgets.
+
+#### State
+
+New code-only implementation-planning subphase generated from the real post-9.5 ZIP.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` — refine selector UI/semantics only.
+- `lib/app/theme/theme_mode_preference.dart` — adjust labels/descriptions only if required by UX and covered by tests.
+- `test/theme_mode_selector_test.dart` — validate selector rendering and selection behavior.
+- `test/theme_mode_preference_test.dart` — validate label/description changes if any.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Technical Justification
+
+Appearance selection is already correctly wired. 9.6.3 should improve the user interaction and accessibility of that selector while preserving the architectural boundary established by 9.5.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Focused selector tests and manual smoke review in system, light, and dark modes.
+
+---
+
+### 9.6.4 — About Identity and Responsive Settings Review
+
+#### Objective
+
+Ensure the About identity surface remains clear, dynamic, and responsive after Settings polish.
+
+#### Scope
+
+- Keep About display tied to `appVersionInfoProvider`.
+- Improve About copy or placement only if it strengthens the Settings hierarchy.
+- Validate Settings remains usable on mobile, desktop, and web widths.
+- Avoid creating a separate About route unless the implementation evidence clearly justifies it.
+
+#### State
+
+New code-only implementation-planning subphase generated from the real post-9.5 ZIP.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/features/settings/presentation/settings_screen.dart` — refine About placement/copy and responsive layout.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — refine section behavior if needed for responsive readability.
+- `test/settings_screen_test.dart` — validate dynamic version display and Settings sections.
+
+#### New Files Tentatively Creatable
+
+None expected by default.
+
+#### Technical Justification
+
+Phase 9.1 already moved About version data to the app identity boundary. Phase 9.6 should preserve that boundary while making the final Settings/About surface easier to scan.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Manual Settings/About review at narrow and wide widths.
 
 ---
 
@@ -2034,15 +2045,15 @@ Close 9.6 by validating the implemented Settings/About alignment against the rea
 
 #### Scope
 
-- Validate app-root theme-mode behavior if completed during 9.6.
-- Validate Settings Appearance selector behavior if completed during 9.6.
+- Validate app-root theme-mode behavior remains intact.
+- Validate Settings Appearance selector behavior remains intact.
 - Validate About version display still uses the dynamic runtime identity boundary.
 - Validate security/recovery, signing, diagnostics, and danger-zone actions remain available.
 - Update trunk documentation from the implemented state without rewriting or summarizing prior history.
 
 #### State
 
-New documentation-closure planning subphase generated from the real ZIP.
+New documentation-closure planning subphase generated from the real post-9.5 ZIP.
 
 #### Existing Files Tentatively Intervenable
 
@@ -2059,7 +2070,7 @@ None expected.
 
 #### Technical Justification
 
-The closure must be evidence-based. Because 9.6 begins by reconciling a documented-vs-physical mismatch, the close step must explicitly confirm which bridge and UI pieces were actually implemented before final Phase 9 closure proceeds.
+The closure must be evidence-based. Because 9.6.1 corrected the baseline against the real ZIP, 9.6.5 must explicitly confirm the actual polish completed by the code-only subphases before final Phase 9 closure proceeds.
 
 #### Expected Validations
 
