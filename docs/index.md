@@ -273,5 +273,5 @@ Phase 9.5 is closed as the runtime selection and persistence sequence over the 9
 - 9.5.4 — Settings Appearance Selector and UX Integration — closed/code-only
 - 9.5.5 — Theme Mode Runtime Selection Validation and Documentation Closure — closed/documentation-only
 
-The 9.5 result is intentionally bounded: it models and persists `system`/`light`/`dark`, wires the selected mode into `MaterialApp.router`, exposes a compact Settings Appearance selector, and validates the flow without changing theme token ownership, wallet behavior, release tooling, or the broader Settings/About polish reserved for 9.6. The next Phase 9 implementation target remains 9.6 — Settings and About UX Alignment.
+The 9.5 result is documented as the runtime selection and persistence bridge, but the 9.6 planning pass revalidated the uploaded ZIP before defining the next step. The physical code contains the paired theme contract and theme-mode preference primitives, while `lib/app/app.dart` still appears dark-only and Settings does not yet contain a physical Appearance selector. The next Phase 9 implementation target remains 9.6 — Settings and About UX Alignment, now explicitly framed as a reconciliation-first Settings/About phase that must complete any missing runtime/UI bridge before final UX polish.
 
