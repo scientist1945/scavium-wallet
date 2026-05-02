@@ -192,10 +192,19 @@ class _AssetTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return ScaviumCard(
       child: ListTile(
         contentPadding: EdgeInsets.zero,
-        leading: CircleAvatar(child: Text(item.symbol.characters.first)),
+        leading: CircleAvatar(
+          backgroundColor: colorScheme.primary.withValues(alpha: 0.16),
+          foregroundColor: colorScheme.primary,
+          child: Text(
+            item.symbol.characters.first,
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
+        ),
         title: Text(item.title),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 6),

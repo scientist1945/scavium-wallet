@@ -1,10 +1,10 @@
 PROYECTO: SCAVIUM Wallet
 
 AJUSTE:
-9.6.icon-polish.1 — Replace dense icons with Lucide thin-stroke icon system
+9.6.theme-polish.2 — Minimal contrast, asset avatar and icon token polish
 
 OBJETIVO:
-Reemplazar los íconos visualmente pesados por un sistema consistente basado en Lucide, alineado con el theme dark-first y primary naranja SCAVIUM.
+Aplicar ajustes visuales mínimos sobre la implementación actual del SCAVIUM Design Token System y Lucide icons.
 
 ALCANCE:
 - Code-only
@@ -17,64 +17,44 @@ ALCANCE:
 - Esperar aprobación
 - Reportar diff final
 
-DEPENDENCIA:
-Agregar `lucide_icons` al pubspec.yaml solo si no existe.
-
 ARCHIVOS A LEER:
-- pubspec.yaml
 - lib/app/theme/**
-- lib/app/router/**
-- lib/features/home/presentation/**
+- lib/features/wallet/presentation/**
 - lib/features/assets/presentation/**
+- lib/features/home/presentation/**
 - lib/features/activity/presentation/**
 - lib/features/settings/presentation/**
-- lib/features/wallet/presentation/**
 - lib/shared/**
 
-REGLAS:
-1. Usar Lucide de forma consistente.
-2. No mezclar Material icons salvo que no haya reemplazo razonable.
-3. No cambiar comportamiento funcional.
-4. No cambiar textos.
-5. Mantener primary naranja.
-6. Mantener verde solo para success/confirmed.
-7. Mantener dark theme intacto visualmente salvo mejora de íconos.
-8. Centralizar tamaños/colores si ya existe helper/token para iconografía.
-9. Si no existe helper, crear uno mínimo en theme/shared, sin sobrediseñar.
+AJUSTES EXACTOS:
+1. Unlock screen light:
+   - asegurar que el título "Unlock wallet" use textPrimary/onSurface con contraste suficiente.
+   - asegurar que el subtítulo use textSecondary/onSurfaceVariant legible.
+   - no alterar layout ni comportamiento.
 
-MAPEO DE ÍCONOS:
-- Home: LucideIcons.home
-- Assets: LucideIcons.walletCards o LucideIcons.wallet
-- Activity/History: LucideIcons.receiptText
-- Settings: LucideIcons.settings
-- Refresh: LucideIcons.refreshCw
-- Add: LucideIcons.plus
-- Back: LucideIcons.arrowLeft
-- Download/Export: LucideIcons.download
-- Sign message: LucideIcons.signature
-- Diagnostics/RPC: LucideIcons.activity
-- Danger zone: LucideIcons.triangleAlert
-- Security: LucideIcons.shield
-- Appearance: LucideIcons.palette
-- System theme: LucideIcons.monitorCog
-- Light theme: LucideIcons.sun
-- Dark theme: LucideIcons.moon
-- Confirmed: LucideIcons.circleCheck
-- Explorer/external link: LucideIcons.externalLink
-- Copy: LucideIcons.copy
-- Receive: LucideIcons.arrowDown
-- Send: LucideIcons.arrowUp
-- Accounts: LucideIcons.usersRound
+2. Assets token/account avatars:
+   - eliminar violeta como color visual principal.
+   - usar naranja SCAVIUM o un surface-accent naranja suave.
+   - mantener contraste correcto para la letra "S".
+   - aplicar de forma consistente en light/dark.
 
-TAMAÑOS OBJETIVO:
-- Sidebar icons: 20
-- Section/card icons: 18
-- Top action icons: 20
-- Inline icons/chips: 16
+3. Icon color tokens:
+   - revisar icon inactive/strong/action.
+   - sidebar inactive debe verse liviano pero legible.
+   - top-right action icons deben quedar fuertes y legibles.
+   - no cambiar tamaños salvo que ya estén fuera de tokens.
 
-VALIDACIÓN VISUAL ESPERADA:
-- Sidebar debe verse más liviana y premium.
-- Settings icons deben dejar de sentirse densos.
-- Top-right refresh/settings deben mantener contraste.
-- Confirmed/status icons deben seguir siendo claros.
-- Light y dark deben mantener coherencia.
+REGLAS VISUALES:
+- Mantener primary naranja SCAVIUM.
+- Mantener dark-first.
+- No volver a introducir azul como primary.
+- Verde solo para success/confirmed.
+- No hacer rework de cards, buttons ni navigation.
+- No cambiar textos.
+- No cambiar funcionalidad.
+
+VALIDACIÓN ESPERADA:
+- Dark debe quedar igual o mejor.
+- Light unlock debe ser legible.
+- Assets avatars deben sentirse SCAVIUM, no violeta genérico.
+- Icon system debe seguir fino y premium.

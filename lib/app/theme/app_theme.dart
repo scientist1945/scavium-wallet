@@ -50,7 +50,7 @@ abstract final class AppTheme {
             if (states.contains(WidgetState.selected)) {
               return colors.iconActive;
             }
-            return colors.iconInactive;
+            return colors.textPrimary;
           }),
         ),
       ),
@@ -282,7 +282,9 @@ abstract final class AppTheme {
       bodyMedium: ScavoTypography.bodySecondary.copyWith(
         color: colors.textSecondary,
       ),
-      bodySmall: ScavoTypography.bodyMuted.copyWith(color: colors.textSecondary),
+      bodySmall: ScavoTypography.bodyMuted.copyWith(
+        color: colors.textSecondary,
+      ),
       titleLarge: ScavoTypography.title.copyWith(color: colors.textPrimary),
       titleMedium: ScavoTypography.subtitle.copyWith(color: colors.textPrimary),
       titleSmall: ScavoTypography.label.copyWith(color: colors.textPrimary),
