@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:scavium_wallet/app/theme/theme_mode_preference.dart';
 import 'package:scavium_wallet/app/theme/theme_mode_repository.dart';
 import 'package:scavium_wallet/core/providers/service_providers.dart';
@@ -29,9 +30,9 @@ void main() {
     expect(selector.selected, {ThemeModePreference.light});
     expect(selector.showSelectedIcon, isTrue);
     expect(selector.segments.map((segment) => (segment.icon! as Icon).icon), [
-      Icons.brightness_auto_outlined,
-      Icons.light_mode_outlined,
-      Icons.dark_mode_outlined,
+      LucideIcons.monitor,
+      LucideIcons.sun,
+      LucideIcons.moon,
     ]);
   });
 

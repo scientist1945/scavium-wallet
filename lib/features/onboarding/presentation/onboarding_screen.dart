@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_primary_button.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
 import 'package:scavium_wallet/shared/widgets/section_title.dart';
@@ -51,7 +53,7 @@ class _FeaturePoint extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 14),
       child: Row(
         children: [
-          const Icon(Icons.check_circle_outline),
+          const Icon(LucideIcons.checkCircle, size: ScavoIconSize.inline),
           const SizedBox(width: 12),
           Expanded(child: Text(text)),
         ],

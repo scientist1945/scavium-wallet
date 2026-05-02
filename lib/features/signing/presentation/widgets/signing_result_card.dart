@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/features/signing/domain/signing_result.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/app_snackbar.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_card.dart';
@@ -43,7 +45,7 @@ class SigningResultCard extends StatelessWidget {
                   AppSnackbar.showSuccess(context, 'Signature copied');
                 }
               },
-              icon: const Icon(Icons.copy_outlined),
+              icon: const Icon(LucideIcons.copy, size: ScavoIconSize.inline),
               label: const Text('Copy signature'),
             ),
           ),

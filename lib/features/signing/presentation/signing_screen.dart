@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/features/signing/application/signing_controller.dart';
 import 'package:scavium_wallet/features/signing/domain/signing_mode.dart';
 import 'package:scavium_wallet/features/signing/domain/signing_request.dart';
@@ -88,7 +90,7 @@ class _SigningScreenState extends ConsumerState<SigningScreen> {
         data: (_) {
           if (activeAccount == null) {
             return const StateMessage(
-              icon: Icons.account_balance_wallet_outlined,
+              icon: LucideIcons.wallet,
               title: 'No active account',
               subtitle: 'Load a wallet before signing messages.',
             );
@@ -133,12 +135,18 @@ class _SigningScreenState extends ConsumerState<SigningScreen> {
                         ButtonSegment(
                           value: SigningMode.personalMessage,
                           label: Text('Personal'),
-                          icon: Icon(Icons.message_outlined),
+                          icon: Icon(
+                            LucideIcons.messageSquare,
+                            size: ScavoIconSize.inline,
+                          ),
                         ),
                         ButtonSegment(
                           value: SigningMode.challengeMessage,
                           label: Text('Challenge'),
-                          icon: Icon(Icons.verified_user_outlined),
+                          icon: Icon(
+                            LucideIcons.shieldCheck,
+                            size: ScavoIconSize.inline,
+                          ),
                         ),
                       ],
                       selected: {_mode},
@@ -165,7 +173,10 @@ class _SigningScreenState extends ConsumerState<SigningScreen> {
                           signingState.isLoading
                               ? null
                               : () => _sign(activeAccount.address),
-                      icon: const Icon(Icons.draw_outlined),
+                      icon: const Icon(
+                        LucideIcons.penTool,
+                        size: ScavoIconSize.inline,
+                      ),
                       label: Text(
                         signingState.isLoading
                             ? 'Signing...'
@@ -185,7 +196,7 @@ class _SigningScreenState extends ConsumerState<SigningScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error:
             (error, _) => StateMessage(
-              icon: Icons.error_outline,
+              icon: LucideIcons.alertCircle,
               title: 'Error loading active account',
               subtitle: '$error',
             ),
@@ -211,7 +222,7 @@ class _SigningModeWarning extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(Icons.warning_amber_outlined),
+        const Icon(LucideIcons.alertTriangle, size: ScavoIconSize.inline),
         const SizedBox(width: 8),
         Expanded(child: Text(text)),
       ],
