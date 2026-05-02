@@ -19,7 +19,7 @@ fvm flutter analyze
 ## Scoped Test
 
 ```bash
-fvm flutter test test/widget_test.dart
+fvm flutter test test/settings_screen_test.dart test/app_version_info_test.dart
 ```
 
 ---
@@ -27,7 +27,7 @@ fvm flutter test test/widget_test.dart
 ## Optional Format
 
 ```bash
-dart format <modified-dart-files>
+dart format lib/core/app_identity/app_version_info.dart lib/core/app_identity/app_version_provider.dart lib/features/settings/presentation/settings_screen.dart test/settings_screen_test.dart test/app_version_info_test.dart
 ```
 
 ---
@@ -43,11 +43,8 @@ fvm flutter test
 ## Fallback
 
 ```bash
-dart run tool/build.dart --check-version --expected-tag v0.2.1
-# Optional release-tool checks only when secrets/platform prerequisites exist:
-# dart run tool/build.dart --platform android-apk --no-version-bump
-# dart run tool/build.dart --platform android-bundle --no-version-bump
-# dart run tool/build.dart --platform windows-msix --no-version-bump
+fvm flutter test test/settings_screen_test.dart
+fvm flutter analyze
 ```
 
 ---
@@ -57,14 +54,14 @@ dart run tool/build.dart --check-version --expected-tag v0.2.1
 ```bash
 git checkout main
 git pull
-git checkout -b phase-8.6-release-distribution-maturity-extension
+git checkout -b phase-9.1-runtime-app-version-surface
 
 git status
 git add <modified-files>
-git commit -m "phase 8.6 release distribution maturity"
+git commit -m "phase 9.1 runtime app version surface"
 
 git checkout main
 git pull
-git merge phase-8.6-release-distribution-maturity-extension
-git branch -d phase-8.6-release-distribution-maturity-extension
+git merge phase-9.1-runtime-app-version-surface
+git branch -d phase-9.1-runtime-app-version-surface
 ```

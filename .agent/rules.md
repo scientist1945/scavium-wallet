@@ -44,7 +44,7 @@
 ## Git Rules
 
 - Use a single accumulative branch per phase.
-- Current branch: `phase-8.6-release-distribution-maturity-extension`
+- Current branch: `phase-9.1-runtime-app-version-surface`
 - Commit per subphase.
 - Merge only after full phase completion.
 
