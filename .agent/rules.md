@@ -44,7 +44,7 @@
 ## Git Rules
 
 - Use a single accumulative branch per phase.
-- Current branch: `phase-9.4-light-dark-theme-implementation`
+- Current branch: `phase-9.5-theme-mode-runtime-selection-persistence`
 - Commit per subphase.
 - Merge only after full phase completion.
 
