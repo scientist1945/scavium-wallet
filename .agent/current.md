@@ -1,32 +1,32 @@
-# Current Task — 9.5.2
+# Current Task — 9.5.3
 
 Project: SCAVIUM Wallet
 Phase: 9.5 — Theme Mode Runtime Selection and Persistence
-Subphase: 9.5.2 — Theme Mode Preference Model and Local Persistence
+Subphase: 9.5.3 — Reactive App Root Theme Mode Wiring
 Type: Code-only
 
 ## Goal
 
-Introduce the local preference model and persistence boundary for `system`, `light`, and `dark` theme modes.
+Wire the persisted theme-mode preference into `ScaviumWalletApp` so runtime selection becomes reactive at the application root.
 
 ## Scope
 
-- Add a small theme-mode preference value model or enum-like owner.
-- Map supported values to Flutter `ThemeMode.system`, `ThemeMode.light`, and `ThemeMode.dark`.
-- Persist the selected value as a stable local string.
-- Missing or invalid stored values must fall back safely, preferably to `system`.
-- Keep persistence local-only and unrelated to wallet, blockchain, backup, diagnostics, release, and CI behavior.
+- Add a Riverpod controller/provider that loads the persisted preference and exposes the selected mode.
+- Update `ScaviumWalletApp` to watch the selected mode.
+- Pass `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, and selected `themeMode` into `MaterialApp.router`.
+- Preserve router, lifecycle guard, lock behavior, wallet behavior, onboarding behavior, diagnostics, and release behavior.
+- Use a deterministic safe fallback while preference loading completes.
 
 ## Allowed Files
 
-- `lib/core/constants/storage_keys.dart`
-- `lib/core/services/local_storage_service.dart` (inspect/reuse; modify only for a generic helper if truly required)
-- `lib/core/providers/service_providers.dart` (inspect/reuse; modify only if needed for provider exposure)
-- `lib/app/theme/app_theme.dart` (inspect only)
-- `lib/app/theme/theme_mode_preference.dart` (new)
-- `lib/app/theme/theme_mode_repository.dart` (new, optional)
-- `lib/app/theme/theme_mode_repository_impl.dart` (new, optional)
-- `test/theme_mode_preference_test.dart` (new)
+- `lib/app/app.dart`
+- `lib/app/theme/theme_mode_preference.dart`
+- `lib/app/theme/theme_mode_repository.dart` (if created by 9.5.2)
+- `lib/app/theme/theme_mode_repository_impl.dart` (if created by 9.5.2)
+- `lib/app/theme/theme_mode_controller.dart` (new)
+- `lib/core/providers/service_providers.dart`
+- `test/theme_mode_controller_test.dart` (new)
+- `test/widget_test.dart` (only if app-root expectations are affected)
 
 ## Forbidden
 
@@ -37,26 +37,26 @@ Introduce the local preference model and persistence boundary for `system`, `lig
 ## Implementation Requirements
 
 - Before editing, read only the allowed files needed for this subphase plus `.agent/rules.md` and `.agent/commands.md`.
-- Add one centralized storage key such as `themeModePreference`.
-- Keep string values stable: `system`, `light`, `dark`.
-- Avoid literal preference strings outside the preference model/repository boundary.
-- Prefer a small repository only if it reduces coupling between the future controller and `LocalStorageService`.
-- Do not change `lib/app/app.dart`; app-root wiring belongs to 9.5.3.
-- Do not change Settings UI; selector integration belongs to 9.5.4.
-- Do not change tokens, palettes, `ThemeData`, docs, `.agent/*`, routing, wallet flows, release tooling, or generated files.
-- Add focused tests for parsing, serialization, fallback, and Flutter `ThemeMode` mapping.
+- Build on the 9.5.2 preference/repository contract; do not duplicate storage logic in `app.dart`.
+- Keep `ScaviumWalletApp` as a `ConsumerStatefulWidget` and preserve `AppLifecycleGuard` observer behavior.
+- Replace the hardcoded `ThemeMode.dark` runtime setting with provider-driven selected mode.
+- Ensure `MaterialApp.router` uses `theme: AppTheme.lightTheme` and `darkTheme: AppTheme.darkTheme`.
+- Keep router provider wiring unchanged.
+- Do not add Settings UI; that belongs to 9.5.4.
+- Do not alter token values, theme construction, docs, `.agent/*`, wallet flows, release tooling, or generated files.
+- Add focused tests for initial/fallback state, persisted load, update persistence, and app-root theme-mode wiring where practical.
 
 ## Validation (manual)
 
 ```bash
 fvm flutter analyze
-fvm flutter test test/theme_mode_preference_test.dart
+fvm flutter test test/theme_mode_controller_test.dart test/widget_test.dart
 ```
 
 ## Acceptance
 
-- Supported values `system`, `light`, and `dark` are modeled centrally.
-- Each value maps to the expected Flutter `ThemeMode`.
-- Missing or invalid stored values fall back safely.
-- Preference persistence uses the existing `LocalStorageService` path.
-- No app-root runtime switching, Settings selector, docs, or token/theme construction changes are introduced by this subphase.
+- `MaterialApp.router` no longer forces `ThemeMode.dark`.
+- `theme`, `darkTheme`, and provider-selected `themeMode` are wired at the app root.
+- Preference loading has a safe deterministic fallback.
+- Router and lifecycle guard behavior remain unchanged.
+- No Settings selector, docs, token/theme construction, or unrelated behavior changes are introduced by this subphase.
