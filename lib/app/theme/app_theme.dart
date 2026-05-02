@@ -1,55 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:scavium_wallet/app/theme/app_colors.dart';
-import 'package:scavium_wallet/app/theme/app_text_styles.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 
 abstract final class AppTheme {
   static ThemeData get darkTheme {
     final base = ThemeData.dark(useMaterial3: true);
 
     return base.copyWith(
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: ScavoColors.backgroundPrimary,
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.primary,
-        secondary: AppColors.accent,
-        surface: AppColors.surface,
-        error: AppColors.danger,
+        primary: ScavoColors.actionPrimary,
+        secondary: ScavoColors.actionSecondary,
+        surface: ScavoColors.backgroundSecondary,
+        error: ScavoColors.semanticDanger,
       ),
       textTheme: TextTheme(
-        displayLarge: AppTextStyles.display,
-        headlineLarge: AppTextStyles.h1,
-        headlineMedium: AppTextStyles.h2,
-        bodyLarge: AppTextStyles.body,
-        bodyMedium: AppTextStyles.bodyMuted,
-        labelLarge: AppTextStyles.button,
+        displayLarge: ScavoTypography.display,
+        headlineLarge: ScavoTypography.title,
+        headlineMedium: ScavoTypography.subtitle,
+        bodyLarge: ScavoTypography.body,
+        bodyMedium: ScavoTypography.bodyMuted,
+        labelLarge: ScavoTypography.button,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
+        backgroundColor: ScavoColors.transparent,
+        elevation: ScavoElevation.none,
+        surfaceTintColor: ScavoColors.transparent,
         centerTitle: false,
       ),
       cardTheme: CardThemeData(
-        color: AppColors.card,
-        elevation: 0,
+        color: ScavoColors.surfacePrimary,
+        elevation: ScavoElevation.none,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(ScavoRadius.lg),
+          side: const BorderSide(color: ScavoColors.borderDefault),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceSoft,
+        fillColor: ScavoColors.surfaceSecondary,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(ScavoRadius.md),
+          borderSide: const BorderSide(color: ScavoColors.borderDefault),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(ScavoRadius.md),
+          borderSide: const BorderSide(color: ScavoColors.borderDefault),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: AppColors.primary),
+          borderRadius: BorderRadius.circular(ScavoRadius.md),
+          borderSide: const BorderSide(color: ScavoColors.focus),
         ),
       ),
     );
