@@ -6,11 +6,13 @@ class SettingsSectionCard extends StatelessWidget {
   const SettingsSectionCard({
     required this.title,
     required this.children,
+    this.icon,
     this.subtitle,
     super.key,
   });
 
   final String title;
+  final IconData? icon;
   final String? subtitle;
   final List<Widget> children;
 
@@ -22,11 +24,21 @@ class SettingsSectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+          Row(
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 20, color: theme.colorScheme.primary),
+                const SizedBox(width: ScavoSpacing.xs),
+              ],
+              Expanded(
+                child: Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
           if (subtitle != null) ...[
             const SizedBox(height: ScavoSpacing.xxs),

@@ -32,10 +32,20 @@ void main() {
 
     expect(find.text('Settings'), findsOneWidget);
     expect(find.text('Appearance'), findsOneWidget);
+    expect(
+      find.text('Choose how SCAVIUM Wallet follows your device display.'),
+      findsOneWidget,
+    );
     expect(find.text('System'), findsOneWidget);
     expect(find.text('Light'), findsOneWidget);
     expect(find.text('Dark'), findsOneWidget);
     expect(find.text('Security & recovery'), findsOneWidget);
+    expect(
+      find.text(
+        'Export recovery material only when you are ready to store it securely.',
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Export encrypted backup'), findsOneWidget);
     expect(find.text('Signing'), findsOneWidget);
     expect(find.text('Sign message'), findsOneWidget);
@@ -43,6 +53,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Diagnostics'), findsOneWidget);
+    expect(
+      find.text('Inspect network health without changing wallet data.'),
+      findsOneWidget,
+    );
     expect(find.text('RPC diagnostics'), findsOneWidget);
     expect(find.text('Danger zone'), findsOneWidget);
     expect(find.text('Reset wallet'), findsOneWidget);

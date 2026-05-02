@@ -31,14 +31,16 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           const SettingsSectionCard(
             title: 'Appearance',
-            subtitle: 'Choose how SCAVIUM Wallet follows your display mode.',
+            icon: Icons.palette_outlined,
+            subtitle: 'Choose how SCAVIUM Wallet follows your device display.',
             children: [ThemeModeSelector()],
           ),
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Security & recovery',
+            icon: Icons.shield_outlined,
             subtitle:
-                'Export recovery material only when you are ready to store it safely.',
+                'Export recovery material only when you are ready to store it securely.',
             children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -60,6 +62,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Signing',
+            icon: Icons.edit_note_outlined,
             subtitle:
                 'Signing proves account control without submitting a transaction.',
             children: [
@@ -77,7 +80,8 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Diagnostics',
-            subtitle: 'Inspect network status without changing wallet data.',
+            icon: Icons.monitor_heart_outlined,
+            subtitle: 'Inspect network health without changing wallet data.',
             children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -93,6 +97,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Danger zone',
+            icon: Icons.warning_amber_outlined,
             subtitle: 'Destructive actions require explicit confirmation.',
             children: [
               ListTile(
@@ -138,10 +143,10 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'About',
+            icon: Icons.info_outline,
             children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.info_outline),
                 title: const Text('SCAVIUM Wallet'),
                 subtitle: Text(appVersionLabel),
               ),
