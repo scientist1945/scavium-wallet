@@ -13,6 +13,10 @@ class ScavoThemeColors {
   final Color textPrimary;
   final Color textSecondary;
   final Color textDisabled;
+  final Color iconActive;
+  final Color iconInactive;
+  final Color iconMuted;
+  final Color iconOnAction;
   final Color actionPrimary;
   final Color actionSecondary;
   final Color actionDisabled;
@@ -34,6 +38,10 @@ class ScavoThemeColors {
     required this.textPrimary,
     required this.textSecondary,
     required this.textDisabled,
+    required this.iconActive,
+    required this.iconInactive,
+    required this.iconMuted,
+    required this.iconOnAction,
     required this.actionPrimary,
     required this.actionSecondary,
     required this.actionDisabled,
@@ -56,6 +64,10 @@ class ScavoThemeColors {
     textPrimary: ScavoColors.textPrimary,
     textSecondary: ScavoColors.textSecondary,
     textDisabled: ScavoColors.textDisabled,
+    iconActive: ScavoColors.actionPrimary,
+    iconInactive: ScavoColors.textSecondary,
+    iconMuted: ScavoColors.textMuted,
+    iconOnAction: ScavoColors.textOnAction,
     actionPrimary: ScavoColors.actionPrimary,
     actionSecondary: ScavoColors.actionSecondary,
     actionDisabled: ScavoColors.actionDisabled,
@@ -78,6 +90,10 @@ class ScavoThemeColors {
     textPrimary: Color(0xFF0A0D14),
     textSecondary: Color(0xFF44516D),
     textDisabled: Color(0xFF8792A8),
+    iconActive: ScavoColors.brandPrimary,
+    iconInactive: Color(0xFF526079),
+    iconMuted: Color(0xFF6B7895),
+    iconOnAction: ScavoColors.brandOnPrimary,
     actionPrimary: ScavoColors.brandPrimary,
     actionSecondary: ScavoColors.brandSupport,
     actionDisabled: Color(0xFFCBD5E1),

@@ -18,6 +18,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     final appVersionState = ref.watch(appVersionInfoProvider);
     final appVersionLabel = appVersionState.maybeWhen(
       data: (version) => version.displayLabel,
@@ -98,6 +99,7 @@ class SettingsScreen extends ConsumerWidget {
           SettingsSectionCard(
             title: 'Danger zone',
             icon: Icons.warning_amber_outlined,
+            iconColor: colorScheme.error,
             subtitle: 'Destructive actions require explicit confirmation.',
             children: [
               ListTile(

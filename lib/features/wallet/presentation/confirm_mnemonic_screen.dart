@@ -96,6 +96,8 @@ class _ConfirmMnemonicScreenState extends ConsumerState<ConfirmMnemonicScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return ScaviumScaffold(
       appBar: AppBar(title: const Text('Confirm recovery phrase')),
       child: ListView(
@@ -108,7 +110,7 @@ class _ConfirmMnemonicScreenState extends ConsumerState<ConfirmMnemonicScreen> {
           ),
           const SizedBox(height: 20),
           if (_error != null) ...[
-            Text(_error!, style: const TextStyle(color: Colors.redAccent)),
+            Text(_error!, style: TextStyle(color: colorScheme.error)),
             const SizedBox(height: 16),
           ],
           for (var i = 0; i < _positions.length; i++) ...[

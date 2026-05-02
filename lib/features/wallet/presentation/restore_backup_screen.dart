@@ -123,6 +123,8 @@ class _RestoreBackupScreenState extends ConsumerState<RestoreBackupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return ScaviumScaffold(
       appBar: AppBar(title: const Text('Restore Backup')),
       child: ListView(
@@ -169,7 +171,7 @@ class _RestoreBackupScreenState extends ConsumerState<RestoreBackupScreen> {
           ),
           const SizedBox(height: 20),
           if (_error != null) ...[
-            Text(_error!, style: const TextStyle(color: Colors.red)),
+            Text(_error!, style: TextStyle(color: colorScheme.error)),
             const SizedBox(height: 12),
           ],
           ElevatedButton(

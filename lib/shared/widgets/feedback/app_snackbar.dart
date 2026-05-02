@@ -6,7 +6,7 @@ abstract final class AppSnackbar {
   }
 
   static void showSuccess(BuildContext context, String message) {
-    _show(context, message, Theme.of(context).colorScheme.secondary);
+    _show(context, message, Theme.of(context).colorScheme.tertiary);
   }
 
   static void showError(BuildContext context, String message) {

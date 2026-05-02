@@ -7,12 +7,14 @@ class SettingsSectionCard extends StatelessWidget {
     required this.title,
     required this.children,
     this.icon,
+    this.iconColor,
     this.subtitle,
     super.key,
   });
 
   final String title;
   final IconData? icon;
+  final Color? iconColor;
   final String? subtitle;
   final List<Widget> children;
 
@@ -27,7 +29,11 @@ class SettingsSectionCard extends StatelessWidget {
           Row(
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 20, color: theme.colorScheme.primary),
+                Icon(
+                  icon,
+                  size: 20,
+                  color: iconColor ?? theme.colorScheme.primary,
+                ),
                 const SizedBox(width: ScavoSpacing.xs),
               ],
               Expanded(
