@@ -364,3 +364,28 @@ Implemented reliability and error-boundary hardening:
 Phase 8.5 is complete as a security, reliability, diagnostics, warning, lock/lifecycle, and invalid-state maturity phase.
 
 The product now has safer diagnostics, clearer signing and backup warning surfaces, more reliable lifecycle behavior, and normalized error handling without adding telemetry, analytics, remote diagnostics reporting, dApp connectivity, WalletConnect, automatic challenge ingestion, backup format changes, shell-owned security state, or release-pipeline changes.
+
+
+---
+
+## 🎨 Phase 9 Planned Application Identity and Theme Features
+
+Phase 9 is planned to add identity and appearance maturity rather than new wallet transaction capabilities.
+
+Planned user-visible capabilities include:
+
+- dynamic application version display in Settings/About;
+- clearer version consistency between runtime UI, `pubspec.yaml`, release tooling, and MSIX metadata;
+- normalized SCAVIUM visual tokens;
+- first-class light and dark themes;
+- local theme-mode selection with `system`, `light`, and `dark` options;
+- persisted appearance preference;
+- smoother Settings/About hierarchy for identity and appearance controls.
+
+Planned non-user-facing capabilities include:
+
+- explicit validation of build/MSIX version synchronization;
+- reduced direct color coupling inside UI code;
+- token-based theme construction for future maintainability.
+
+Phase 9 does not add WalletConnect, dApp connectivity, new transaction flows, new signing flows, analytics, telemetry, remote configuration, or white-label runtime customization.

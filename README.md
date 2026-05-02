@@ -54,9 +54,10 @@ Completed phases:
 - Phase 8.3 — Transaction & Activity Maturity
 - Phase 8.4 — Navigation Shell and Product Surface Scaling
 - Phase 8.5 — Security, Reliability & Diagnostics Maturity
+- Phase 8.6 — Release & Distribution Maturity Extension
 
-Active Phase 8 work:
-- None currently active after Phase 8.6 closure.
+Active Phase 9 work:
+- Phase 9.0 planned — Application Identity, Versioning, and Visual Theme Maturity documentation lock.
 
 
 Current Phase 8 milestone:
@@ -139,7 +140,20 @@ Completed Phase 8.6 release and distribution maturity work includes:
 
 Phase 8.6 completed as a release-tooling and distribution-documentation maturity phase. It did not reopen wallet runtime behavior, account state, asset state, signing, backup semantics, routing, diagnostics, security ownership, telemetry, analytics, Play Store upload, Microsoft Store submission, iOS distribution, or runtime update delivery.
 
-The closed Phase 8.6 state keeps release ownership concentrated in the existing surfaces: `tool/build.dart` owns local build automation, version/MSIX synchronization, artifact expectations, build summaries, and generated release reports; `.github/workflows/release.yml` owns tag/manual release validation, Android and Windows artifact jobs, versioned release assets, CI-generated release manifest, checksum generation, and draft GitHub Release publication; `pubspec.yaml` owns `0.2.1+12` and `msix_config.msix_version: 0.2.1.12`; `docs/release.md` owns operator-facing release and distribution guidance.
+Planned Phase 9 identity and visual-theme maturity work includes:
+
+- 9.0 — Phase Definition & Documentation Lock
+- 9.1 — Runtime App Version Surface
+- 9.2 — Build Version & MSIX Synchronization Hardening
+- 9.3 — Theme Token Normalization
+- 9.4 — Light/Dark Theme Implementation
+- 9.5 — Theme Mode Runtime Selection and Persistence
+- 9.6 — Settings and About UX Alignment
+- 9.close — Application Identity, Versioning, and Visual Theme Maturity Closure
+
+The closed Phase 8.6 state keeps release ownership concentrated in the existing surfaces: `tool/build.dart` owns local build automation, version/MSIX synchronization, artifact expectations, build summaries, and generated release reports; `.github/workflows/release.yml` owns tag/manual release validation, Android and Windows artifact jobs, versioned release assets, CI-generated release manifest, checksum generation, and draft GitHub Release publication; `pubspec.yaml` owns the project version and `msix_config.msix_version`; `docs/release.md` owns operator-facing release and distribution guidance.
+
+Phase 9 is now planned as the next product-maturity phase. It focuses on application identity and visual-system consistency: dynamic runtime version display, explicit build/MSIX version synchronization hardening, SCAVIUM design token normalization, first-class light/dark themes, persisted theme-mode selection, and Settings/About alignment.
 
 
 

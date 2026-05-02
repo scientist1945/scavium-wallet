@@ -280,3 +280,21 @@ Implemented UX improvements:
 The UX deliberately stays conservative. Phase 8.5 does not create automated signing prompts, dApp prompts, WalletConnect prompts, hidden challenge ingestion, or telemetry consent surfaces. Sensitive actions remain user-initiated, visible, confirmable, and cancellable.
 
 The Phase 8.5 UX remains intentionally bounded. It does not introduce telemetry, dApp prompts, WalletConnect, background signing, automatic challenge ingestion, or hidden shell-owned security behavior.
+
+
+---
+
+## 🎨 Phase 9 Application Identity and Visual Theme UX
+
+Phase 9 is planned to make the wallet feel more coherent, less saturated, and more product-like without redesigning the stabilized Phase 8 surfaces.
+
+The UX direction is based on the SCAVIUM Design Token System:
+
+- brand colors remain recognizable but should be used with restraint;
+- large backgrounds and surfaces should be calmer than high-signal actions;
+- semantic colors must be distinct from brand colors;
+- cards, navigation, inputs, dialogs, snackbars, and list tiles should share a consistent hierarchy;
+- light and dark modes should feel like the same product, not two unrelated skins;
+- Settings/About should clearly expose application version and appearance controls.
+
+The desired user outcome is a smoother visual experience: less noise, clearer hierarchy, better contrast, and more predictable appearance across web, desktop, Android, and future supported platforms.

@@ -548,3 +548,19 @@ Before publishing outside GitHub Releases, an operator must still review the dra
 ### Closure result
 
 Phase 8.6 closes with a clearer release evidence chain from local build execution to CI draft-release publication. The build tool reports expected outputs, the workflow carries generated reports and manifest metadata into the draft release, checksums cover the release asset set, and documentation distinguishes implemented release automation from manual distribution responsibilities.
+
+
+---
+
+## 🧭 Phase 9 Version Identity Follow-Up
+
+Phase 8.6 closed the release/distribution tooling maturity layer. Phase 9 is planned to follow that work by aligning the user-visible runtime version with the same project identity chain used by build and packaging flows.
+
+The Phase 9 versioning follow-up is expected to validate:
+
+- whether Settings/About displays version data from runtime metadata instead of static copy;
+- whether `tool/build.dart` version bump behavior and `msix_config.msix_version` synchronization remain explicit;
+- whether `--no-version-bump` behavior is documented clearly enough that operators do not confuse intentional non-mutation with a synchronization failure;
+- whether runtime version display, `pubspec.yaml`, MSIX metadata, CI artifact naming, and release documentation remain conceptually aligned.
+
+This is not a new release publication feature. It is an identity/version consistency hardening step over the existing release tooling baseline.

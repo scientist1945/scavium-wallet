@@ -238,3 +238,27 @@ The resulting path is:
 - asset, send, token-send, transaction-history, and async UI failures keep their controller-level ownership while using safer user-facing copy.
 
 This avoids a broad global security manager or global error subsystem. Phase 8.5 improves safety without hiding which feature owns each behavior.
+
+
+---
+
+## 🎨 Phase 9 Identity and Theme Runtime Path
+
+Phase 9 should introduce two small runtime paths without changing wallet custody or blockchain behavior.
+
+The first path is application identity:
+
+1. project/build metadata defines the version;
+2. a runtime identity/version provider resolves displayable version data;
+3. Settings/About consumes that provider instead of hardcoded copy;
+4. release tooling and MSIX synchronization remain external build concerns.
+
+The second path is appearance:
+
+1. SCAVIUM tokens define brand, background, surface, text, semantic, interaction, shape, spacing, and elevation values;
+2. `AppTheme.lightTheme` and `AppTheme.darkTheme` are derived from the same token model;
+3. a local theme preference resolves `system`, `light`, or `dark`;
+4. the app root applies the selected `ThemeMode`;
+5. Settings exposes the preference without owning global theme behavior directly.
+
+This keeps Phase 9 visually meaningful while preserving the existing controller/service/domain boundaries.

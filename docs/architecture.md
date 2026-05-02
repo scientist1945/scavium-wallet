@@ -458,3 +458,20 @@ The new error-boundary helpers are intentionally small shared utilities. They no
 Diagnostics are also intentionally local. They expose useful non-sensitive runtime state, but they are not telemetry, not analytics, not remote reporting, and not a support-upload pipeline.
 
 Phase 8.5 deliberately does not add telemetry, analytics, remote diagnostics reporting, dApp connectivity, WalletConnect, background signing, automatic challenge ingestion, backup payload migrations, shell-owned security state, or release-pipeline changes.
+
+
+---
+
+## 🎨 Phase 9 Application Identity and Theme Architecture
+
+Phase 9 is planned as an application identity and visual-system maturity phase over the Phase 8.6-completed codebase.
+
+Architecturally, Phase 9 should keep identity and theme ownership separated from wallet domain logic:
+
+- runtime app version display should be owned by a small application identity/version boundary rather than hardcoded Settings copy;
+- build/MSIX version synchronization should remain in the build tooling layer and continue to treat `pubspec.yaml` as the project version source;
+- visual design should be normalized through the app theme layer before broad screen-level changes are made;
+- light and dark themes should derive from shared SCAVIUM design tokens instead of becoming separate ad-hoc palettes;
+- theme-mode selection should be local, persisted, reactive, and applied at the app root.
+
+The SCAVIUM Design Token System proposed for Phase 9 establishes brand, background, surface, border, text, semantic, interaction, shape, spacing, and elevation tokens. This keeps the existing SCAVIUM identity recognizable while reducing saturation and improving hierarchy across mobile, web, and desktop surfaces.

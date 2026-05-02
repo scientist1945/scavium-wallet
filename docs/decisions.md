@@ -312,3 +312,20 @@ Benefits:
 - users receive clearer retry/correction copy;
 - local data such as pending transaction history is preserved when refresh fails;
 - existing feature/controller ownership remains intact.
+
+
+---
+
+### 25. Phase 9 should normalize visual identity through design tokens before broad theme changes
+
+Phase 9 is planned around a token-first visual strategy. The project should not solve the current saturated/dark-only appearance by applying isolated color changes across screens.
+
+Instead, the app theme layer should define a SCAVIUM Design Token System covering brand, background, surface, border, text, semantic, interaction, shape, spacing, and elevation values. Light and dark themes should then derive from that shared token language.
+
+This decision keeps SCAVIUM identity stable while enabling smoother visual hierarchy, lower saturation, and future maintainability.
+
+### 26. Runtime version display should not be hardcoded in Settings/About
+
+The Settings/About surface should display application version data resolved from runtime metadata or generated build metadata.
+
+Hardcoded copy such as `Version 0.4.0` can diverge from `pubspec.yaml`, MSIX metadata, CI artifacts, and release tags. Phase 9 should remove that mismatch by introducing a small application identity/version boundary instead of treating version display as static UI text.

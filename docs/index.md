@@ -26,17 +26,21 @@
 - Phase 8 — Product Expansion & Production Maturity  
   phase8_scavium_wallet.md
 
+- Phase 9 — Application Identity, Versioning, and Visual Theme Maturity  
+  phase9_scavium_wallet.md
+
 ---
 
 ## Current Phase 8 status
 
-Phase 8 is active and currently completed through:
+Phase 8 is closed and completed through:
 
 - Phase 8.1 — Account Model Expansion
 - Phase 8.2 — Asset & Portfolio Expansion
 - Phase 8.3 — Transaction & Activity Maturity
 - Phase 8.4 — Navigation Shell and Product Surface Scaling
 - Phase 8.5 — Security, Reliability & Diagnostics Maturity
+- Phase 8.6 — Release & Distribution Maturity Extension
 
 Phase 8.6 — Release & Distribution Maturity Extension is now complete.
 
@@ -206,3 +210,20 @@ Phase 8.6 completed scope:
 The final release-published artifact set is Android APK, Android App Bundle, and Windows MSIX. Web and unpackaged Windows runner builds remain local-support-only outputs. Build reports and the CI release manifest are generated release evidence, not committed source files. Checksums remain CI-owned through `SHA256SUMS.txt`.
 
 Phase 8.6 remains bounded after closure. It did not introduce automatic Play Store upload, automatic Microsoft Store submission, iOS distribution, runtime update delivery, telemetry, analytics, backup format changes, WalletConnect, dApp connectivity, or wallet runtime feature changes.
+
+---
+
+## Planned Phase 9 application identity and visual theme maturity
+
+Phase 9 is planned after Phase 8.6 closure. It does not reopen Phase 8 runtime feature domains; instead, it addresses the identity and visual-system gaps identified in the real Phase 8.6-completed codebase.
+
+The planned Phase 9 baseline includes:
+
+- replacing hardcoded Settings/About version copy with runtime version metadata;
+- validating and hardening build-version and MSIX synchronization behavior;
+- defining a SCAVIUM Design Token System before broad visual changes;
+- implementing first-class light and dark themes from shared tokens;
+- allowing runtime theme-mode selection and persistence;
+- aligning Settings/About as the application identity and appearance control surface.
+
+Phase 9 is documented in `docs/phase9_scavium_wallet.md`.

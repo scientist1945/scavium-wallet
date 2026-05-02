@@ -353,3 +353,29 @@ dart run tool/build.dart --platform windows-msix --no-version-bump
 Phase 8.6 generated release reports under `build/release/` and CI release metadata under the GitHub Release asset directory. Those outputs are generated evidence and must not be confused with committed source files.
 
 Future development phases must preserve the Phase 8.6 boundary unless a later phase explicitly expands release automation. Store upload, store submission, runtime update delivery, analytics, telemetry, iOS distribution, WalletConnect, dApp connectivity, and wallet runtime feature expansion remain out of scope after this closure.
+
+
+---
+
+## Phase 9 Development Boundary
+
+Phase 9 development must remain bounded to application identity, versioning, and visual theme maturity.
+
+Expected implementation areas are:
+
+- runtime app version resolution and Settings/About display;
+- build tool validation or hardening around `pubspec.yaml` and `msix_config.msix_version`;
+- SCAVIUM design token normalization inside the app theme layer;
+- light and dark theme implementation;
+- local theme-mode selection and persistence;
+- Settings/About alignment for version and appearance controls.
+
+Development rules:
+
+- do not change wallet custody, transaction, signing, backup, restore, RPC, diagnostics, or release publication semantics unless directly required by the version/theme task;
+- keep theme logic centralized under the app/theme boundary where possible;
+- avoid scattered per-screen color fixes before the token layer is defined;
+- use focused tests for Settings/About version display and theme preference behavior where practical;
+- continue using `fvm flutter analyze` and `fvm flutter test` as the baseline validation commands.
+
+Build/version hardening in Phase 9 should document whether a command mutates `pubspec.yaml`, synchronizes MSIX metadata, or intentionally leaves version data unchanged because `--no-version-bump` was requested.
