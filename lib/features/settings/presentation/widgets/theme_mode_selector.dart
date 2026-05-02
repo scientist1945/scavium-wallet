@@ -10,23 +10,32 @@ class ThemeModeSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedPreference = ref.watch(themeModeControllerProvider);
 
-    return SegmentedButton<ThemeModePreference>(
-      segments: ThemeModePreference.values
-          .map(
-            (preference) => ButtonSegment<ThemeModePreference>(
-              value: preference,
-              label: Text(preference.label),
-              tooltip: preference.description,
-            ),
-          )
-          .toList(growable: false),
-      selected: {selectedPreference},
-      onSelectionChanged: (selection) {
-        final preference = selection.single;
-        ref
-            .read(themeModeControllerProvider.notifier)
-            .setPreference(preference);
-      },
+    return Semantics(
+      label: 'Theme mode',
+      value: selectedPreference.label,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: SegmentedButton<ThemeModePreference>(
+          showSelectedIcon: true,
+          segments: ThemeModePreference.values
+              .map(
+                (preference) => ButtonSegment<ThemeModePreference>(
+                  value: preference,
+                  icon: Icon(preference.icon),
+                  label: Text(preference.label),
+                  tooltip: preference.description,
+                ),
+              )
+              .toList(growable: false),
+          selected: {selectedPreference},
+          onSelectionChanged: (selection) {
+            final preference = selection.single;
+            ref
+                .read(themeModeControllerProvider.notifier)
+                .setPreference(preference);
+          },
+        ),
+      ),
     );
   }
 }

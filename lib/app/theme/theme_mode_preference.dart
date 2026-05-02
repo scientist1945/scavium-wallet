@@ -22,9 +22,17 @@ enum ThemeModePreference {
 
   String get description {
     return switch (this) {
-      system => 'Match device settings',
-      light => 'Use light appearance',
-      dark => 'Use dark appearance',
+      system => 'Match your device setting',
+      light => 'Always use light mode',
+      dark => 'Always use dark mode',
+    };
+  }
+
+  IconData get icon {
+    return switch (this) {
+      system => Icons.brightness_auto_outlined,
+      light => Icons.light_mode_outlined,
+      dark => Icons.dark_mode_outlined,
     };
   }
 

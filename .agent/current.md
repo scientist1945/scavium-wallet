@@ -1,26 +1,26 @@
-# Current Task — 9.6.2
+# Current Task — 9.6.3
 
 Project: SCAVIUM Wallet
 Phase: 9.6 — Settings and About UX Alignment
-Subphase: 9.6.2 — Settings/About Information Architecture Polish
+Subphase: 9.6.3 — Appearance Selector UX and Accessibility Polish
 Type: Code-only
 
 ## Goal
 
-Refine Settings/About section hierarchy so Appearance, security/recovery, signing, diagnostics, danger-zone actions, and About read as one coherent Settings surface.
+Polish the existing Appearance selector for clarity, accessibility, selected-state feedback, and narrow/wide layout without changing persistence ownership.
 
 ## Scope
 
-- Improve section order, spacing, copy, and grouping without changing behavior.
-- Preserve Appearance selector visibility and current theme-mode ownership.
-- Preserve dynamic About version display through the existing app identity provider.
-- Preserve backup export, signing route, diagnostics route, and reset action availability.
+- Improve `ThemeModeSelector` presentation only.
+- Preserve `ThemeModeController` as the state boundary and `ThemeModePreference` as the value/label boundary.
+- Adjust preference labels/descriptions only if required for UX clarity and covered by tests.
 
 ## Allowed Files
 
-- `lib/features/settings/presentation/settings_screen.dart`
-- `lib/features/settings/presentation/widgets/settings_section_card.dart`
-- `test/settings_screen_test.dart`
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart`
+- `lib/app/theme/theme_mode_preference.dart` (only if labels/descriptions need correction)
+- `test/theme_mode_selector_test.dart`
+- `test/theme_mode_preference_test.dart` (only if preference labels/descriptions change)
 
 ## Forbidden
 
@@ -31,21 +31,22 @@ Refine Settings/About section hierarchy so Appearance, security/recovery, signin
 ## Implementation Requirements
 
 - Before editing, read only the allowed files needed for this subphase plus `.agent/rules.md` and `.agent/commands.md`.
-- Keep `ThemeModeSelector` consumed by Settings; do not move persistence or app-root theme selection into Settings.
-- Do not modify `theme_mode_controller.dart`, repositories, storage keys, app root, routing, token/theme construction, docs, `.agent/*`, release tooling, platform files, or generated files.
-- Prefer layout/copy/card hierarchy changes over new abstractions.
-- Add or adjust focused tests for visible section hierarchy and preserved actions.
+- Do not change storage values: `system`, `light`, `dark`.
+- Do not change repository/provider/app-root theme-mode wiring.
+- Do not modify Settings section hierarchy unless strictly necessary to host the selector polish; if needed, stop and ask approval to include `settings_screen.dart`.
+- Do not modify docs, `.agent/*`, routing, release tooling, platform files, generated files, or unrelated tests.
+- Add or adjust focused tests for selector rendering, selected value, and preference update behavior.
 
 ## Validation (manual)
 
 ```bash
 fvm flutter analyze
-fvm flutter test test/settings_screen_test.dart
+fvm flutter test test/theme_mode_selector_test.dart test/theme_mode_preference_test.dart
 ```
 
 ## Acceptance
 
-- Settings shows a coherent ordered surface with Appearance, security/recovery, signing, diagnostics, danger-zone, and About sections.
-- Existing user actions remain reachable.
-- About still renders dynamic version data from the provider.
-- No theme-mode ownership or persistence is reimplemented.
+- Appearance selector remains wired to `themeModeControllerProvider`.
+- Selector labels/descriptions are clear and accessible.
+- Selecting System/Light/Dark still saves the selected preference.
+- No persistence or app-root logic is duplicated.

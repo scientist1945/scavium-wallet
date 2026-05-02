@@ -14,6 +14,18 @@ void main() {
       expect(ThemeModePreference.dark.storageValue, 'dark');
     });
 
+    test('exposes clear display labels and descriptions', () {
+      expect(ThemeModePreference.system.label, 'System');
+      expect(
+        ThemeModePreference.system.description,
+        'Match your device setting',
+      );
+      expect(ThemeModePreference.light.label, 'Light');
+      expect(ThemeModePreference.light.description, 'Always use light mode');
+      expect(ThemeModePreference.dark.label, 'Dark');
+      expect(ThemeModePreference.dark.description, 'Always use dark mode');
+    });
+
     test('maps values to Flutter ThemeMode', () {
       expect(ThemeModePreference.system.themeMode, ThemeMode.system);
       expect(ThemeModePreference.light.themeMode, ThemeMode.light);

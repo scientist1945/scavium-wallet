@@ -18,11 +18,33 @@ void main() {
     expect(find.text('System'), findsOneWidget);
     expect(find.text('Light'), findsOneWidget);
     expect(find.text('Dark'), findsOneWidget);
+    expect(find.byTooltip('Match your device setting'), findsOneWidget);
+    expect(find.byTooltip('Always use light mode'), findsOneWidget);
+    expect(find.byTooltip('Always use dark mode'), findsOneWidget);
 
     final selectedButtons = tester.widgetList<SegmentedButton>(
       find.byType(SegmentedButton<ThemeModePreference>),
     );
-    expect(selectedButtons.single.selected, {ThemeModePreference.light});
+    final selector = selectedButtons.single;
+    expect(selector.selected, {ThemeModePreference.light});
+    expect(selector.showSelectedIcon, isTrue);
+    expect(selector.segments.map((segment) => (segment.icon! as Icon).icon), [
+      Icons.brightness_auto_outlined,
+      Icons.light_mode_outlined,
+      Icons.dark_mode_outlined,
+    ]);
+  });
+
+  testWidgets('exposes accessible current theme mode value', (tester) async {
+    final repository = _ThemeModeRepositoryFake(ThemeModePreference.dark);
+
+    await tester.pumpWidget(_harness(repository));
+    await tester.pump();
+
+    expect(
+      tester.getSemantics(find.byType(ThemeModeSelector)),
+      matchesSemantics(label: 'Theme mode', value: 'Dark'),
+    );
   });
 
   testWidgets('updates preference when a mode is selected', (tester) async {
