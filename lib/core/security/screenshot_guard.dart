@@ -9,11 +9,21 @@ class ScreenshotGuard {
 
   static Future<void> enableProtection() async {
     if (!Platform.isAndroid) return;
-    await _channel.invokeMethod('enableScreenshotProtection');
+    await _tryInvoke('enableScreenshotProtection');
   }
 
   static Future<void> disableProtection() async {
     if (!Platform.isAndroid) return;
-    await _channel.invokeMethod('disableScreenshotProtection');
+    await _tryInvoke('disableScreenshotProtection');
+  }
+
+  static Future<void> _tryInvoke(String method) async {
+    try {
+      await _channel.invokeMethod(method);
+    } on PlatformException {
+      return;
+    } on MissingPluginException {
+      return;
+    }
   }
 }

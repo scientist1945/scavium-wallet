@@ -175,3 +175,181 @@ Future:
 ## 🎯 Goal
 
 Maintain a stable, scalable and predictable codebase while hardening release candidates safely, making release operations more repeatable, and reducing operational wallet-loss risk for users.
+---
+
+## 🤖 Agent-Assisted Phase Execution
+
+Phase 8.2 introduced a controlled agent-assisted implementation flow through `.agent/*` task files.
+
+The agent flow is constrained by:
+
+- one current task file per subphase;
+- explicit allowed and forbidden files;
+- no documentation changes during code-only subphases;
+- validation through `fvm flutter analyze` and `fvm flutter test`;
+- documentation closure after code subphases are implemented and reviewed.
+
+This keeps the implementation loop faster while preserving the project rule that trunk documentation is updated only from the real working tree state.
+
+### Phase 8.2 Development Boundary
+
+Phase 8.2 code subphases were intentionally limited to asset, token, portfolio, and presentation polish areas.
+
+They did not alter:
+
+- backup formats;
+- wallet account persistence;
+- route names;
+- build automation;
+- release automation;
+- navigation shell structure.
+
+---
+
+## Phase 8.3 Development Boundary
+
+Phase 8.3 continued the controlled agent-assisted implementation flow established during Phase 8.2.
+
+The code subphases were intentionally limited to:
+
+- local outgoing transaction-history state maturity;
+- transaction detail presentation;
+- local activity filtering, grouping, and empty/error states;
+- message-signing domain and service boundaries;
+- message-signing UX with preview, confirmation, cancellation, and result display.
+
+They did not alter:
+
+- backup formats;
+- wallet account persistence ownership;
+- release automation;
+- build automation;
+- store publication flow;
+- external transaction indexing;
+- dApp connectivity;
+- Phase 8.4 navigation shell structure.
+
+Expected local validation remains:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Documentation closure must be performed after code subphases are reviewed so trunk documents describe the real working tree rather than planned implementation text.
+---
+
+## Phase 8.4 Development Boundary
+
+Phase 8.4 continued the controlled agent-assisted implementation flow and completed navigation-shell/product-surface maturity.
+
+The code subphases were intentionally limited to:
+
+- route classification and shell eligibility;
+- authenticated shell composition for primary destinations;
+- responsive compact and wide navigation chrome;
+- Home dashboard segmentation;
+- dedicated Accounts surface placement;
+- Settings organization for secondary actions and diagnostics.
+
+They did not alter:
+
+- backup payload formats;
+- wallet encryption;
+- transaction submission semantics;
+- release automation;
+- build automation;
+- store publication flow;
+- external transaction indexing;
+- automatic token discovery;
+- dApp connectivity;
+- shell-owned feature state.
+
+Expected local validation remains:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+During documentation closure in this environment, those commands could not be executed because `fvm`, `flutter`, and `dart` were not available in the execution container. The project-local validation expectation remains unchanged.
+
+
+---
+
+## Phase 8.5 Development Boundary
+
+Phase 8.5 continued the controlled agent-assisted implementation flow and completed security, reliability, diagnostics, warning, lock/lifecycle, and invalid-state maturity.
+
+The code subphases were intentionally limited to:
+
+- safe RPC diagnostics output;
+- signing request limits, warnings, confirmation copy, cancellation behavior, and result copy;
+- backup/export and restore warning consistency plus safe backup error normalization;
+- lifecycle refresh behavior while locked and platform-safe screenshot protection;
+- safe user-facing error helpers for invalid state, refresh, send, token, and async UI surfaces;
+- pending transaction-history preservation when receipt refresh cannot complete;
+- focused tests for diagnostics, signing, backup warnings, route boundaries, error safety, and pending transaction-history preservation.
+
+They did not alter:
+
+- wallet account persistence ownership;
+- encrypted backup payload format semantics;
+- route ownership by `GoRouter`;
+- shell presentation-only ownership;
+- release automation;
+- build automation;
+- telemetry or analytics behavior;
+- dApp or WalletConnect scope.
+
+### Phase 8.5 Closure Validation Boundary
+
+The closure was processed as a documentation-only close over the implemented runtime work. The expected project-local validation commands remain:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+```
+
+Those commands are the correct validation gate for the developer workstation or CI environment. The closure documentation does not replace those commands; it records the real implementation scope and keeps the next Phase 8 work from inheriting ambiguous assumptions.
+
+---
+
+## Phase 8.6 Development Boundary
+
+Phase 8.6 is complete as a release and distribution maturity extension after Phase 8.5. It closed without modifying wallet runtime behavior or introducing a new release ownership model.
+
+The phase remained limited to release-tooling and distribution-documentation concerns:
+
+- `tool/build.dart` build automation maturity;
+- `.github/workflows/release.yml` release workflow consistency;
+- version, artifact, checksum, manifest, and report consistency;
+- release validation and operator reporting;
+- distribution metadata and store-readiness documentation;
+- cross-platform packaging expectations for Android, Web, and Windows.
+
+It did not alter:
+
+- wallet account persistence ownership;
+- asset, transaction, signing, backup, restore, diagnostics, routing, or lock runtime behavior;
+- encrypted backup payload semantics;
+- GoRouter ownership;
+- Riverpod feature-state ownership;
+- telemetry or analytics behavior;
+- automatic Play Store upload, Microsoft Store submission, iOS distribution, or runtime update delivery.
+
+Expected local validation for release-tooling work remains:
+
+```bash
+fvm flutter analyze
+fvm flutter test
+dart run tool/build.dart --check-version --expected-tag v0.2.1
+dart run tool/build.dart --platform android-apk --no-version-bump
+dart run tool/build.dart --platform android-bundle --no-version-bump
+dart run tool/build.dart --platform web --no-version-bump
+dart run tool/build.dart --platform windows-msix --no-version-bump
+```
+
+Phase 8.6 generated release reports under `build/release/` and CI release metadata under the GitHub Release asset directory. Those outputs are generated evidence and must not be confused with committed source files.
+
+Future development phases must preserve the Phase 8.6 boundary unless a later phase explicitly expands release automation. Store upload, store submission, runtime update delivery, analytics, telemetry, iOS distribution, WalletConnect, dApp connectivity, and wallet runtime feature expansion remain out of scope after this closure.

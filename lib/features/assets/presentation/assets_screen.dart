@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
 import 'package:scavium_wallet/features/assets/application/assets_controller.dart';
+import 'package:scavium_wallet/features/assets/domain/asset_account_context.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_kind.dart';
+import 'package:scavium_wallet/features/assets/domain/portfolio_summary.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/state_message.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_card.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
@@ -46,13 +48,35 @@ class AssetsScreen extends ConsumerWidget {
             onRefresh:
                 () =>
                     ref.read(assetsControllerProvider.notifier).refreshAssets(),
-            child: ListView.separated(
-              padding: const EdgeInsets.all(20),
-              itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final item = items[index];
-                return _AssetTile(item: item);
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final horizontalPadding =
+                    constraints.maxWidth >= 720 ? 32.0 : 20.0;
+
+                return ListView.separated(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                    vertical: 20,
+                  ),
+                  itemCount: items.length + 1,
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final child =
+                        index == 0
+                            ? _PortfolioSummaryCard(
+                              summary: PortfolioSummary.fromAssets(items),
+                              accountContext: items.first.accountContext,
+                            )
+                            : _AssetTile(item: items[index - 1]);
+
+                    return Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 760),
+                        child: child,
+                      ),
+                    );
+                  },
+                );
               },
             ),
           );
@@ -69,6 +93,96 @@ class AssetsScreen extends ConsumerWidget {
   }
 }
 
+class _PortfolioSummaryCard extends StatelessWidget {
+  final PortfolioSummary summary;
+  final AssetAccountContext? accountContext;
+
+  const _PortfolioSummaryCard({
+    required this.summary,
+    required this.accountContext,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaviumCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Portfolio summary',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _SummaryMetric(
+                  label: 'Assets',
+                  value: summary.totalAssets.toString(),
+                ),
+              ),
+              Expanded(
+                child: _SummaryMetric(
+                  label: 'With balance',
+                  value: summary.nonZeroAssetCount.toString(),
+                ),
+              ),
+              Expanded(
+                child: _SummaryMetric(
+                  label: 'Tokens',
+                  value: summary.erc20AssetCount.toString(),
+                ),
+              ),
+            ],
+          ),
+          if (accountContext != null) ...[
+            const SizedBox(height: 12),
+            const Divider(height: 1),
+            const SizedBox(height: 12),
+            Text(
+              accountContext!.displayName,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              accountContext!.shortAddress,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryMetric extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _SummaryMetric({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          value,
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 2),
+        Text(label, style: Theme.of(context).textTheme.bodySmall),
+      ],
+    );
+  }
+}
+
 class _AssetTile extends StatelessWidget {
   final AssetItem item;
 
@@ -81,10 +195,22 @@ class _AssetTile extends StatelessWidget {
         contentPadding: EdgeInsets.zero,
         leading: CircleAvatar(child: Text(item.symbol.characters.first)),
         title: Text(item.title),
-        subtitle: Text(
-          item.kind == AssetKind.native
-              ? 'Native asset'
-              : item.contractAddress ?? '',
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              _AssetKindChip(kind: item.kind),
+              if (item.kind == AssetKind.erc20 && item.contractAddress != null)
+                Text(
+                  _shortAddress(item.contractAddress!),
+                  style: Theme.of(context).textTheme.bodySmall,
+                  overflow: TextOverflow.ellipsis,
+                ),
+            ],
+          ),
         ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -101,6 +227,31 @@ class _AssetTile extends StatelessWidget {
           context.push(RouteNames.assetDetail, extra: item);
         },
       ),
+    );
+  }
+
+  String _shortAddress(String address) {
+    final trimmed = address.trim();
+    if (trimmed.length <= 14) {
+      return trimmed;
+    }
+    return '${trimmed.substring(0, 8)}...${trimmed.substring(trimmed.length - 6)}';
+  }
+}
+
+class _AssetKindChip extends StatelessWidget {
+  final AssetKind kind;
+
+  const _AssetKindChip({required this.kind});
+
+  @override
+  Widget build(BuildContext context) {
+    final isNative = kind == AssetKind.native;
+
+    return Chip(
+      label: Text(isNative ? 'Native' : 'ERC-20'),
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
 }

@@ -1,0 +1,121 @@
+@echo off
+setlocal
+
+if "%~1"=="" (
+    echo Uso: zip_etapa_limpio.bat 6.3
+    exit /b 1
+)
+
+set "ETAPA=%~1"
+set "CURRENT_DIR=%cd%"
+set "PARENT_DIR=%CURRENT_DIR%\.."
+
+set "BACKEND_DIR=%PARENT_DIR%\scavo.exchange-backend"
+set "FRONTEND_DIR=%PARENT_DIR%\scavo.exchange-frontend"
+set "SCAVIUM_WALLET_DIR=%PARENT_DIR%\scavium-wallet"
+
+set "OUTPUT_FILE=%PARENT_DIR%\scavium-wallet-%ETAPA%.zip"
+set "TEMP_DIR=%temp%\scavium_wallet_bundle_%random%%random%"
+set "TEMP_ROOT=%TEMP_DIR%\bundle-wallet"
+
+echo.
+echo Verificando carpetas origen...
+
+if not exist "%BACKEND_DIR%" (
+    echo ERROR: no existe la carpeta backend:
+    echo %BACKEND_DIR%
+    exit /b 1
+)
+
+if not exist "%FRONTEND_DIR%" (
+    echo ERROR: no existe la carpeta frontend:
+    echo %FRONTEND_DIR%
+    exit /b 1
+)
+
+if not exist "%SCAVIUM_WALLET_DIR%" (
+    echo ERROR: no existe la carpeta scavium-wallet:
+    echo %SCAVIUM_WALLET_DIR%
+    exit /b 1
+)
+
+
+echo.
+echo Preparando carpeta temporal...
+mkdir "%TEMP_ROOT%"
+@REM mkdir "%TEMP_ROOT%\scavo.exchange-backend"
+@REM mkdir "%TEMP_ROOT%\scavo.exchange-frontend"
+mkdir "%TEMP_ROOT%\scavium-wallet"
+
+@REM echo.
+@REM echo Copiando backend...
+@REM robocopy "%BACKEND_DIR%" "%TEMP_ROOT%\scavo.exchange-backend" /E /XD .fvm .git .idea .vscode dist build .dart_tool distribution\submissions >nul
+
+@REM if errorlevel 8 (
+@REM     echo ERROR: fallo robocopy al copiar backend.
+@REM     rmdir /s /q "%TEMP_DIR%"
+@REM     exit /b 1
+@REM )
+
+@REM echo Copiando frontend...
+@REM robocopy "%FRONTEND_DIR%" "%TEMP_ROOT%\scavo.exchange-frontend" /E /XD .fvm .git .idea .vscode dist build .dart_tool distribution\submissions >nul
+
+@REM if errorlevel 8 (
+@REM     echo ERROR: fallo robocopy al copiar frontend.
+@REM     rmdir /s /q "%TEMP_DIR%"
+@REM     exit /b 1
+@REM )
+
+echo Copiando scavium-wallet...
+robocopy "%SCAVIUM_WALLET_DIR%" "%TEMP_ROOT%\scavium-wallet" /E /XF *.zip /XD .gradle .fvm .git .idea .vscode dist build .dart_tool distribution\submissions >nul
+
+if errorlevel 8 (
+    echo ERROR: fallo robocopy al copiar scavium-wallet.
+    rmdir /s /q "%TEMP_DIR%"
+    exit /b 1
+)
+
+@REM echo Eliminando scavo.exchange-frontend\windows\flutter\ephemeral del temporal...
+@REM if exist "%TEMP_ROOT%\scavo.exchange-frontend\windows\flutter\ephemeral" (
+@REM     rmdir /s /q "%TEMP_ROOT%\scavo.exchange-frontend\windows\flutter\ephemeral"
+@REM )
+echo Eliminando scavium-wallet\windows\flutter\ephemeral del temporal...
+if exist "%TEMP_ROOT%\scavium-wallet\windows\flutter\ephemeral" (
+    rmdir /s /q "%TEMP_ROOT%\scavium-wallet\windows\flutter\ephemeral"
+)
+echo Eliminando scavium-wallet\linux\flutter\ephemeral del temporal...
+if exist "%TEMP_ROOT%\scavium-wallet\linux\flutter\ephemeral" (
+    rmdir /s /q "%TEMP_ROOT%\scavium-wallet\linux\flutter\ephemeral"
+)
+@REM echo Eliminando scavium-wallet\.agent del temporal...
+@REM if exist "%TEMP_ROOT%\scavium-wallet\.agent" (
+@REM     rmdir /s /q "%TEMP_ROOT%\scavium-wallet\.agent"
+@REM )
+
+
+if exist "%OUTPUT_FILE%" del /f /q "%OUTPUT_FILE%"
+
+echo.
+echo Generando ZIP...
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+    "Compress-Archive -Path '%TEMP_ROOT%\*' -DestinationPath '%OUTPUT_FILE%' -Force"
+
+if errorlevel 1 (
+    echo ERROR: no se pudo generar el zip.
+    rmdir /s /q "%TEMP_DIR%"
+    exit /b 1
+)
+
+rmdir /s /q "%TEMP_DIR%"
+
+echo.
+echo ZIP generado correctamente:
+echo %OUTPUT_FILE%
+echo.
+echo Contenido esperado dentro del ZIP:
+@REM echo - scavo.exchange-backend
+@REM echo - scavo.exchange-frontend
+echo - scavium-wallet
+echo.
+
+endlocal

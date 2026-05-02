@@ -1,15 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/app/shell/app_shell.dart';
 import 'package:scavium_wallet/core/constants/storage_keys.dart';
 import 'package:scavium_wallet/core/services/local_storage_service.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
 import 'package:scavium_wallet/features/assets/domain/token_info.dart';
+import 'package:scavium_wallet/features/assets/domain/tx_history_entry.dart';
 import 'package:scavium_wallet/features/assets/presentation/add_token_screen.dart';
 import 'package:scavium_wallet/features/assets/presentation/asset_detail_screen.dart';
 import 'package:scavium_wallet/features/assets/presentation/assets_screen.dart';
 import 'package:scavium_wallet/features/assets/presentation/history_screen.dart';
 import 'package:scavium_wallet/features/assets/presentation/send_token_screen.dart';
+import 'package:scavium_wallet/features/assets/presentation/transaction_detail_screen.dart';
 import 'package:scavium_wallet/features/blockchain/presentation/receive_screen.dart';
 import 'package:scavium_wallet/features/blockchain/presentation/rpc_diagnostics_screen.dart';
 import 'package:scavium_wallet/features/blockchain/presentation/send_screen.dart';
@@ -20,8 +23,10 @@ import 'package:scavium_wallet/features/onboarding/presentation/onboarding_scree
 import 'package:scavium_wallet/features/onboarding/presentation/wallet_entry_screen.dart';
 import 'package:scavium_wallet/features/onboarding/presentation/welcome_screen.dart';
 import 'package:scavium_wallet/features/settings/presentation/settings_screen.dart';
+import 'package:scavium_wallet/features/signing/presentation/signing_screen.dart';
 import 'package:scavium_wallet/features/splash/presentation/splash_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/backup_mnemonic_screen.dart';
+import 'package:scavium_wallet/features/wallet/presentation/accounts_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/create_wallet_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/import_wallet_screen.dart';
 import 'package:scavium_wallet/features/wallet/presentation/confirm_mnemonic_screen.dart';
@@ -30,7 +35,7 @@ import 'package:scavium_wallet/app/router/router_refresh_notifier.dart';
 final routerRefreshNotifierProvider = Provider<RouterRefreshNotifier>((ref) {
   final notifier = RouterRefreshNotifier();
 
-  ref.listen<bool>(appLockStateControllerProvider, (_, __) {
+  ref.listen<bool>(appLockStateControllerProvider, (_, _) {
     notifier.refresh();
   });
 
@@ -38,62 +43,78 @@ final routerRefreshNotifierProvider = Provider<RouterRefreshNotifier>((ref) {
 });
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final storage = LocalStorageService();
-
   return GoRouter(
     refreshListenable: ref.read(routerRefreshNotifierProvider),
     initialLocation: RouteNames.splash,
     routes: [
-      GoRoute(
-        path: RouteNames.splash,
-        builder: (_, __) => const SplashScreen(),
-      ),
+      GoRoute(path: RouteNames.splash, builder: (_, _) => const SplashScreen()),
       GoRoute(
         path: RouteNames.onboarding,
-        builder: (_, __) => const OnboardingScreen(),
+        builder: (_, _) => const OnboardingScreen(),
       ),
       GoRoute(
         path: RouteNames.welcome,
-        builder: (_, __) => const WelcomeScreen(),
+        builder: (_, _) => const WelcomeScreen(),
       ),
       GoRoute(
         path: RouteNames.walletEntry,
-        builder: (_, __) => const WalletEntryScreen(),
+        builder: (_, _) => const WalletEntryScreen(),
       ),
       GoRoute(
         path: RouteNames.createWallet,
-        builder: (_, __) => const CreateWalletScreen(),
+        builder: (_, _) => const CreateWalletScreen(),
       ),
       GoRoute(
         path: RouteNames.importWallet,
-        builder: (_, __) => const ImportWalletScreen(),
+        builder: (_, _) => const ImportWalletScreen(),
       ),
       GoRoute(
         path: RouteNames.backupMnemonic,
-        builder: (_, __) => const BackupMnemonicScreen(),
+        builder: (_, _) => const BackupMnemonicScreen(),
       ),
-      GoRoute(path: RouteNames.lock, builder: (_, __) => const LockScreen()),
-      GoRoute(path: RouteNames.home, builder: (_, __) => const HomeScreen()),
+      GoRoute(path: RouteNames.lock, builder: (_, _) => const LockScreen()),
+      ShellRoute(
+        builder: (_, state, child) {
+          return AppShell(location: state.matchedLocation, child: child);
+        },
+        routes: [
+          GoRoute(path: RouteNames.home, builder: (_, _) => const HomeScreen()),
+          GoRoute(
+            path: RouteNames.assets,
+            builder: (_, _) => const AssetsScreen(),
+          ),
+          GoRoute(
+            path: RouteNames.history,
+            builder: (_, _) => const HistoryScreen(),
+          ),
+          GoRoute(
+            path: RouteNames.settings,
+            builder: (_, _) => const SettingsScreen(),
+          ),
+        ],
+      ),
       GoRoute(
-        path: RouteNames.settings,
-        builder: (_, __) => const SettingsScreen(),
+        path: RouteNames.accounts,
+        builder: (_, _) => const AccountsScreen(),
       ),
-      GoRoute(path: RouteNames.send, builder: (_, __) => const SendScreen()),
+      GoRoute(path: RouteNames.send, builder: (_, _) => const SendScreen()),
       GoRoute(
         path: RouteNames.receive,
-        builder: (_, __) => const ReceiveScreen(),
+        builder: (_, _) => const ReceiveScreen(),
       ),
       GoRoute(
-        path: RouteNames.assets,
-        builder: (_, __) => const AssetsScreen(),
+        path: RouteNames.signing,
+        builder: (_, _) => const SigningScreen(),
       ),
       GoRoute(
         path: RouteNames.addToken,
-        builder: (_, __) => const AddTokenScreen(),
+        builder: (_, _) => const AddTokenScreen(),
       ),
       GoRoute(
-        path: RouteNames.history,
-        builder: (_, __) => const HistoryScreen(),
+        path: RouteNames.transactionDetail,
+        builder:
+            (_, state) =>
+                TransactionDetailScreen(entry: state.extra as TxHistoryEntry),
       ),
       GoRoute(
         path: RouteNames.assetDetail,
@@ -106,11 +127,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RouteNames.confirmMnemonic,
-        builder: (_, __) => const ConfirmMnemonicScreen(),
+        builder: (_, _) => const ConfirmMnemonicScreen(),
       ),
       GoRoute(
         path: RouteNames.rpcDiagnostics,
-        builder: (_, __) => const RpcDiagnosticsScreen(),
+        builder: (_, _) => const RpcDiagnosticsScreen(),
       ),
     ],
     redirect: (context, state) async {

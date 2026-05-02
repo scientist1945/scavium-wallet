@@ -3,11 +3,18 @@ import 'package:scavium_wallet/features/assets/data/tx_history_repository_impl.d
 import 'package:scavium_wallet/features/assets/domain/tx_history_entry.dart';
 import 'package:scavium_wallet/features/assets/domain/tx_status.dart';
 import 'package:scavium_wallet/features/blockchain/data/scavium_rpc_service.dart';
+import 'package:web3dart/web3dart.dart';
 
 final txHistoryControllerProvider =
     AsyncNotifierProvider<TxHistoryController, List<TxHistoryEntry>>(
       TxHistoryController.new,
     );
+
+final txReceiptReaderProvider =
+    Provider<Future<TransactionReceipt?> Function(String)>((ref) {
+      final rpc = ref.read(scaviumRpcServiceProvider);
+      return rpc.getReceipt;
+    });
 
 class TxHistoryController extends AsyncNotifier<List<TxHistoryEntry>> {
   @override
@@ -34,9 +41,9 @@ class TxHistoryController extends AsyncNotifier<List<TxHistoryEntry>> {
 
     state = const AsyncLoading();
 
-    state = await AsyncValue.guard(() async {
+    try {
       final repo = ref.read(txHistoryRepositoryProvider);
-      final rpc = ref.read(scaviumRpcServiceProvider);
+      final readReceipt = ref.read(txReceiptReaderProvider);
       final entries = await repo.getEntries();
 
       final updated = <TxHistoryEntry>[];
@@ -47,7 +54,7 @@ class TxHistoryController extends AsyncNotifier<List<TxHistoryEntry>> {
           continue;
         }
 
-        final receipt = await rpc.getReceipt(item.txHash);
+        final receipt = await readReceipt(item.txHash);
         if (receipt == null) {
           updated.add(item);
           continue;
@@ -62,7 +69,9 @@ class TxHistoryController extends AsyncNotifier<List<TxHistoryEntry>> {
       }
 
       await repo.saveEntries(updated);
-      return repo.getEntries();
-    });
+      state = AsyncData(await repo.getEntries());
+    } catch (_) {
+      state = AsyncData(currentEntries);
+    }
   }
 }

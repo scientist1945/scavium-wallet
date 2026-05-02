@@ -1,3 +1,4 @@
+import 'package:scavium_wallet/features/wallet/domain/wallet_backup_payload.dart';
 import 'package:scavium_wallet/features/wallet/domain/wallet_profile.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -19,9 +20,20 @@ abstract class WalletRepository {
     required String accountName,
   });
 
+  Future<WalletProfile> restoreWalletBackup(WalletBackupPayload payload);
+
   Future<WalletProfile?> loadWalletProfile();
+  Future<WalletProfile> setActiveAccount(String accountId);
+
+  Future<WalletProfile> addDerivedAccount({required String accountName});
+
+  Future<WalletProfile> addPrivateKeyAccount({
+    required String privateKey,
+    required String accountName,
+  });
   Future<String?> readMnemonic();
   Future<String?> readPrivateKey();
+  Future<Map<String, String>> readImportedPrivateKeys();
 
   Future<void> savePin(String pin);
   Future<bool> validatePin(String pin);
@@ -32,4 +44,5 @@ abstract class WalletRepository {
   Future<void> clearWallet();
 
   EthPrivateKey credentialsFromMnemonic(String mnemonic);
+  Future<EthPrivateKey> credentialsForActiveAccount();
 }

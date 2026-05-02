@@ -222,3 +222,19 @@ Additionally, all stabilization work from Phase 7 onward follows this same philo
 - preserve architecture
 - isolate fixes
 - minimize regression risk
+---
+
+## 🛡️ Phase 8.5 Sensitive Runtime Path
+
+Phase 8.5 adds a deeper safety rule across the expanded wallet runtime: sensitive behavior is hardened at the feature boundary where the behavior already belongs.
+
+The resulting path is:
+
+- diagnostics stay inside the RPC/blockchain diagnostics surface;
+- signing stays inside the signing feature and validates the active wallet account before producing a signature;
+- backup/export and restore stay inside the wallet recovery boundary and preserve encrypted payload semantics;
+- lifecycle lock behavior stays inside the lock/security layer;
+- screenshot protection stays behind the platform guard;
+- asset, send, token-send, transaction-history, and async UI failures keep their controller-level ownership while using safer user-facing copy.
+
+This avoids a broad global security manager or global error subsystem. Phase 8.5 improves safety without hiding which feature owns each behavior.

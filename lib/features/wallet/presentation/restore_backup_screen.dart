@@ -59,7 +59,7 @@ class _RestoreBackupScreenState extends ConsumerState<RestoreBackupScreen> {
       } else if (!kIsWeb && file.path != null) {
         raw = await File(file.path!).readAsString();
       } else {
-        throw Exception('Unable to read selected backup file');
+        throw Exception(safeBackupRestoreErrorMessage());
       }
 
       setState(() {
@@ -68,7 +68,7 @@ class _RestoreBackupScreenState extends ConsumerState<RestoreBackupScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = e.toString().replaceFirst('Exception: ', '');
+        _error = safeBackupRestoreErrorMessage(e);
       });
     }
   }
@@ -110,7 +110,7 @@ class _RestoreBackupScreenState extends ConsumerState<RestoreBackupScreen> {
       context.go(RouteNames.home);
     } catch (e) {
       setState(() {
-        _error = e.toString().replaceFirst('Exception: ', '');
+        _error = safeBackupRestoreErrorMessage(e);
       });
     } finally {
       if (mounted) {
@@ -129,7 +129,7 @@ class _RestoreBackupScreenState extends ConsumerState<RestoreBackupScreen> {
         padding: const EdgeInsets.all(20),
         children: [
           const Text(
-            'Restore a wallet from an encrypted backup file.',
+            'Restore a wallet from a password-protected backup file.',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 12),
@@ -141,11 +141,15 @@ class _RestoreBackupScreenState extends ConsumerState<RestoreBackupScreen> {
           const Text('- You need both the backup file and its password.'),
           const SizedBox(height: 4),
           const Text(
-            '- If the file is invalid or the password is incorrect, the wallet cannot be restored.',
+            '- If the file is invalid, incompatible, or the password is incorrect, restore fails safely.',
           ),
           const SizedBox(height: 4),
           const Text(
             '- This will restore the wallet into secure local storage on this device.',
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            '- Only restore backup files you created and stored securely.',
           ),
           const SizedBox(height: 24),
           OutlinedButton.icon(

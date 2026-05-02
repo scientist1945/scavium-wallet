@@ -1,7 +1,9 @@
+import 'package:scavium_wallet/features/assets/domain/asset_account_context.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_kind.dart';
 
 class AssetItem {
   final AssetKind kind;
+  final AssetAccountContext? accountContext;
   final String title;
   final String symbol;
   final String? contractAddress;
@@ -11,6 +13,7 @@ class AssetItem {
 
   const AssetItem({
     required this.kind,
+    this.accountContext,
     required this.title,
     required this.symbol,
     required this.contractAddress,

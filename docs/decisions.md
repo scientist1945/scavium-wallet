@@ -232,3 +232,83 @@ Benefits:
 - better alignment with platform expectations
 - more reliable user-controlled file placement
 - no unnecessary desktop/mobile UX compromise
+---
+
+### 19. Portfolio summary derived only from visible assets
+
+Phase 8.2 introduced a portfolio summary model that is computed only from currently loaded `AssetItem` entries.
+
+Benefits:
+
+- deterministic behavior;
+- no dependency on external indexers;
+- no unsupported fiat valuation assumptions;
+- no hidden token discovery behavior;
+- safer incremental foundation for future portfolio maturity.
+
+---
+
+### 20. Manual token registry remains explicit
+
+Phase 8.2 keeps token registration user-driven and deterministic.
+
+Token addresses are validated and normalized before persistence, and duplicate entries are prevented by normalized contract address.
+
+Benefits:
+
+- lower risk of unstable automatic discovery;
+- predictable storage behavior;
+- safer metadata error handling;
+- clearer user control over locally displayed ERC-20 tokens.
+
+---
+
+### 21. Asset context depends on wallet account state but does not own it
+
+Phase 8.2 adds account context to asset items while keeping wallet identity ownership inside the wallet feature.
+
+Benefits:
+
+- avoids feature ownership inversion;
+- keeps account switching centralized;
+- allows assets to be presented in the correct account context;
+- prepares later activity and transaction maturity work without broad refactoring.
+
+---
+
+### 22. Diagnostics remain local and non-invasive
+
+Phase 8.5 confirms that RPC diagnostics are a local operational aid, not telemetry.
+
+Benefits:
+
+- keeps diagnostics useful for chain/RPC visibility;
+- avoids remote reporting assumptions;
+- prevents raw exception dumps from becoming user-facing security risk;
+- preserves the wallet's self-custody and privacy posture.
+
+---
+
+### 23. Signing safety copy is explicit but signing scope remains bounded
+
+Phase 8.5 improves signing validation, warning copy, confirmation copy, cancellation behavior, and result language.
+
+Benefits:
+
+- users see that signatures are not transactions;
+- users are reminded that signatures do not move funds and are not receipts;
+- challenge-message and personal-message signing remain distinct;
+- signing does not become dApp connectivity, WalletConnect, or automatic challenge ingestion.
+
+---
+
+### 24. Error normalization does not create a new global error architecture
+
+Phase 8.5 introduces safer user-facing error helpers and applies them across selected invalid-state and async surfaces.
+
+Benefits:
+
+- sensitive material is suppressed from user-facing failures;
+- users receive clearer retry/correction copy;
+- local data such as pending transaction history is preserved when refresh fails;
+- existing feature/controller ownership remains intact.

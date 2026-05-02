@@ -4,6 +4,10 @@ import 'package:scavium_wallet/features/blockchain/application/rpc_status_contro
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
 import 'package:scavium_wallet/shared/widgets/section_title.dart';
 
+String safeRpcStatusErrorMessage([Object? error]) {
+  return 'RPC status unavailable. Refresh diagnostics or try another RPC node.';
+}
+
 class RpcDiagnosticsScreen extends ConsumerStatefulWidget {
   const RpcDiagnosticsScreen({super.key});
 
@@ -257,7 +261,7 @@ class _RpcDiagnosticsScreenState extends ConsumerState<RpcDiagnosticsScreen> {
               return Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Text('Error loading RPC status: $error'),
+                  child: Text(safeRpcStatusErrorMessage(error)),
                 ),
               );
             },

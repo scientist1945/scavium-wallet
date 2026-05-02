@@ -20,8 +20,14 @@ class AppLifecycleGuard extends WidgetsBindingObserver {
     }
 
     if (state == AppLifecycleState.resumed) {
+      final isLocked = ref.read(appLockStateControllerProvider);
+      if (isLocked) {
+        refresh.stop();
+        return;
+      }
+
       refresh.start();
-      refresh.refreshNow(); // 🔥 clave: refresco inmediato
+      refresh.refreshNow();
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -11,8 +12,11 @@ import 'package:scavium_wallet/features/assets/domain/token_info.dart';
 import 'package:scavium_wallet/features/blockchain/domain/network_info.dart';
 import 'package:scavium_wallet/features/blockchain/domain/scavium_rpc_status.dart';
 import 'package:scavium_wallet/features/blockchain/domain/transaction_send_result.dart';
+import 'package:scavium_wallet/features/signing/domain/signing_mode.dart';
+import 'package:scavium_wallet/features/signing/domain/signing_result.dart';
 import 'package:scavium_wallet/features/wallet/data/wallet_repository_impl.dart';
 import 'package:scavium_wallet/features/wallet/domain/wallet_repository.dart';
+import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 final httpClientProvider = Provider<http.Client>((ref) {
@@ -461,17 +465,44 @@ class ScaviumRpcService {
   }
 
   Future<Credentials> getCredentials() async {
-    final mnemonic = await walletRepository.readMnemonic();
-    if (mnemonic != null && mnemonic.isNotEmpty) {
-      return walletRepository.credentialsFromMnemonic(mnemonic);
+    return walletRepository.credentialsForActiveAccount();
+  }
+
+  Future<SigningResult> signPersonalMessage(String message) {
+    return _signMessage(message: message, mode: SigningMode.personalMessage);
+  }
+
+  Future<SigningResult> signChallengeMessage(String message) {
+    return _signMessage(message: message, mode: SigningMode.challengeMessage);
+  }
+
+  Future<SigningResult> _signMessage({
+    required String message,
+    required SigningMode mode,
+  }) async {
+    final normalizedMessage = message.trim();
+    if (normalizedMessage.isEmpty) {
+      throw Exception('Signing message cannot be empty');
     }
 
-    final privateKey = await walletRepository.readPrivateKey();
-    if (privateKey != null && privateKey.isNotEmpty) {
-      return EthPrivateKey.fromHex(privateKey);
+    final profile = await walletRepository.loadWalletProfile();
+    if (profile == null) {
+      throw Exception('No wallet profile loaded');
     }
 
-    throw Exception('No credentials available');
+    final activeAccount = profile.activeAccount;
+    final credentials = await walletRepository.credentialsForActiveAccount();
+    final signatureBytes = credentials.signPersonalMessageToUint8List(
+      Uint8List.fromList(utf8.encode(normalizedMessage)),
+    );
+
+    return SigningResult(
+      mode: mode,
+      accountAddress: activeAccount.address,
+      message: normalizedMessage,
+      signature: bytesToHex(signatureBytes, include0x: true),
+      signedAt: DateTime.now().toUtc(),
+    );
   }
 
   Future<EtherAmount> getNativeBalance() async {

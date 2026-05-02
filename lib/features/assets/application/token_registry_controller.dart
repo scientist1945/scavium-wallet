@@ -15,12 +15,24 @@ class TokenRegistryController extends AsyncNotifier<List<TokenInfo>> {
   }
 
   Future<void> addTokenByAddress(String contractAddress) async {
+    final normalizedAddress = TokenInfo.normalizeContractAddress(
+      contractAddress,
+    );
+
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final rpc = ref.read(scaviumRpcServiceProvider);
       final repo = ref.read(tokenRegistryRepositoryProvider);
 
-      final token = await rpc.loadTokenMetadata(contractAddress);
+      final existingTokens = await repo.getTokens();
+      final exists = existingTokens.any(
+        (token) => token.contractAddress == normalizedAddress,
+      );
+      if (exists) {
+        return existingTokens;
+      }
+
+      final token = await rpc.loadTokenMetadata(normalizedAddress);
       await repo.addToken(token);
 
       return repo.getTokens();

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scavium_wallet/core/config/app_config.dart';
+import 'package:scavium_wallet/core/errors/app_exception.dart';
 import 'package:scavium_wallet/core/utils/evm_format.dart';
 import 'package:scavium_wallet/features/assets/application/assets_controller.dart';
 import 'package:scavium_wallet/features/assets/application/tx_history_controller.dart';
@@ -67,7 +68,13 @@ class SendTransactionController extends AsyncNotifier<TransactionSendResult?> {
         return result;
       } catch (e) {
         final normalized = await service.normalizeRpcError(e);
-        throw Exception(normalized);
+        throw AppException(
+          safeUserFacingError(
+            AppException(normalized),
+            fallback:
+                'Transaction could not be sent. Check the recipient and amount, then try again.',
+          ),
+        );
       }
     });
   }

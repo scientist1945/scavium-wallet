@@ -153,3 +153,84 @@ That is an intentional self-custody consequence.
 ## 🎯 Goal
 
 Provide a secure environment for managing digital assets while maintaining usability, operational correctness, and a realistic self-custody recovery model.
+---
+
+## 👛 Phase 8.1 Account Expansion Security Boundary
+
+Account expansion must not weaken the self-custody or secure-storage model.
+
+The Phase 8.1 contract requires that multi-account support preserve the existing security baseline:
+
+- secret material remains in secure storage
+- private keys and mnemonic data are never logged
+- account metadata must not be treated as secret material unless it exposes sensitive user intent
+- active account selection must not bypass lock state
+- account switching must not expose recovery material
+- backup v1 restore compatibility must remain safe
+
+Future backup v2 work must explicitly separate account metadata, account selection state, and sensitive recovery material.
+
+The current single account remains the default security baseline for migration.
+
+
+---
+
+## Phase 8.1.2 Account Metadata Storage Security
+
+Phase 8.1.2 stores account metadata in the same secure storage boundary used by the existing wallet persistence layer.
+
+The new metadata contains account identifiers, labels, addresses, active/default flags, and storage version information. It does not introduce new secret material and does not change the handling of mnemonic, private key, PIN, biometric state, or backup payloads.
+
+Security rules for this subphase:
+
+- legacy secrets remain under their existing secure storage keys
+- multi-account metadata is persisted in parallel and cleared with the wallet
+- backup/restore v1 remains unchanged
+- no account-switching UX is introduced before controller-level validation exists
+
+## Phase 8.1.6 — Multi-Account Backup Security
+
+Backup payload version 2 remains protected by the existing encrypted backup envelope. Imported account private keys are serialized only inside the encrypted payload so restored imported accounts remain operational after recovery. Account metadata continues to avoid embedding private keys during normal runtime storage.
+
+---
+
+## 📊 Phase 8.2 Asset and Token Safety
+
+Phase 8.2 adds safety hardening around manual token registration and account-aware asset presentation.
+
+Manual token registration is intentionally explicit:
+
+- users provide the ERC-20 contract address;
+- the address is validated before metadata loading;
+- the address is normalized before storage;
+- duplicate entries are prevented by normalized contract address;
+- metadata failures are shown to the user and do not mutate the registry;
+- token removal is local only and does not affect on-chain funds.
+
+Account-aware asset presentation improves user clarity by showing which account context the current asset view belongs to, without moving account ownership into the asset feature.
+
+### Security Boundary
+
+Phase 8.2 does not scan for unknown user holdings, connect to external indexers, or infer assets automatically.
+
+This keeps asset expansion deterministic and avoids introducing external data-dependency or privacy assumptions during this phase.
+
+---
+
+## 🛡️ Phase 8.5 Security, Reliability, and Diagnostics Boundary
+
+Phase 8.5 hardens sensitive runtime behavior without changing the self-custody model.
+
+The phase reinforces the following security expectations:
+
+- diagnostics must never expose private keys, mnemonic text, passwords, encrypted backup payloads, raw backup contents, or signature material;
+- signing must remain explicit, previewed, confirmable, and separated from transaction submission;
+- backup export and restore warnings must clearly communicate password/file responsibility;
+- backup failure copy must be safe and must not leak raw payload or secret material;
+- lifecycle lock behavior must remain centralized rather than being owned by shell presentation widgets;
+- screenshot protection must be requested where supported without destabilizing unsupported or failing platforms;
+- invalid-state messages must be useful without revealing sensitive internals.
+
+Phase 8.5 does not add remote diagnostics, telemetry, analytics, dApp connectivity, WalletConnect, background signing, or automatic challenge ingestion.
+
+The result is a more mature security posture over the expanded Phase 8 product surface while preserving the original self-custody principle: the user controls the wallet, the app does not gain a remote recovery path, and sensitive material does not leave the device.

@@ -51,3 +51,5 @@ android/keystores/
 # FVM Version Cache
 .fvm/
 
+# zip files
+*.zip
