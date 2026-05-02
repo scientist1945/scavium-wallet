@@ -4,6 +4,8 @@ import 'package:scavium_wallet/app/theme/tokens/scavo_colors.dart';
 
 /// Typography tokens for the SCAVIUM visual system.
 abstract final class ScavoTypography {
+  static const fontFamily = 'Inter';
+
   static TextStyle get display => GoogleFonts.inter(
     fontSize: 30,
     fontWeight: FontWeight.w800,
@@ -46,4 +48,9 @@ abstract final class ScavoTypography {
     fontWeight: FontWeight.w700,
     color: ScavoColors.textOnAction,
   );
+
+  static TextStyle get headline => title;
+  static TextStyle get subhead => subtitle;
+  static TextStyle get bodySecondary => bodyMuted;
+  static TextStyle get actionLabel => button;
 }

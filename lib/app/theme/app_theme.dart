@@ -6,11 +6,11 @@ abstract final class AppTheme {
     final base = ThemeData.dark(useMaterial3: true);
 
     return base.copyWith(
-      scaffoldBackgroundColor: ScavoColors.backgroundPrimary,
+      scaffoldBackgroundColor: ScavoColors.backgroundCanvas,
       colorScheme: const ColorScheme.dark(
         primary: ScavoColors.actionPrimary,
         secondary: ScavoColors.actionSecondary,
-        surface: ScavoColors.backgroundSecondary,
+        surface: ScavoColors.backgroundLayer,
         error: ScavoColors.semanticDanger,
       ),
       textTheme: TextTheme(
@@ -23,32 +23,32 @@ abstract final class AppTheme {
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: ScavoColors.transparent,
-        elevation: ScavoElevation.none,
+        elevation: ScavoElevation.surface,
         surfaceTintColor: ScavoColors.transparent,
         centerTitle: false,
       ),
       cardTheme: CardThemeData(
-        color: ScavoColors.surfacePrimary,
-        elevation: ScavoElevation.none,
+        color: ScavoColors.surfaceBase,
+        elevation: ScavoElevation.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ScavoRadius.lg),
+          borderRadius: BorderRadius.circular(ScavoRadius.container),
           side: const BorderSide(color: ScavoColors.borderDefault),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: ScavoColors.surfaceSecondary,
+        fillColor: ScavoColors.surfaceRaised,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ScavoRadius.md),
+          borderRadius: BorderRadius.circular(ScavoRadius.interactive),
           borderSide: const BorderSide(color: ScavoColors.borderDefault),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ScavoRadius.md),
+          borderRadius: BorderRadius.circular(ScavoRadius.interactive),
           borderSide: const BorderSide(color: ScavoColors.borderDefault),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ScavoRadius.md),
-          borderSide: const BorderSide(color: ScavoColors.focus),
+          borderRadius: BorderRadius.circular(ScavoRadius.interactive),
+          borderSide: const BorderSide(color: ScavoColors.focusRing),
         ),
       ),
     );

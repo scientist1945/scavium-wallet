@@ -10,17 +10,24 @@ abstract final class AppColors {
   static const surface = ScavoColors.backgroundSecondary;
   static const surfaceSoft = ScavoColors.surfaceSecondary;
   static const card = ScavoColors.surfacePrimary;
+  static const canvas = ScavoColors.backgroundCanvas;
+  static const layer = ScavoColors.backgroundLayer;
 
   static const primary = ScavoColors.brandPrimary;
   static const primarySoft = ScavoColors.brandPrimarySoft;
   static const accent = ScavoColors.brandAccent;
+  static const onPrimary = ScavoColors.brandOnPrimary;
 
   static const textPrimary = ScavoColors.textPrimary;
   static const textSecondary = ScavoColors.textSecondary;
   static const textMuted = ScavoColors.textMuted;
+  static const textDisabled = ScavoColors.textDisabled;
 
   static const border = ScavoColors.borderDefault;
+  static const borderSubtle = ScavoColors.borderSubtle;
+  static const divider = ScavoColors.dividerDefault;
   static const danger = ScavoColors.semanticDanger;
   static const warning = ScavoColors.semanticWarning;
   static const success = ScavoColors.semanticSuccess;
+  static const info = ScavoColors.semanticInfo;
 }

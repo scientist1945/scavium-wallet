@@ -13,4 +13,8 @@ abstract final class AppTextStyles {
   static TextStyle get bodyMuted => ScavoTypography.bodyMuted;
   static TextStyle get label => ScavoTypography.label;
   static TextStyle get button => ScavoTypography.button;
+  static TextStyle get headline => ScavoTypography.headline;
+  static TextStyle get subhead => ScavoTypography.subhead;
+  static TextStyle get bodySecondary => ScavoTypography.bodySecondary;
+  static TextStyle get actionLabel => ScavoTypography.actionLabel;
 }

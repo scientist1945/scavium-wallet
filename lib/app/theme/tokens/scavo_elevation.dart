@@ -5,4 +5,10 @@
 abstract final class ScavoElevation {
   static const none = 0.0;
   static const raised = 2.0;
+  static const overlay = 6.0;
+
+  static const surface = none;
+  static const interactive = none;
+  static const floating = raised;
+  static const modal = overlay;
 }
