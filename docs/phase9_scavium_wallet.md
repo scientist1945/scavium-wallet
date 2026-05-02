@@ -559,20 +559,245 @@ Clarify and harden the relationship between `pubspec.yaml`, build-number mutatio
 - Add focused tests or script-level validation if the project structure supports it.
 - Update release/development documentation with exact command expectations.
 
+### State
+
+Planned implementation subphase.
+
+The real Phase 9.1 ZIP confirms that 9.2 is not yet implemented in code. `tool/build.dart` already owns version parsing, build-number mutation, tag validation, Windows MSIX version synchronization, CI MSIX overrides, artifact expectation reporting, and release-report generation. `pubspec.yaml` currently owns `version: 0.2.2+1` and `msix_config.msix_version: 0.2.2.1`. No build-tool unit test or validation helper currently exists under `test/`, and 9.1 did not modify build tooling, CI release workflow, MSIX metadata, artifact naming, or release publication behavior.
+
 ### Existing Files Tentatively Intervenable
 
-- `tool/build.dart`
-- `docs/release.md`
-- `docs/development.md`
-- `docs/phase9_scavium_wallet.md`
+- `tool/build.dart` — validate or harden version bump, `--version`, `--no-version-bump`, expected-tag validation, and MSIX synchronization behavior without changing release publication semantics.
+- `pubspec.yaml` — may be touched only as part of real build-tool behavior during implementation or command validation; source-controlled metadata must remain coherent after the subphase.
+- `docs/release.md` — document operator-facing command expectations, mutation boundaries, no-bump semantics, and MSIX synchronization evidence.
+- `docs/development.md` — document developer-facing validation expectations for build/version hardening.
+- `docs/phase9_scavium_wallet.md` — record the executed 9.2 implementation result and validation outcome when 9.2 is executed.
 
 ### New Files Tentatively Creatable
 
-- Build-tool tests or validation helpers only if the current project test structure can support them without adding unnecessary complexity.
+- `test/build_tool_version_test.dart` — optional focused Dart test for pure version parsing, version bump/no-bump semantics, tag normalization, and MSIX version-line synchronization if `tool/build.dart` can be safely structured for testability without broad tooling churn.
+- `tool/build_version_validation.dart` — optional helper only if script-level validation cannot be cleanly covered through tests and the helper remains strictly local to build/version consistency.
 
 ### Technical Justification
 
-Phase 8.6 matured release tooling, but Phase 9 must close the identity gap between displayed runtime version, project version source, and Windows MSIX metadata.
+Phase 8.6 matured release tooling, and 9.1 aligned the user-visible runtime version with package metadata. Phase 9.2 must now harden the adjacent build identity chain so operators can distinguish intended version mutation, intended no-mutation behavior, tag/pubspec validation, and Windows MSIX metadata synchronization. This closes the identity gap between the runtime surface, project metadata, and release packaging without introducing a new release publication feature.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- `dart run tool/build.dart --check-version --expected-tag v0.2.2`
+- Script-level validation for `--no-version-bump` and Windows MSIX synchronization if implementation adds a safe non-publishing validation path.
+- Confirm no Play Store upload, Microsoft Store submission, release publication, wallet runtime, signing, asset, backup, restore, diagnostics, routing, or theme behavior is changed by 9.2.
+
+### 9.2 Subphase Determination
+
+Phase 9 already defines `9.2 — Build Version & MSIX Synchronization Hardening` as the next executable implementation subphase after 9.1. Because the current build tool already performs several responsibilities, 9.2 should be executed as a compact set of nested subphases that separate inspection, behavior hardening, validation coverage, and documentation closure.
+
+The following nested subphases are derived from the real ZIP and are intentionally limited to build-version and MSIX synchronization maturity. They do not touch runtime Settings/About version display already completed in 9.1, SCAVIUM design tokens, light/dark themes, theme preference persistence, signing, assets, transactions, routing, backup/restore, diagnostics behavior, or release publication.
+
+---
+
+### 9.2.1 — Build Version Baseline Inspection and Contract
+
+#### Objective
+
+Lock the current version ownership contract before modifying build tooling.
+
+#### Scope
+
+- Inspect `tool/build.dart` version parsing, bumping, override, no-bump, tag-validation, MSIX synchronization, and release-report behavior.
+- Confirm `pubspec.yaml` remains the source of semantic version/build number and MSIX metadata.
+- Identify which behavior is already correct, which behavior is ambiguous, and which behavior needs validation or hardening.
+- Avoid changing runtime code during the inspection step.
+
+#### State
+
+New planned nested implementation subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `docs/phase9_scavium_wallet.md` — record the baseline inspection result and confirm the exact 9.2 execution contract.
+- `docs/release.md` — may receive a small baseline note only if the inspection discovers operator-facing ambiguity that must be documented before code work.
+- `docs/development.md` — may receive a small baseline note only if developer validation commands need to be clarified before code work.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Technical Justification
+
+The build tool is already mature enough that uncontrolled edits could regress Phase 8.6 behavior. 9.2.1 creates a narrow contract around existing behavior before hardening anything.
+
+#### Expected Validations
+
+- Confirm current `pubspec.yaml` version and `msix_config.msix_version` alignment.
+- Confirm 9.2 does not require `.github/workflows/release.yml` changes unless code inspection proves a real CI inconsistency.
+- Confirm no `.agent/*` artifacts are part of the documentation deliverable for this planning task.
+
+---
+
+### 9.2.2 — Build Tool Version and MSIX Behavior Hardening
+
+#### Objective
+
+Harden `tool/build.dart` so version mutation, no-bump behavior, and MSIX synchronization are explicit and difficult to misinterpret.
+
+#### Scope
+
+- Keep `pubspec.yaml` version parsing strict and predictable.
+- Preserve build-number increment behavior when no semantic version override is provided.
+- Preserve build-number reset behavior when semantic version changes through `--version`.
+- Make `--no-version-bump` semantics explicit in logs and behavior.
+- Ensure Windows MSIX synchronization remains tied to the resolved build version when MSIX packaging is requested.
+- Avoid changing artifact publication, signing policy, CI release ownership, or platform build commands unless required by the hardening.
+
+#### State
+
+New planned nested implementation subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `tool/build.dart` — primary implementation target for behavior clarification, guardrails, and log clarity.
+- `pubspec.yaml` — only if implementation/validation intentionally exercises version metadata and leaves source-controlled metadata coherent afterward.
+- `docs/phase9_scavium_wallet.md` — record actual implementation decisions and whether MSIX synchronization behavior changed or was only clarified.
+
+#### New Files Tentatively Creatable
+
+None expected by default. A small extracted build-version helper file is acceptable only if testing pure version behavior from `tool/build.dart` would otherwise require invoking full Flutter builds.
+
+#### Technical Justification
+
+The real script already performs version and MSIX work, but 9.2 exists because operators need an unambiguous identity chain. Hardening should improve clarity and safety without converting the build script into a new release system.
+
+#### Expected Validations
+
+- `dart run tool/build.dart --check-version --expected-tag v0.2.2`
+- A safe command or test proving no-bump behavior does not mutate `pubspec.yaml` unexpectedly.
+- A safe command or test proving MSIX version synchronization produces `x.y.z.n` from `version: x.y.z+n`.
+
+---
+
+### 9.2.3 — Build Version Validation Coverage
+
+#### Objective
+
+Add focused validation so version parsing, tag normalization, version bumping, no-bump behavior, and MSIX synchronization can be checked without relying on full release builds.
+
+#### Scope
+
+- Add a focused test or script-level validation path if the current project structure supports it cleanly.
+- Prefer pure Dart validation of version/MSIX behavior over invoking platform builds.
+- Keep tests deterministic and independent from generated release artifacts.
+- Avoid broad refactors of `tool/build.dart` solely for test aesthetics.
+
+#### State
+
+New planned nested implementation subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `tool/build.dart` — may require small extraction or injectable file handling to make pure behavior testable.
+- `pubspec.yaml` — may require dev dependency changes only if the existing Flutter test stack cannot run the selected validation path.
+- `docs/phase9_scavium_wallet.md` — record the validation strategy and commands used.
+
+#### New Files Tentatively Creatable
+
+- `test/build_tool_version_test.dart` — preferred optional test file for deterministic coverage if the build-tool behavior can be tested without triggering Flutter platform builds.
+- `tool/build_version_validation.dart` — fallback optional validation helper only if a test file would over-couple the build tool to Flutter test infrastructure.
+
+#### Technical Justification
+
+Full Android, web, and Windows builds are too expensive and environment-dependent for every version-behavior assertion. 9.2.3 should validate the identity logic directly so future release-tool changes do not silently break version/MSIX synchronization.
+
+#### Expected Validations
+
+- `fvm flutter test test/build_tool_version_test.dart` if a Flutter/Dart test is added.
+- Or a documented `dart run tool/...` validation command if a script-level helper is added.
+- Existing `fvm flutter test` remains green.
+
+---
+
+### 9.2.4 — Release and Development Documentation Alignment
+
+#### Objective
+
+Align trunk documentation with the final 9.2 behavior so operators and developers know exactly which commands mutate version metadata, which commands validate tags, and which commands synchronize MSIX metadata.
+
+#### Scope
+
+- Update release documentation with the operator-facing version/MSIX behavior.
+- Update development documentation with the developer-facing validation commands and boundaries.
+- Confirm 9.2 did not alter runtime identity from 9.1 or theme work planned for 9.3 onward.
+- Keep documentation incremental and consistent with Phase 8.6 release narrative.
+
+#### State
+
+New planned nested implementation subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `docs/release.md` — document final operator commands, no-bump meaning, expected tag validation, and MSIX synchronization evidence.
+- `docs/development.md` — document developer validation flow for build-version hardening.
+- `docs/phase9_scavium_wallet.md` — record the 9.2 documentation result and next subphase.
+- `README.md` — update only if project status should move from planned 9.2 to completed 9.2 after implementation.
+- `docs/index.md` — update only if the Phase 9 ledger should move from next 9.2 to completed 9.2 after implementation.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Technical Justification
+
+Version tooling is operationally sensitive. The implementation is incomplete unless the release/development documentation explains the mutation and validation boundaries clearly enough for future operators to reproduce them.
+
+#### Expected Validations
+
+- Documentation states whether `--no-version-bump` intentionally preserves `pubspec.yaml`.
+- Documentation states when `msix_config.msix_version` is synchronized.
+- Documentation does not claim automatic store upload, Microsoft Store submission, or runtime update delivery.
+
+---
+
+### 9.2.close — Build Version & MSIX Synchronization Hardening Closure
+
+#### Objective
+
+Close 9.2 by confirming that build-version mutation, no-bump behavior, tag validation, and MSIX synchronization are implemented, validated, and documented coherently.
+
+#### Scope
+
+- Record the actual files changed by 9.2 implementation.
+- Record the exact validation commands and outcomes.
+- Confirm runtime version display from 9.1 remains intact.
+- Confirm 9.3 remains the next executable implementation subphase.
+
+#### State
+
+Planned closure subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `docs/phase9_scavium_wallet.md` — close 9.2 from the real implemented state.
+- `docs/release.md` — final release documentation alignment if not completed in 9.2.4.
+- `docs/development.md` — final development documentation alignment if not completed in 9.2.4.
+- `README.md` — update project status after closure if applicable.
+- `docs/index.md` — update Phase 9 ledger after closure if applicable.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Technical Justification
+
+9.2 must close as a build/version hardening phase, not as a release publication phase. Closure prevents later theme work from carrying unresolved version-tooling ambiguity.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Focused build-version validation command or test introduced by 9.2.
+- Confirm the next executable implementation subphase is `9.3 — Theme Token Normalization`.
 
 ---
 

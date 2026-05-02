@@ -59,7 +59,7 @@ Completed phases:
 Active Phase 9 work:
 - Phase 9.0 completed — Application Identity, Versioning, and Visual Theme Maturity documentation lock.
 - Phase 9.1 completed — Runtime App Version Surface.
-- Phase 9.2 next — Build Version & MSIX Synchronization Hardening.
+- Phase 9.2 next — Build Version & MSIX Synchronization Hardening, now documented as a nested execution plan.
 
 
 Current Phase 8 milestone:
@@ -150,7 +150,12 @@ Planned Phase 9 identity and visual-theme maturity work includes:
   - 9.1.2 — Settings/About Runtime Version Integration
   - 9.1.3 — Runtime Version Surface Test Coverage
   - 9.1.close — Runtime App Version Surface Closure
-- 9.2 — Build Version & MSIX Synchronization Hardening
+- 9.2 — Build Version & MSIX Synchronization Hardening (planned)
+  - 9.2.1 — Build Version Baseline Inspection and Contract
+  - 9.2.2 — Build Tool Version and MSIX Behavior Hardening
+  - 9.2.3 — Build Version Validation Coverage
+  - 9.2.4 — Release and Development Documentation Alignment
+  - 9.2.close — Build Version & MSIX Synchronization Hardening Closure
 - 9.3 — Theme Token Normalization
 - 9.4 — Light/Dark Theme Implementation
 - 9.5 — Theme Mode Runtime Selection and Persistence
@@ -159,7 +164,7 @@ Planned Phase 9 identity and visual-theme maturity work includes:
 
 The closed Phase 8.6 state keeps release ownership concentrated in the existing surfaces: `tool/build.dart` owns local build automation, version/MSIX synchronization, artifact expectations, build summaries, and generated release reports; `.github/workflows/release.yml` owns tag/manual release validation, Android and Windows artifact jobs, versioned release assets, CI-generated release manifest, checksum generation, and draft GitHub Release publication; `pubspec.yaml` owns the project version and `msix_config.msix_version`; `docs/release.md` owns operator-facing release and distribution guidance.
 
-Phase 9 is now open as the next product-maturity phase. Phase 9.0 completed the documentation lock for application identity and visual-system consistency. Phase 9.1 then implemented the runtime app version surface: `package_info_plus` resolves package metadata, `lib/core/app_identity` owns the application version boundary, Settings/About consumes that boundary through Riverpod, and focused tests prove deterministic version formatting and provider override behavior. The remaining Phase 9 work continues with explicit build/MSIX version synchronization hardening, SCAVIUM design token normalization, first-class light/dark themes, persisted theme-mode selection, and broader Settings/About alignment.
+Phase 9 is now open as the next product-maturity phase. Phase 9.0 completed the documentation lock for application identity and visual-system consistency. Phase 9.1 then implemented the runtime app version surface: `package_info_plus` resolves package metadata, `lib/core/app_identity` owns the application version boundary, Settings/About consumes that boundary through Riverpod, and focused tests prove deterministic version formatting and provider override behavior. Phase 9.2 is now documented as the next compact implementation sequence for build-version baseline inspection, build-tool/MSIX behavior hardening, deterministic validation coverage, release/development documentation alignment, and closure. The remaining Phase 9 work then continues with SCAVIUM design token normalization, first-class light/dark themes, persisted theme-mode selection, and broader Settings/About alignment.
 
 
 

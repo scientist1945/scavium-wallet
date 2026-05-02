@@ -380,6 +380,20 @@ Development rules:
 
 Build/version hardening in Phase 9 should document whether a command mutates `pubspec.yaml`, synchronizes MSIX metadata, or intentionally leaves version data unchanged because `--no-version-bump` was requested.
 
+### Phase 9.2 Build Version & MSIX Synchronization Hardening
+
+Phase 9.2 is planned as the next compact implementation sequence after the completed runtime version surface. Development should execute it without changing release publication semantics, wallet runtime behavior, or theme behavior.
+
+The planned nested sequence is:
+
+- 9.2.1 — Build Version Baseline Inspection and Contract;
+- 9.2.2 — Build Tool Version and MSIX Behavior Hardening;
+- 9.2.3 — Build Version Validation Coverage;
+- 9.2.4 — Release and Development Documentation Alignment;
+- 9.2.close — Build Version & MSIX Synchronization Hardening Closure.
+
+The expected implementation files are `tool/build.dart`, optional focused build-version validation tests or helpers, and trunk documentation. `pubspec.yaml` may be touched only by intentional build/version behavior or dependency/test needs, and it must remain coherent after validation. `.github/workflows/release.yml` should remain outside the default 9.2 scope unless code inspection proves a real CI inconsistency.
+
 ### Phase 9.1 Runtime Version Surface
 
 Phase 9.1 establishes the first concrete Phase 9 development pattern: keep application identity behind a narrow boundary and test UI behavior through provider overrides rather than machine-local package metadata.

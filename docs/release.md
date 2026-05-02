@@ -569,4 +569,12 @@ Remaining for later Phase 9 implementation:
 - whether `--no-version-bump` behavior is documented clearly enough that operators do not confuse intentional non-mutation with a synchronization failure;
 - whether runtime version display, `pubspec.yaml`, MSIX metadata, CI artifact naming, and release documentation remain conceptually aligned.
 
-This is not a new release publication feature. It is an identity/version consistency hardening step over the existing release tooling baseline. Phase 9.1 does not change `tool/build.dart`, `.github/workflows/release.yml`, MSIX metadata, artifact naming, or publishing behavior; those boundaries remain for 9.2.
+Phase 9.2 is now documented as the implementation sequence that will handle this remaining build/version hardening:
+
+- 9.2.1 — Build Version Baseline Inspection and Contract;
+- 9.2.2 — Build Tool Version and MSIX Behavior Hardening;
+- 9.2.3 — Build Version Validation Coverage;
+- 9.2.4 — Release and Development Documentation Alignment;
+- 9.2.close — Build Version & MSIX Synchronization Hardening Closure.
+
+This is not a new release publication feature. It is an identity/version consistency hardening step over the existing release tooling baseline. Phase 9.1 does not change `tool/build.dart`, `.github/workflows/release.yml`, MSIX metadata, artifact naming, or publishing behavior; those boundaries remain for 9.2 implementation.
