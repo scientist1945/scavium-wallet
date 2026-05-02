@@ -561,9 +561,11 @@ Clarify and harden the relationship between `pubspec.yaml`, build-number mutatio
 
 ### State
 
-Planned implementation subphase.
+Active implementation subphase. 9.2.1 is complete as the baseline inspection and contract lock; 9.2.2 remains the next executable implementation step.
 
-The real Phase 9.1 ZIP confirms that 9.2 is not yet implemented in code. `tool/build.dart` already owns version parsing, build-number mutation, tag validation, Windows MSIX version synchronization, CI MSIX overrides, artifact expectation reporting, and release-report generation. `pubspec.yaml` currently owns `version: 0.2.2+1` and `msix_config.msix_version: 0.2.2.1`. No build-tool unit test or validation helper currently exists under `test/`, and 9.1 did not modify build tooling, CI release workflow, MSIX metadata, artifact naming, or release publication behavior.
+The real Phase 9.2.1 ZIP confirms that 9.2 is not yet implemented in code beyond the existing Phase 8.6 release-tooling baseline. `tool/build.dart` already owns version parsing, build-number mutation, tag validation, Windows MSIX version synchronization, CI MSIX overrides, artifact expectation reporting, and release-report generation. `pubspec.yaml` currently owns `version: 0.2.2+1` and `msix_config.msix_version: 0.2.2.1`. No build-tool unit test or validation helper currently exists under `test/`, and 9.1 did not modify build tooling, CI release workflow, MSIX metadata, artifact naming, or release publication behavior.
+
+The 9.2.1 inspection locks the baseline contract before code hardening: `pubspec.yaml` is the canonical source of semantic version and build number; `tool/build.dart` is the canonical executor for local/CI build orchestration, tag validation, version mutation, and MSIX synchronization; `.github/workflows/release.yml` remains outside the default 9.2 scope unless a later implementation subphase proves a real CI inconsistency; generated build reports and release manifests remain generated evidence, not source-controlled documentation.
 
 ### Existing Files Tentatively Intervenable
 
@@ -613,7 +615,9 @@ Lock the current version ownership contract before modifying build tooling.
 
 #### State
 
-New planned nested implementation subphase.
+Completed documentation/baseline subphase.
+
+9.2.1 was executed from the real Phase 9.2 step ZIP as a documentation-only baseline lock. No runtime code, build script, dependency file, workflow, generated release artifact, or `.agent/*` file was modified.
 
 #### Existing Files Tentatively Intervenable
 
@@ -625,15 +629,52 @@ New planned nested implementation subphase.
 
 None expected.
 
+#### Baseline Inspection Result
+
+The current source-controlled metadata is internally aligned:
+
+- `pubspec.yaml` declares `version: 0.2.2+1`;
+- `pubspec.yaml` declares `msix_config.msix_version: 0.2.2.1`;
+- the MSIX value follows the existing build-tool mapping from `x.y.z+n` to `x.y.z.n`;
+- `tool/build.dart` reads `version: x.y.z+n` through `readVersionInfo`;
+- `resolveVersion` increments the build number when the semantic version is unchanged;
+- `resolveVersion` resets the build number to `1` when `--version x.y.z` changes the semantic version;
+- `--no-version-bump` returns the currently recorded version without mutating `pubspec.yaml`;
+- `validateExpectedTagAgainstPubspec` accepts tags shaped as `vX.Y.Z` or `refs/tags/vX.Y.Z` and compares them against the semantic version only;
+- `buildWindowsMsix` synchronizes `msix_config.msix_version` from the resolved build version before invoking Windows/MSIX packaging;
+- CI MSIX overrides remain environment-variable based and do not redefine version ownership.
+
+The inspection also identifies the precise ambiguity left for 9.2.2 and 9.2.3: the behavior exists, but the script does not yet expose a dedicated low-cost validation surface for no-bump/MSIX synchronization semantics, and operator logs can still be improved so intentional non-mutation is visibly different from a failed synchronization.
+
+#### Version Ownership Contract Locked by 9.2.1
+
+- `pubspec.yaml` is the canonical source for the project semantic version and Flutter build number.
+- `msix_config.msix_version` must remain derivable from `pubspec.yaml` as `semanticVersion.buildNumber`.
+- `tool/build.dart` owns build-time interpretation, optional mutation, tag validation, and MSIX metadata synchronization.
+- `--no-version-bump` means the build uses the current `pubspec.yaml` version intentionally; it is not a request to resynchronize or increment metadata.
+- `--check-version --expected-tag vX.Y.Z` validates the Git tag against the semantic version only; it does not validate or mutate the build number.
+- `.github/workflows/release.yml` remains outside the default 9.2 implementation scope unless a later code inspection proves the workflow contradicts this contract.
+- Generated files under `build/release/`, CI release manifests, checksums, and draft-release assets remain evidence outputs and must not be treated as committed source of truth.
+
 #### Technical Justification
 
-The build tool is already mature enough that uncontrolled edits could regress Phase 8.6 behavior. 9.2.1 creates a narrow contract around existing behavior before hardening anything.
+The build tool is already mature enough that uncontrolled edits could regress Phase 8.6 behavior. 9.2.1 creates a narrow contract around existing behavior before hardening anything. The locked contract gives 9.2.2 permission to improve clarity and guardrails without changing release publication semantics, and gives 9.2.3 a stable target for deterministic validation coverage.
 
 #### Expected Validations
 
 - Confirm current `pubspec.yaml` version and `msix_config.msix_version` alignment.
 - Confirm 9.2 does not require `.github/workflows/release.yml` changes unless code inspection proves a real CI inconsistency.
 - Confirm no `.agent/*` artifacts are part of the documentation deliverable for this planning task.
+
+#### 9.2.1 Validation Result
+
+Completed by documentation and source inspection from the real ZIP:
+
+- current version alignment confirmed as `version: 0.2.2+1` and `msix_config.msix_version: 0.2.2.1`;
+- no code-level implementation was performed;
+- no `.github/workflows/release.yml` intervention is justified for 9.2.1;
+- no `.agent/*` artifact is part of the deliverable;
+- 9.2.2 remains the next executable implementation subphase.
 
 ---
 
@@ -988,4 +1029,4 @@ Status: Active.
 
 Phase 9 is opened as the active next phase after Phase 8.6 closure. It is not a continuation of release/distribution implementation, but it depends on the Phase 8.6 versioning and release-tooling baseline.
 
-Phase 9.0 is complete as the phase definition and documentation lock. Phase 9.1 is complete as the runtime application version surface: Settings/About now displays dynamic runtime metadata through `lib/core/app_identity` instead of hardcoded UI copy. The next executable implementation subphase is 9.2 — Build Version & MSIX Synchronization Hardening.
+Phase 9.0 is complete as the phase definition and documentation lock. Phase 9.1 is complete as the runtime application version surface: Settings/About now displays dynamic runtime metadata through `lib/core/app_identity` instead of hardcoded UI copy. Phase 9.2 is active; 9.2.1 completed the build-version baseline inspection and contract lock, and the next executable implementation subphase is 9.2.2 — Build Tool Version and MSIX Behavior Hardening.

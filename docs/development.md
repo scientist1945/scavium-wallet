@@ -119,6 +119,20 @@ No version bump:
 - windows-msix
 - all
 
+### Phase 9.2.1 Build Version Baseline Contract
+
+Phase 9.2.1 locks the current versioning contract before build-tool hardening. Development must treat `pubspec.yaml` as the canonical source for `version: x.y.z+n`, where `x.y.z` is the semantic version and `n` is the Flutter build number. The current baseline is `version: 0.2.2+1`.
+
+Windows MSIX metadata must remain aligned as `msix_config.msix_version: x.y.z.n`; the current baseline is `0.2.2.1`. The build tool already performs this mapping for Windows MSIX builds through `tool/build.dart`, while `--no-version-bump` intentionally uses the current pubspec value without incrementing or rewriting the version line.
+
+For later 9.2 implementation work, developer validation should distinguish three behaviors explicitly:
+
+- semantic tag validation through `dart run tool/build.dart --check-version --expected-tag v0.2.2`;
+- intentional metadata mutation through normal build/version paths;
+- intentional non-mutation through `--no-version-bump`.
+
+`.github/workflows/release.yml` remains outside the default Phase 9.2 scope unless implementation proves a real CI inconsistency against this contract. Generated reports under `build/release/` remain evidence outputs and are not source-controlled documentation.
+
 ---
 
 ## ♻️ Backup and Restore Development
@@ -382,11 +396,11 @@ Build/version hardening in Phase 9 should document whether a command mutates `pu
 
 ### Phase 9.2 Build Version & MSIX Synchronization Hardening
 
-Phase 9.2 is planned as the next compact implementation sequence after the completed runtime version surface. Development should execute it without changing release publication semantics, wallet runtime behavior, or theme behavior.
+Phase 9.2 is active as the compact implementation sequence after the completed runtime version surface. 9.2.1 is complete as the build-version baseline inspection and contract lock. Development should execute it without changing release publication semantics, wallet runtime behavior, or theme behavior.
 
 The planned nested sequence is:
 
-- 9.2.1 — Build Version Baseline Inspection and Contract;
+- 9.2.1 — Build Version Baseline Inspection and Contract — completed;
 - 9.2.2 — Build Tool Version and MSIX Behavior Hardening;
 - 9.2.3 — Build Version Validation Coverage;
 - 9.2.4 — Release and Development Documentation Alignment;

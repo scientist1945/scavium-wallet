@@ -177,6 +177,20 @@ This mode is used by GitHub Actions to enforce semantic consistency between:
 - build number increments automatically when the base version stays the same
 - build number resets to `1` when the base version changes
 
+### Phase 9.2.1 version/MSIX baseline contract
+
+Phase 9.2.1 confirms the release-facing version contract before further build-tool hardening:
+
+- `pubspec.yaml` is the canonical committed source for `version: x.y.z+n`;
+- the current inspected baseline is `version: 0.2.2+1`;
+- `msix_config.msix_version` must mirror that value as `x.y.z.n`;
+- the current inspected MSIX baseline is `0.2.2.1`;
+- `tool/build.dart` owns build-time version interpretation, optional mutation, expected-tag validation, and Windows MSIX synchronization;
+- `--no-version-bump` is intentional non-mutation, not a synchronization failure;
+- `--check-version --expected-tag vX.Y.Z` validates the semantic version against the tag and does not mutate build metadata.
+
+This contract does not introduce a new publication target, automatic store upload, Microsoft Store submission, or runtime update mechanism. It preserves the Phase 8.6 release automation boundary while giving 9.2.2 and 9.2.3 a stable baseline for hardening and validation.
+
 Example:
 
     0.2.1+3 → 0.2.1+4
@@ -564,14 +578,20 @@ Completed in 9.1:
 - the stale `Version 0.4.0` UI literal is removed from the runtime Settings surface;
 - tests validate version display through deterministic provider overrides rather than release artifacts.
 
+Completed in 9.2.1:
+
+- the baseline contract confirms `pubspec.yaml` as the source of `version: 0.2.2+1`;
+- the baseline contract confirms `msix_config.msix_version: 0.2.2.1` as the aligned Windows MSIX metadata representation;
+- the baseline contract separates tag validation, version mutation, no-bump behavior, and MSIX synchronization before code hardening.
+
 Remaining for later Phase 9 implementation:
-- whether `tool/build.dart` version bump behavior and `msix_config.msix_version` synchronization remain explicit;
+- whether `tool/build.dart` version bump behavior and `msix_config.msix_version` synchronization logs/guardrails remain explicit enough for operators;
 - whether `--no-version-bump` behavior is documented clearly enough that operators do not confuse intentional non-mutation with a synchronization failure;
 - whether runtime version display, `pubspec.yaml`, MSIX metadata, CI artifact naming, and release documentation remain conceptually aligned.
 
 Phase 9.2 is now documented as the implementation sequence that will handle this remaining build/version hardening:
 
-- 9.2.1 — Build Version Baseline Inspection and Contract;
+- 9.2.1 — Build Version Baseline Inspection and Contract — completed;
 - 9.2.2 — Build Tool Version and MSIX Behavior Hardening;
 - 9.2.3 — Build Version Validation Coverage;
 - 9.2.4 — Release and Development Documentation Alignment;

@@ -226,7 +226,7 @@ The Phase 9 baseline includes:
 - allowing runtime theme-mode selection and persistence;
 - aligning Settings/About as the application identity and appearance control surface.
 
-Phase 9 is documented in `docs/phase9_scavium_wallet.md`. Phase 9.1 is complete and the next implementation subphase is 9.2 — Build Version & MSIX Synchronization Hardening. Phase 9.2 is now documented as a compact nested execution plan before implementation.
+Phase 9 is documented in `docs/phase9_scavium_wallet.md`. Phase 9.1 is complete and Phase 9.2 — Build Version & MSIX Synchronization Hardening is active. Phase 9.2 is documented as a compact nested execution plan; 9.2.1 has completed the baseline inspection and contract lock before code hardening.
 
 Phase 9.1 closed the runtime version surface through the compact implementation sequence derived from the real Phase 9.0 ZIP:
 
@@ -237,13 +237,13 @@ Phase 9.1 closed the runtime version surface through the compact implementation 
 
 The implemented result introduces `lib/core/app_identity` as the runtime application version boundary, uses `package_info_plus` to resolve package metadata, replaces the stale `Version 0.4.0` About copy in Settings, and validates the behavior with deterministic provider-overridden tests. This closes the first visible Phase 9 identity gap without changing theme behavior, build/MSIX synchronization, release publication, wallet custody, account, asset, transaction, signing, backup, restore, diagnostics, or routing behavior.
 
-Phase 9.2 is planned as the next build-version hardening sequence derived from the real Phase 9.1 ZIP:
+Phase 9.2 is active as the next build-version hardening sequence derived from the real Phase 9.2.1 ZIP:
 
-- 9.2.1 — Build Version Baseline Inspection and Contract
+- 9.2.1 — Build Version Baseline Inspection and Contract — completed
 - 9.2.2 — Build Tool Version and MSIX Behavior Hardening
 - 9.2.3 — Build Version Validation Coverage
 - 9.2.4 — Release and Development Documentation Alignment
 - 9.2.close — Build Version & MSIX Synchronization Hardening Closure
 
-This planned sequence remains bounded to `tool/build.dart`, project version metadata, optional focused build-tool validation, and release/development documentation. It does not reopen runtime Settings/About version display completed in 9.1 and does not touch theme tokens, light/dark themes, wallet custody, account, asset, transaction, signing, backup, restore, diagnostics, routing, or release publication behavior.
+This active sequence remains bounded to `tool/build.dart`, project version metadata, optional focused build-tool validation, and release/development documentation. The 9.2.1 baseline confirms `pubspec.yaml` currently owns `version: 0.2.2+1`, `msix_config.msix_version` mirrors it as `0.2.2.1`, and `tool/build.dart` owns build-time interpretation, mutation, tag validation, and MSIX synchronization. It does not reopen runtime Settings/About version display completed in 9.1 and does not touch theme tokens, light/dark themes, wallet custody, account, asset, transaction, signing, backup, restore, diagnostics, routing, or release publication behavior.
 
