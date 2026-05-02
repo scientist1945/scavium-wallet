@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/features/assets/application/assets_controller.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_account_context.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
@@ -24,13 +26,13 @@ class AssetsScreen extends ConsumerWidget {
         actions: [
           IconButton(
             onPressed: () => context.push(RouteNames.addToken),
-            icon: const Icon(Icons.add),
+            icon: const Icon(LucideIcons.plus, size: ScavoIconSize.action),
           ),
           IconButton(
             onPressed:
                 () =>
                     ref.read(assetsControllerProvider.notifier).refreshAssets(),
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(LucideIcons.refreshCw, size: ScavoIconSize.action),
           ),
         ],
       ),
@@ -38,7 +40,7 @@ class AssetsScreen extends ConsumerWidget {
         data: (items) {
           if (items.isEmpty) {
             return const StateMessage(
-              icon: Icons.account_balance_wallet_outlined,
+              icon: LucideIcons.wallet,
               title: 'No assets available',
               subtitle: 'Your assets will appear here once loaded.',
             );
@@ -84,7 +86,7 @@ class AssetsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error:
             (e, _) => StateMessage(
-              icon: Icons.error_outline,
+              icon: LucideIcons.alertCircle,
               title: 'Error loading assets',
               subtitle: '$e',
             ),

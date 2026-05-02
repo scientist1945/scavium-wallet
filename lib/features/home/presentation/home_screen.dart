@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
@@ -81,11 +82,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   .read(homeAutoRefreshControllerProvider.notifier)
                   .refreshNow();
             },
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(LucideIcons.refreshCw, size: ScavoIconSize.action),
           ),
           IconButton(
             onPressed: () => context.push(RouteNames.settings),
-            icon: const Icon(Icons.settings_outlined),
+            icon: const Icon(LucideIcons.settings, size: ScavoIconSize.action),
           ),
         ],
       ),
@@ -190,32 +191,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     _QuickAction(
                       title: 'Send',
-                      icon: Icons.arrow_upward,
+                      icon: LucideIcons.arrowUp,
                       onTap: () => context.push(RouteNames.send),
                     ),
                     _QuickAction(
                       title: 'Receive',
-                      icon: Icons.arrow_downward,
+                      icon: LucideIcons.arrowDown,
                       onTap: () => context.push(RouteNames.receive),
                     ),
                     _QuickAction(
                       title: 'Assets',
-                      icon: Icons.account_balance_wallet_outlined,
+                      icon: LucideIcons.wallet,
                       onTap: () => context.push(RouteNames.assets),
                     ),
                     _QuickAction(
                       title: 'Accounts',
-                      icon: Icons.manage_accounts_outlined,
+                      icon: LucideIcons.users,
                       onTap: () => context.push(RouteNames.accounts),
                     ),
                     _QuickAction(
                       title: 'History',
-                      icon: Icons.receipt_long,
+                      icon: LucideIcons.receipt,
                       onTap: () => context.push(RouteNames.history),
                     ),
                     _QuickAction(
                       title: 'Copy',
-                      icon: Icons.copy_outlined,
+                      icon: LucideIcons.copy,
                       onTap: () async {
                         await Clipboard.setData(ClipboardData(text: address));
                         if (context.mounted) {
@@ -227,7 +228,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     _QuickAction(
                       title: 'Explorer',
-                      icon: Icons.open_in_new,
+                      icon: LucideIcons.externalLink,
                       onTap: () async {
                         final uri = Uri.parse(
                           rpcService.explorerAddressUrl(address),
@@ -294,7 +295,11 @@ class _QuickAction extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(icon, color: theme.colorScheme.primary),
+            Icon(
+              icon,
+              color: theme.colorScheme.primary,
+              size: ScavoIconSize.section,
+            ),
             const SizedBox(height: ScavoSpacing.xs),
             Text(title),
           ],

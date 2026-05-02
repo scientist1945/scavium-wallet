@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
 
 class AppShellDestination {
@@ -17,22 +18,22 @@ abstract final class AppShellDestinations {
   static const values = <AppShellDestination>[
     AppShellDestination(
       label: 'Home',
-      icon: Icons.home_outlined,
+      icon: LucideIcons.home,
       route: RouteNames.home,
     ),
     AppShellDestination(
       label: 'Assets',
-      icon: Icons.account_balance_wallet_outlined,
+      icon: LucideIcons.wallet,
       route: RouteNames.assets,
     ),
     AppShellDestination(
       label: 'Activity',
-      icon: Icons.receipt_long_outlined,
+      icon: LucideIcons.receipt,
       route: RouteNames.history,
     ),
     AppShellDestination(
       label: 'Settings',
-      icon: Icons.settings_outlined,
+      icon: LucideIcons.settings,
       route: RouteNames.settings,
     ),
   ];

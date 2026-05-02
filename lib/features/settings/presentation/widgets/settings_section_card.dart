@@ -31,7 +31,7 @@ class SettingsSectionCard extends StatelessWidget {
               if (icon != null) ...[
                 Icon(
                   icon,
-                  size: 20,
+                  size: ScavoIconSize.section,
                   color: iconColor ?? theme.colorScheme.primary,
                 ),
                 const SizedBox(width: ScavoSpacing.xs),

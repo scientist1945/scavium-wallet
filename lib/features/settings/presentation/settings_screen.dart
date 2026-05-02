@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/core/app_identity/app_version_provider.dart';
 import 'package:scavium_wallet/features/assets/data/token_registry_repository_impl.dart';
 import 'package:scavium_wallet/features/assets/data/tx_history_repository_impl.dart';
@@ -32,14 +34,14 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           const SettingsSectionCard(
             title: 'Appearance',
-            icon: Icons.palette_outlined,
+            icon: LucideIcons.palette,
             subtitle: 'Choose how SCAVIUM Wallet follows your device display.',
             children: [ThemeModeSelector()],
           ),
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Security & recovery',
-            icon: Icons.shield_outlined,
+            icon: LucideIcons.shield,
             subtitle:
                 'Export recovery material only when you are ready to store it securely.',
             children: [
@@ -49,7 +51,10 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text(
                   'Create a password-protected backup file that can be used to restore this wallet later.',
                 ),
-                trailing: const Icon(Icons.download_outlined),
+                trailing: const Icon(
+                  LucideIcons.download,
+                  size: ScavoIconSize.section,
+                ),
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -63,7 +68,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Signing',
-            icon: Icons.edit_note_outlined,
+            icon: LucideIcons.penTool,
             subtitle:
                 'Signing proves account control without submitting a transaction.',
             children: [
@@ -73,7 +78,10 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text(
                   'Sign a message or challenge with the active account without sending a transaction.',
                 ),
-                trailing: const Icon(Icons.draw_outlined),
+                trailing: const Icon(
+                  LucideIcons.penTool,
+                  size: ScavoIconSize.section,
+                ),
                 onTap: () => context.push(RouteNames.signing),
               ),
             ],
@@ -81,7 +89,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Diagnostics',
-            icon: Icons.monitor_heart_outlined,
+            icon: LucideIcons.activity,
             subtitle: 'Inspect network health without changing wallet data.',
             children: [
               ListTile(
@@ -90,7 +98,10 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text(
                   'Inspect active RPC node, ping endpoints and switch the active node manually.',
                 ),
-                trailing: const Icon(Icons.router_outlined),
+                trailing: const Icon(
+                  LucideIcons.activity,
+                  size: ScavoIconSize.section,
+                ),
                 onTap: () => context.push(RouteNames.rpcDiagnostics),
               ),
             ],
@@ -98,7 +109,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Danger zone',
-            icon: Icons.warning_amber_outlined,
+            icon: LucideIcons.alertTriangle,
             iconColor: colorScheme.error,
             subtitle: 'Destructive actions require explicit confirmation.',
             children: [
@@ -108,7 +119,10 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text(
                   'Delete locally stored wallet, token list and local transaction history.',
                 ),
-                trailing: const Icon(Icons.delete_outline),
+                trailing: const Icon(
+                  LucideIcons.trash2,
+                  size: ScavoIconSize.section,
+                ),
                 onTap: () async {
                   await showDialog<void>(
                     context: context,
@@ -145,7 +159,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'About',
-            icon: Icons.info_outline,
+            icon: LucideIcons.info,
             subtitle: 'App identity and installed build information.',
             children: [
               ListTile(

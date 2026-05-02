@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/core/config/app_config.dart';
 import 'package:scavium_wallet/features/assets/domain/tx_history_entry.dart';
@@ -30,7 +31,11 @@ class TransactionDetailScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(_statusIcon(entry.status), color: statusColor),
+                    Icon(
+                      _statusIcon(entry.status),
+                      color: statusColor,
+                      size: ScavoIconSize.inline,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -89,7 +94,10 @@ class TransactionDetailScreen extends StatelessWidget {
                 mode: LaunchMode.externalApplication,
               );
             },
-            icon: const Icon(Icons.open_in_new),
+            icon: const Icon(
+              LucideIcons.externalLink,
+              size: ScavoIconSize.inline,
+            ),
             label: const Text('Open in explorer'),
           ),
         ],
@@ -99,9 +107,9 @@ class TransactionDetailScreen extends StatelessWidget {
 
   IconData _statusIcon(TxStatus status) {
     return switch (status) {
-      TxStatus.confirmed => Icons.check_circle_outline,
-      TxStatus.failed => Icons.error_outline,
-      TxStatus.pending => Icons.schedule,
+      TxStatus.confirmed => LucideIcons.checkCircle,
+      TxStatus.failed => LucideIcons.alertCircle,
+      TxStatus.pending => LucideIcons.clock,
     };
   }
 

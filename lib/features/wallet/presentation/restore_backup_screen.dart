@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
 import 'package:scavium_wallet/features/wallet/application/wallet_backup_controller.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/app_snackbar.dart';
@@ -156,7 +158,7 @@ class _RestoreBackupScreenState extends ConsumerState<RestoreBackupScreen> {
           const SizedBox(height: 24),
           OutlinedButton.icon(
             onPressed: _loading ? null : _pickBackupFile,
-            icon: const Icon(Icons.upload_file_outlined),
+            icon: const Icon(LucideIcons.upload, size: ScavoIconSize.inline),
             label: Text(
               _selectedFileName == null
                   ? 'Select backup file'

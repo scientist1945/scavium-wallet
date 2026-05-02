@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scavium_wallet/app/shell/app_shell_destination.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 
 class ResponsiveNavigation extends StatelessWidget {
   final List<AppShellDestination> destinations;
@@ -29,7 +30,10 @@ class ResponsiveNavigation extends StatelessWidget {
                 destinations: destinations
                     .map(
                       (destination) => NavigationRailDestination(
-                        icon: Icon(destination.icon),
+                        icon: Icon(
+                          destination.icon,
+                          size: ScavoIconSize.sidebar,
+                        ),
                         label: Text(destination.label),
                       ),
                     )
@@ -49,7 +53,7 @@ class ResponsiveNavigation extends StatelessWidget {
             destinations: destinations
                 .map(
                   (destination) => NavigationDestination(
-                    icon: Icon(destination.icon),
+                    icon: Icon(destination.icon, size: ScavoIconSize.sidebar),
                     label: destination.label,
                   ),
                 )

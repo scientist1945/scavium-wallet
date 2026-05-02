@@ -1,10 +1,10 @@
 PROYECTO: SCAVIUM Wallet
 
 AJUSTE:
-9.6.theme-polish.1 — Light contrast and icon system polish
+9.6.icon-polish.1 — Replace dense icons with Lucide thin-stroke icon system
 
 OBJETIVO:
-Corregir inconsistencias visuales detectadas luego de implementar SCAVIUM Design Token System v1, manteniendo dark-first y primary naranja.
+Reemplazar los íconos visualmente pesados por un sistema consistente basado en Lucide, alineado con el theme dark-first y primary naranja SCAVIUM.
 
 ALCANCE:
 - Code-only
@@ -17,58 +17,64 @@ ALCANCE:
 - Esperar aprobación
 - Reportar diff final
 
+DEPENDENCIA:
+Agregar `lucide_icons` al pubspec.yaml solo si no existe.
+
 ARCHIVOS A LEER:
+- pubspec.yaml
 - lib/app/theme/**
-- lib/features/settings/presentation/**
+- lib/app/router/**
+- lib/features/home/presentation/**
 - lib/features/assets/presentation/**
 - lib/features/activity/presentation/**
+- lib/features/settings/presentation/**
 - lib/features/wallet/presentation/**
-- lib/features/home/presentation/**
 - lib/shared/**
-- lib/app/app.dart
 
-PROBLEMAS A CORREGIR:
-1. Light mode:
-   - textos con bajo contraste sobre fondo claro
-   - inputs/dropdowns con texto casi invisible
-   - cards demasiado planas o sin separación suficiente
+REGLAS:
+1. Usar Lucide de forma consistente.
+2. No mezclar Material icons salvo que no haya reemplazo razonable.
+3. No cambiar comportamiento funcional.
+4. No cambiar textos.
+5. Mantener primary naranja.
+6. Mantener verde solo para success/confirmed.
+7. Mantener dark theme intacto visualmente salvo mejora de íconos.
+8. Centralizar tamaños/colores si ya existe helper/token para iconografía.
+9. Si no existe helper, crear uno mínimo en theme/shared, sin sobrediseñar.
 
-2. Icons:
-   - definir y aplicar color consistente para:
-     - active
-     - inactive
-     - muted/subtle
-     - onPrimary
-   - sidebar active/inactive debe ser claro en light y dark
-   - action icons top-right deben tener contraste correcto
-   - settings section icons deben usar primary/semantic coherentemente
+MAPEO DE ÍCONOS:
+- Home: LucideIcons.home
+- Assets: LucideIcons.walletCards o LucideIcons.wallet
+- Activity/History: LucideIcons.receiptText
+- Settings: LucideIcons.settings
+- Refresh: LucideIcons.refreshCw
+- Add: LucideIcons.plus
+- Back: LucideIcons.arrowLeft
+- Download/Export: LucideIcons.download
+- Sign message: LucideIcons.signature
+- Diagnostics/RPC: LucideIcons.activity
+- Danger zone: LucideIcons.triangleAlert
+- Security: LucideIcons.shield
+- Appearance: LucideIcons.palette
+- System theme: LucideIcons.monitorCog
+- Light theme: LucideIcons.sun
+- Dark theme: LucideIcons.moon
+- Confirmed: LucideIcons.circleCheck
+- Explorer/external link: LucideIcons.externalLink
+- Copy: LucideIcons.copy
+- Receive: LucideIcons.arrowDown
+- Send: LucideIcons.arrowUp
+- Accounts: LucideIcons.usersRound
 
-3. Inputs/dropdowns:
-   - border visible siempre
-   - focused border primary naranja
-   - fill diferenciado por theme
-   - dropdown selected/menu text legible
+TAMAÑOS OBJETIVO:
+- Sidebar icons: 20
+- Section/card icons: 18
+- Top action icons: 20
+- Inline icons/chips: 16
 
-4. Chips/filters:
-   - selected: primary naranja
-   - unselected: outline + textSecondary legible
-   - evitar apariencia disabled
-
-5. Secondary buttons:
-   - no deben parecer disabled
-   - usar primary text + outline visible
-
-REGLAS VISUALES:
-- Mantener primary: Color(0xFFFF6B14) o el naranja ya definido en tokens.
-- Mantener dark-first.
-- No volver a usar azul como primary.
-- Verde solo para success/confirmed.
-- No hardcodear colores nuevos si pueden salir del token system.
-- Preferir centralizar ajustes en theme/tokens y widgets comunes.
-
-VALIDACIÓN ESPERADA:
-- Dark debe mantenerse igual o mejor.
-- Light debe tener contraste suficiente.
-- Settings Appearance selector debe verse bien en light/dark.
-- Home/Assets/History/Unlock deben verse coherentes.
-- No cambiar comportamiento funcional.
+VALIDACIÓN VISUAL ESPERADA:
+- Sidebar debe verse más liviana y premium.
+- Settings icons deben dejar de sentirse densos.
+- Top-right refresh/settings deben mantener contraste.
+- Confirmed/status icons deben seguir siendo claros.
+- Light y dark deben mantener coherencia.

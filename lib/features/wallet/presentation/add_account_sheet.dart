@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/features/wallet/domain/wallet_profile.dart';
 
@@ -27,7 +29,8 @@ class _AccountModeTile extends StatelessWidget {
       enabled: enabled,
       onTap: enabled ? onTap : null,
       leading: Icon(
-        selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+        selected ? LucideIcons.checkCircle : LucideIcons.circle,
+        size: ScavoIconSize.inline,
       ),
       title: Text(title),
       subtitle: Text(subtitle),
@@ -112,7 +115,7 @@ class _AddAccountSheetState extends ConsumerState<AddAccountSheet> {
                   IconButton(
                     onPressed:
                         _submitting ? null : () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(LucideIcons.x, size: ScavoIconSize.action),
                   ),
                 ],
               ),
@@ -182,7 +185,10 @@ class _AddAccountSheetState extends ConsumerState<AddAccountSheet> {
                             dimension: 18,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                          : const Icon(Icons.add),
+                          : const Icon(
+                            LucideIcons.plus,
+                            size: ScavoIconSize.inline,
+                          ),
                   label: Text(_submitting ? 'Adding...' : 'Add account'),
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 enum ThemeModePreference {
   system('system', ThemeMode.system),
@@ -30,9 +31,9 @@ enum ThemeModePreference {
 
   IconData get icon {
     return switch (this) {
-      system => Icons.brightness_auto_outlined,
-      light => Icons.light_mode_outlined,
-      dark => Icons.dark_mode_outlined,
+      system => LucideIcons.monitor,
+      light => LucideIcons.sun,
+      dark => LucideIcons.moon,
     };
   }
 
