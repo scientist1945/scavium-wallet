@@ -44,7 +44,7 @@
 ## Git Rules
 
 - Use a single accumulative branch per phase.
-- Current branch: `phase-9.5-theme-mode-runtime-selection-persistence`
+- Current branch: `phase-9.6-settings-about-ux-alignment`
 - Commit per subphase.
 - Merge only after full phase completion.
 

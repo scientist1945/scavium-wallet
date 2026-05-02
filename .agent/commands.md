@@ -19,7 +19,7 @@ fvm flutter analyze
 ## Scoped Test
 
 ```bash
-fvm flutter test test/theme_mode_preference_test.dart test/theme_mode_controller_test.dart test/settings_screen_test.dart
+fvm flutter test test/settings_screen_test.dart test/theme_mode_selector_test.dart test/theme_mode_preference_test.dart
 ```
 
 ---
@@ -27,7 +27,7 @@ fvm flutter test test/theme_mode_preference_test.dart test/theme_mode_controller
 ## Optional Format
 
 ```bash
-dart format lib/app/app.dart lib/app/theme/theme_mode_preference.dart lib/app/theme/theme_mode_repository.dart lib/app/theme/theme_mode_repository_impl.dart lib/app/theme/theme_mode_controller.dart lib/core/constants/storage_keys.dart lib/core/providers/service_providers.dart lib/features/settings/presentation/settings_screen.dart lib/features/settings/presentation/widgets/theme_mode_selector.dart test/theme_mode_preference_test.dart test/theme_mode_controller_test.dart test/settings_screen_test.dart test/theme_mode_selector_test.dart
+dart format lib/features/settings/presentation/settings_screen.dart lib/features/settings/presentation/widgets/settings_section_card.dart lib/features/settings/presentation/widgets/theme_mode_selector.dart lib/app/theme/theme_mode_preference.dart test/settings_screen_test.dart test/theme_mode_selector_test.dart test/theme_mode_preference_test.dart
 ```
 
 ---
@@ -43,9 +43,9 @@ fvm flutter test
 ## Fallback
 
 ```bash
-fvm flutter test test/theme_mode_preference_test.dart
-fvm flutter test test/theme_mode_controller_test.dart
 fvm flutter test test/settings_screen_test.dart
+fvm flutter test test/theme_mode_selector_test.dart
+fvm flutter test test/theme_mode_preference_test.dart
 ```
 
 ---
@@ -55,14 +55,14 @@ fvm flutter test test/settings_screen_test.dart
 ```bash
 git checkout main
 git pull
-git checkout -b phase-9.5-theme-mode-runtime-selection-persistence
+git checkout -b phase-9.6-settings-about-ux-alignment
 
 git status
 git add <modified-files>
-git commit -m "Phase 9.5 theme mode runtime selection and persistence"
+git commit -m "Phase 9.6 settings and about UX alignment"
 
 git checkout main
 git pull
-git merge phase-9.5-theme-mode-runtime-selection-persistence
-git branch -d phase-9.5-theme-mode-runtime-selection-persistence
+git merge phase-9.6-settings-about-ux-alignment
+git branch -d phase-9.6-settings-about-ux-alignment
 ```
