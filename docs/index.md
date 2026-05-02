@@ -226,7 +226,7 @@ The Phase 9 baseline includes:
 - allowing runtime theme-mode selection and persistence;
 - aligning Settings/About as the application identity and appearance control surface.
 
-Phase 9 is documented in `docs/phase9_scavium_wallet.md`. Phase 9.1 is complete, Phase 9.2 — Build Version & MSIX Synchronization Hardening is closed, and Phase 9.3 — Theme Token Normalization is closed as the compact token-foundation sequence. The SCAVIUM token namespace is implemented under `lib/app/theme/tokens/`, compatibility facades remain stable, and shared visual widgets have begun token adoption without exposing light mode yet.
+Phase 9 is documented in `docs/phase9_scavium_wallet.md`. Phase 9.1 is complete, Phase 9.2 — Build Version & MSIX Synchronization Hardening is closed, Phase 9.3 — Theme Token Normalization is closed as the compact token-foundation sequence, and Phase 9.4.1 — Light/Dark Theme Baseline and Token Boundary is closed as a documentation-only execution gate. The SCAVIUM token namespace is implemented under `lib/app/theme/tokens/`, compatibility facades remain stable, and shared visual widgets have begun token adoption without exposing light mode yet.
 
 Phase 9.1 closed the runtime version surface through the compact implementation sequence derived from the real Phase 9.0 ZIP:
 
@@ -258,10 +258,10 @@ The closed 9.3 result confirms that token ownership belongs to `lib/app/theme/to
 
 Phase 9.4 is now formally documented for execution as the light/dark theme implementation bridge after the closed 9.3 token foundation. Its planned subphase sequence is:
 
-- 9.4.1 — Light/Dark Theme Baseline and Token Boundary
+- 9.4.1 — Light/Dark Theme Baseline and Token Boundary — closed/documentation-only
 - 9.4.2 — AppTheme Light and Dark ThemeData Construction
 - 9.4.3 — Component and Navigation Theme Coherence
 - 9.4.4 — Light/Dark Theme Validation and Documentation Closure
 
-The documented 9.4 boundary is intentionally narrow: add first-class paired light/dark theme definitions from the token namespace, keep `AppTheme.darkTheme` compatible with the 9.3 result, validate shared components and navigation surfaces, and leave runtime theme-mode selection, persistence, and Settings appearance controls to 9.5 and 9.6. The current app root still uses `ThemeMode.dark`, so 9.4 should not be treated as a user-facing theme selector phase.
+The documented 9.4 boundary is intentionally narrow: add first-class paired light/dark theme definitions from the token namespace, keep `AppTheme.darkTheme` compatible with the 9.3 result, validate shared components and navigation surfaces, and leave runtime theme-mode selection, persistence, and Settings appearance controls to 9.5 and 9.6. Phase 9.4.1 confirms this from the real code baseline: the current app root still uses `ThemeMode.dark`, `AppTheme.lightTheme` does not exist yet, and the next executable subphase is 9.4.2 as code-only paired theme construction.
 
