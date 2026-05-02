@@ -44,7 +44,7 @@
 ## Git Rules
 
 - Use a single accumulative branch per phase.
-- Current branch: `phase-9.3-theme-token-normalization`
+- Current branch: `phase-9.4-light-dark-theme-implementation`
 - Commit per subphase.
 - Merge only after full phase completion.
 

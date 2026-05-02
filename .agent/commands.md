@@ -19,7 +19,7 @@ fvm flutter analyze
 ## Scoped Test
 
 ```bash
-fvm flutter test test/app_theme_tokens_test.dart test/widget_test.dart
+fvm flutter test test/app_theme_tokens_test.dart test/app_shell_test.dart test/settings_screen_test.dart
 ```
 
 ---
@@ -27,7 +27,7 @@ fvm flutter test test/app_theme_tokens_test.dart test/widget_test.dart
 ## Optional Format
 
 ```bash
-fvm dart format lib/app/theme lib/shared/widgets test/app_theme_tokens_test.dart
+dart format <modified-dart-files>
 ```
 
 ---
@@ -44,7 +44,7 @@ fvm flutter test
 
 ```bash
 flutter analyze
-flutter test test/app_theme_tokens_test.dart test/widget_test.dart
+flutter test test/app_theme_tokens_test.dart test/app_shell_test.dart test/settings_screen_test.dart
 ```
 
 ---
@@ -54,14 +54,14 @@ flutter test test/app_theme_tokens_test.dart test/widget_test.dart
 ```bash
 git checkout main
 git pull
-git checkout -b phase-9.3-theme-token-normalization
+git checkout -b phase-9.4-light-dark-theme-implementation
 
 git status
 git add <modified-files>
-git commit -m "Phase 9.3 theme token normalization"
+git commit -m "phase 9.4: implement light dark themes"
 
 git checkout main
 git pull
-git merge phase-9.3-theme-token-normalization
-git branch -d phase-9.3-theme-token-normalization
+git merge phase-9.4-light-dark-theme-implementation
+git branch -d phase-9.4-light-dark-theme-implementation
 ```
