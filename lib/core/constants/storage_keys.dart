@@ -3,6 +3,7 @@ abstract final class StorageKeys {
   static const walletCreated = 'wallet_created';
   static const lockEnabled = 'lock_enabled';
   static const hideBalances = 'hide_balances';
+  static const themeModePreference = 'theme_mode_preference';
   static const appPin = 'app_pin';
 
   static const walletType = 'wallet_type';
