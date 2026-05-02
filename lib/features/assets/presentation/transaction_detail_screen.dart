@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/core/config/app_config.dart';
 import 'package:scavium_wallet/features/assets/domain/tx_history_entry.dart';
 import 'package:scavium_wallet/features/assets/domain/tx_kind.dart';
@@ -15,6 +16,8 @@ class TransactionDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final explorerUrl = '${AppConfig.current.txExplorerPath}/${entry.txHash}';
+    final colorScheme = Theme.of(context).colorScheme;
+    final statusColor = _statusColor(context, entry.status);
 
     return ScaviumScaffold(
       appBar: AppBar(title: const Text('Transaction detail')),
@@ -27,7 +30,7 @@ class TransactionDetailScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(_statusIcon(entry.status)),
+                    Icon(_statusIcon(entry.status), color: statusColor),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -39,6 +42,17 @@ class TransactionDetailScreen extends StatelessWidget {
                     ),
                     Chip(
                       label: Text(_statusLabel(entry.status)),
+                      backgroundColor:
+                          entry.status == TxStatus.confirmed
+                              ? ScavoColors.semanticSuccess
+                              : colorScheme.surface,
+                      labelStyle: TextStyle(
+                        color:
+                            entry.status == TxStatus.confirmed
+                                ? colorScheme.onPrimary
+                                : statusColor,
+                      ),
+                      side: BorderSide(color: statusColor),
                       visualDensity: VisualDensity.compact,
                     ),
                   ],
@@ -88,6 +102,16 @@ class TransactionDetailScreen extends StatelessWidget {
       TxStatus.confirmed => Icons.check_circle_outline,
       TxStatus.failed => Icons.error_outline,
       TxStatus.pending => Icons.schedule,
+    };
+  }
+
+  Color _statusColor(BuildContext context, TxStatus status) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return switch (status) {
+      TxStatus.confirmed => ScavoColors.semanticSuccess,
+      TxStatus.failed => colorScheme.error,
+      TxStatus.pending => colorScheme.primary,
     };
   }
 

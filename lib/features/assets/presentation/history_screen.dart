@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/features/assets/application/tx_history_controller.dart';
 import 'package:scavium_wallet/features/assets/domain/tx_history_entry.dart';
 import 'package:scavium_wallet/features/assets/domain/tx_history_filter.dart';
@@ -224,6 +225,13 @@ class _HistoryEntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final statusColor = switch (item.status) {
+      TxStatus.confirmed => ScavoColors.semanticSuccess,
+      TxStatus.failed => colorScheme.error,
+      TxStatus.pending => colorScheme.primary,
+    };
+
     return ScaviumCard(
       child: ListTile(
         contentPadding: EdgeInsets.zero,
@@ -233,6 +241,7 @@ class _HistoryEntryCard extends StatelessWidget {
               : item.status == TxStatus.failed
               ? Icons.error_outline
               : Icons.schedule,
+          color: statusColor,
         ),
         title: Text('${item.amountDisplay} ${item.symbol}'),
         subtitle: Column(
@@ -243,7 +252,7 @@ class _HistoryEntryCard extends StatelessWidget {
             Text(item.createdAt.toLocal().toString()),
           ],
         ),
-        trailing: Text(item.status.name),
+        trailing: Text(item.status.name, style: TextStyle(color: statusColor)),
         onTap: () {
           context.push(RouteNames.transactionDetail, extra: item);
         },

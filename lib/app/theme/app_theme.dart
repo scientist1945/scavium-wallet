@@ -64,6 +64,19 @@ abstract final class AppTheme {
           textStyle: textTheme.labelLarge,
         ),
       ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: colors.actionPrimary,
+          foregroundColor: colors.textOnAction,
+          disabledBackgroundColor: colors.actionDisabled,
+          disabledForegroundColor: colors.textSecondary,
+          elevation: ScavoElevation.interactive,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ScavoRadius.interactive),
+          ),
+          textStyle: textTheme.labelLarge,
+        ),
+      ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: colors.actionPrimary,
@@ -80,6 +93,45 @@ abstract final class AppTheme {
           foregroundColor: colors.actionPrimary,
           disabledForegroundColor: colors.textDisabled,
           textStyle: textTheme.labelMedium,
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: colors.surfaceRaised,
+        selectedColor: colors.actionPrimary,
+        disabledColor: colors.actionDisabled,
+        labelStyle: textTheme.labelMedium,
+        secondaryLabelStyle: textTheme.labelMedium?.copyWith(
+          color: colors.textOnAction,
+        ),
+        side: BorderSide(color: colors.border),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ScavoRadius.pill),
+        ),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            return states.contains(WidgetState.selected)
+                ? colors.actionPrimary
+                : colors.surfaceBase;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            return states.contains(WidgetState.selected)
+                ? colors.textOnAction
+                : colors.textSecondary;
+          }),
+          iconColor: WidgetStateProperty.resolveWith((states) {
+            return states.contains(WidgetState.selected)
+                ? colors.textOnAction
+                : colors.textSecondary;
+          }),
+          side: WidgetStatePropertyAll(BorderSide(color: colors.border)),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ScavoRadius.interactive),
+            ),
+          ),
+          textStyle: WidgetStatePropertyAll(textTheme.labelMedium),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(

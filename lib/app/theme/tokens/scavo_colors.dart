@@ -7,18 +7,19 @@ import 'package:flutter/material.dart';
 /// contract required before broader light/dark theme work.
 abstract final class ScavoColors {
   // Brand tokens.
-  static const brandPrimary = Color(0xFF4F8CFF);
-  static const brandPrimarySoft = Color(0xFF8AB3FF);
-  static const brandAccent = Color(0xFF19E6A7);
+  static const brandPrimary = Color(0xFFF97316);
+  static const brandPrimarySoft = Color(0xFFFDBA74);
+  static const brandAccent = Color(0xFF2563EB);
+  static const brandSupport = brandAccent;
   static const brandOnPrimary = Colors.white;
 
   // Background and surface tokens.
-  static const backgroundPrimary = Color(0xFF0A0D14);
-  static const backgroundSecondary = Color(0xFF121826);
+  static const backgroundPrimary = Color(0xFF0B1220);
+  static const backgroundSecondary = Color(0xFF0F1A2E);
   static const backgroundCanvas = backgroundPrimary;
   static const backgroundLayer = backgroundSecondary;
-  static const surfacePrimary = Color(0xFF131B2E);
-  static const surfaceSecondary = Color(0xFF182033);
+  static const surfacePrimary = Color(0xFF0F1A2E);
+  static const surfaceSecondary = Color(0xFF13213A);
   static const surfaceBase = surfacePrimary;
   static const surfaceRaised = surfaceSecondary;
 
@@ -30,20 +31,20 @@ abstract final class ScavoColors {
   static const textOnAction = brandOnPrimary;
 
   // Boundary tokens.
-  static const borderDefault = Color(0xFF26314D);
-  static const borderSubtle = Color(0xFF1D2740);
-  static const dividerDefault = Color(0xFF26314D);
+  static const borderDefault = Color(0xFF1F2A44);
+  static const borderSubtle = Color(0xFF17213A);
+  static const dividerDefault = Color(0xFF1F2A44);
   static const dividerSubtle = borderSubtle;
 
   // Semantic state tokens.
-  static const semanticDanger = Color(0xFFFF5D73);
-  static const semanticWarning = Color(0xFFFFC857);
-  static const semanticSuccess = Color(0xFF1EDC8B);
-  static const semanticInfo = brandPrimary;
+  static const semanticDanger = Color(0xFFEF4444);
+  static const semanticWarning = Color(0xFFF59E0B);
+  static const semanticSuccess = Color(0xFF22C55E);
+  static const semanticInfo = brandSupport;
 
   // Interaction tokens.
   static const actionPrimary = brandPrimary;
-  static const actionSecondary = brandAccent;
+  static const actionSecondary = brandSupport;
   static const actionDanger = semanticDanger;
   static const actionDisabled = textMuted;
   static const focus = brandPrimary;

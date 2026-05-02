@@ -1,52 +1,74 @@
-# Current Task — 9.6.4
+PROYECTO: SCAVIUM Wallet
 
-Project: SCAVIUM Wallet
-Phase: 9.6 — Settings and About UX Alignment
-Subphase: 9.6.4 — About Identity and Responsive Settings Review
-Type: Code-only
+AJUSTE:
+9.6.theme-polish.1 — Light contrast and icon system polish
 
-## Goal
+OBJETIVO:
+Corregir inconsistencias visuales detectadas luego de implementar SCAVIUM Design Token System v1, manteniendo dark-first y primary naranja.
 
-Ensure the About identity surface remains clear, dynamic, and responsive after Settings polish.
+ALCANCE:
+- Code-only
+- NO modificar documentación
+- NO generar .agent
+- NO ejecutar comandos
+- NO hacer git
+- Leer archivos necesarios
+- Proponer plan antes de editar
+- Esperar aprobación
+- Reportar diff final
 
-## Scope
+ARCHIVOS A LEER:
+- lib/app/theme/**
+- lib/features/settings/presentation/**
+- lib/features/assets/presentation/**
+- lib/features/activity/presentation/**
+- lib/features/wallet/presentation/**
+- lib/features/home/presentation/**
+- lib/shared/**
+- lib/app/app.dart
 
-- Keep About display tied to `appVersionInfoProvider`.
-- Improve About placement/copy/responsive behavior only if it strengthens the Settings hierarchy.
-- Validate Settings remains usable on mobile, desktop, and web widths.
-- Avoid creating a separate About route unless real implementation evidence clearly requires it.
+PROBLEMAS A CORREGIR:
+1. Light mode:
+   - textos con bajo contraste sobre fondo claro
+   - inputs/dropdowns con texto casi invisible
+   - cards demasiado planas o sin separación suficiente
 
-## Allowed Files
+2. Icons:
+   - definir y aplicar color consistente para:
+     - active
+     - inactive
+     - muted/subtle
+     - onPrimary
+   - sidebar active/inactive debe ser claro en light y dark
+   - action icons top-right deben tener contraste correcto
+   - settings section icons deben usar primary/semantic coherentemente
 
-- `lib/features/settings/presentation/settings_screen.dart`
-- `lib/features/settings/presentation/widgets/settings_section_card.dart`
-- `test/settings_screen_test.dart`
+3. Inputs/dropdowns:
+   - border visible siempre
+   - focused border primary naranja
+   - fill diferenciado por theme
+   - dropdown selected/menu text legible
 
-## Forbidden
+4. Chips/filters:
+   - selected: primary naranja
+   - unselected: outline + textSecondary legible
+   - evitar apariencia disabled
 
-- docs/**
-- README.md
-- Any unrelated file
+5. Secondary buttons:
+   - no deben parecer disabled
+   - usar primary text + outline visible
 
-## Implementation Requirements
+REGLAS VISUALES:
+- Mantener primary: Color(0xFFFF6B14) o el naranja ya definido en tokens.
+- Mantener dark-first.
+- No volver a usar azul como primary.
+- Verde solo para success/confirmed.
+- No hardcodear colores nuevos si pueden salir del token system.
+- Preferir centralizar ajustes en theme/tokens y widgets comunes.
 
-- Before editing, read only the allowed files needed for this subphase plus `.agent/rules.md` and `.agent/commands.md`.
-- Consume `appVersionInfoProvider`; do not duplicate package/version resolution.
-- Preserve Appearance selector, security/recovery, signing, diagnostics, and danger-zone actions.
-- Do not modify app identity provider internals unless a test-proven bug is directly blocking this subphase.
-- Do not modify docs, `.agent/*`, routing, release tooling, platform files, generated files, or unrelated tests.
-- Add or adjust focused tests for About/version display and Settings responsiveness where feasible.
-
-## Validation (manual)
-
-```bash
-fvm flutter analyze
-fvm flutter test test/settings_screen_test.dart
-```
-
-## Acceptance
-
-- About clearly shows SCAVIUM Wallet identity and dynamic version info.
-- Settings remains coherent at narrow and wide widths.
-- Version display still comes from `appVersionInfoProvider`.
-- Existing Settings actions and Appearance selector remain available.
+VALIDACIÓN ESPERADA:
+- Dark debe mantenerse igual o mejor.
+- Light debe tener contraste suficiente.
+- Settings Appearance selector debe verse bien en light/dark.
+- Home/Assets/History/Unlock deben verse coherentes.
+- No cambiar comportamiento funcional.

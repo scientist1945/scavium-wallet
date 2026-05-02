@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
 import 'package:scavium_wallet/features/assets/application/assets_controller.dart';
 import 'package:scavium_wallet/features/assets/application/tx_history_controller.dart';
@@ -278,18 +279,25 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return InkWell(
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(ScavoRadius.interactive),
       onTap: onTap,
       child: Container(
         width: 140,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(ScavoSpacing.md),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white10),
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(ScavoRadius.interactive),
+          border: Border.all(color: theme.dividerColor),
         ),
         child: Column(
-          children: [Icon(icon), const SizedBox(height: 10), Text(title)],
+          children: [
+            Icon(icon, color: theme.colorScheme.primary),
+            const SizedBox(height: ScavoSpacing.xs),
+            Text(title),
+          ],
         ),
       ),
     );

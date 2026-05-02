@@ -12,6 +12,9 @@ void main() {
 
   group('SCAVIUM theme token contract', () {
     test('preserves legacy color facade mappings', () {
+      expect(ScavoColors.brandPrimary, const Color(0xFFF97316));
+      expect(ScavoColors.backgroundPrimary, const Color(0xFF0B1220));
+      expect(ScavoColors.semanticSuccess, const Color(0xFF22C55E));
       expect(AppColors.background, ScavoColors.backgroundPrimary);
       expect(AppColors.surface, ScavoColors.backgroundSecondary);
       expect(AppColors.surfaceSoft, ScavoColors.surfaceSecondary);
@@ -31,7 +34,7 @@ void main() {
       expect(ScavoColors.surfaceRaised, ScavoColors.surfaceSecondary);
       expect(ScavoColors.textDisabled, ScavoColors.textMuted);
       expect(ScavoColors.dividerSubtle, ScavoColors.borderSubtle);
-      expect(ScavoColors.semanticInfo, ScavoColors.brandPrimary);
+      expect(ScavoColors.semanticInfo, ScavoColors.brandSupport);
       expect(ScavoColors.focusRing, ScavoColors.focus);
       expect(AppColors.canvas, ScavoColors.backgroundCanvas);
       expect(AppColors.info, ScavoColors.semanticInfo);
@@ -91,6 +94,7 @@ void main() {
       expect(theme.inputDecorationTheme.fillColor, ScavoColors.surfaceRaised);
       expect(theme.snackBarTheme.backgroundColor, ScavoColors.surfaceRaised);
       expect(theme.dialogTheme.backgroundColor, ScavoColors.surfaceBase);
+      expect(theme.chipTheme.selectedColor, ScavoColors.actionPrimary);
       expect(theme.navigationBarTheme.backgroundColor, ScavoColors.surfaceBase);
       expect(
         theme.navigationRailTheme.backgroundColor,
@@ -124,6 +128,10 @@ void main() {
       expect(
         theme.dialogTheme.backgroundColor,
         ScavoThemeColors.light.surfaceBase,
+      );
+      expect(
+        theme.chipTheme.selectedColor,
+        ScavoThemeColors.light.actionPrimary,
       );
       expect(
         theme.navigationBarTheme.backgroundColor,
