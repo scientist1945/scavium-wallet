@@ -1,32 +1,32 @@
-# Current Task — 9.5.3
+# Current Task — 9.5.4
 
 Project: SCAVIUM Wallet
 Phase: 9.5 — Theme Mode Runtime Selection and Persistence
-Subphase: 9.5.3 — Reactive App Root Theme Mode Wiring
+Subphase: 9.5.4 — Settings Appearance Selector and UX Integration
 Type: Code-only
 
 ## Goal
 
-Wire the persisted theme-mode preference into `ScaviumWalletApp` so runtime selection becomes reactive at the application root.
+Expose the runtime theme-mode preference through Settings without turning 9.5 into a broader Settings/About redesign.
 
 ## Scope
 
-- Add a Riverpod controller/provider that loads the persisted preference and exposes the selected mode.
-- Update `ScaviumWalletApp` to watch the selected mode.
-- Pass `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, and selected `themeMode` into `MaterialApp.router`.
-- Preserve router, lifecycle guard, lock behavior, wallet behavior, onboarding behavior, diagnostics, and release behavior.
-- Use a deterministic safe fallback while preference loading completes.
+- Add an Appearance section or compact selector to Settings.
+- Present clear labels for system, light, and dark modes.
+- Update the theme-mode controller when the user selects a mode.
+- Reflect the currently selected mode in the UI.
+- Preserve existing Settings sections for Security & recovery, Signing, Diagnostics, Danger zone, and About.
+- Defer broader Settings/About layout polish to 9.6.
 
 ## Allowed Files
 
-- `lib/app/app.dart`
+- `lib/features/settings/presentation/settings_screen.dart`
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` (inspect only; modify only if needed for existing section-card behavior)
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` (new, optional)
 - `lib/app/theme/theme_mode_preference.dart`
-- `lib/app/theme/theme_mode_repository.dart` (if created by 9.5.2)
-- `lib/app/theme/theme_mode_repository_impl.dart` (if created by 9.5.2)
-- `lib/app/theme/theme_mode_controller.dart` (new)
-- `lib/core/providers/service_providers.dart`
-- `test/theme_mode_controller_test.dart` (new)
-- `test/widget_test.dart` (only if app-root expectations are affected)
+- `lib/app/theme/theme_mode_controller.dart`
+- `test/settings_screen_test.dart`
+- `test/theme_mode_selector_test.dart` (new, optional)
 
 ## Forbidden
 
@@ -37,26 +37,25 @@ Wire the persisted theme-mode preference into `ScaviumWalletApp` so runtime sele
 ## Implementation Requirements
 
 - Before editing, read only the allowed files needed for this subphase plus `.agent/rules.md` and `.agent/commands.md`.
-- Build on the 9.5.2 preference/repository contract; do not duplicate storage logic in `app.dart`.
-- Keep `ScaviumWalletApp` as a `ConsumerStatefulWidget` and preserve `AppLifecycleGuard` observer behavior.
-- Replace the hardcoded `ThemeMode.dark` runtime setting with provider-driven selected mode.
-- Ensure `MaterialApp.router` uses `theme: AppTheme.lightTheme` and `darkTheme: AppTheme.darkTheme`.
-- Keep router provider wiring unchanged.
-- Do not add Settings UI; that belongs to 9.5.4.
-- Do not alter token values, theme construction, docs, `.agent/*`, wallet flows, release tooling, or generated files.
-- Add focused tests for initial/fallback state, persisted load, update persistence, and app-root theme-mode wiring where practical.
+- Keep the selector bounded to `system`, `light`, and `dark`.
+- Prefer a small extracted widget only if it keeps `settings_screen.dart` readable.
+- Preserve existing Settings section order and behavior unless a minimal Appearance placement is required.
+- Do not modify Security & recovery, Signing, Diagnostics, Danger zone, About behavior except for necessary layout insertion.
+- Do not implement broader Settings/About polish; that belongs to 9.6.
+- Do not change persistence serialization, app-root wiring, tokens, theme construction, docs, `.agent/*`, wallet flows, release tooling, or generated files.
+- Add or update focused widget tests for labels, current selection, and update behavior with provider overrides where practical.
 
 ## Validation (manual)
 
 ```bash
 fvm flutter analyze
-fvm flutter test test/theme_mode_controller_test.dart test/widget_test.dart
+fvm flutter test test/settings_screen_test.dart
 ```
 
 ## Acceptance
 
-- `MaterialApp.router` no longer forces `ThemeMode.dark`.
-- `theme`, `darkTheme`, and provider-selected `themeMode` are wired at the app root.
-- Preference loading has a safe deterministic fallback.
-- Router and lifecycle guard behavior remain unchanged.
-- No Settings selector, docs, token/theme construction, or unrelated behavior changes are introduced by this subphase.
+- Settings exposes an Appearance control for system/light/dark.
+- The selected value reflects provider state.
+- User selection updates the controller.
+- Existing Settings sections and destructive/security/diagnostics behavior remain intact.
+- No docs, token/theme construction, release, routing, or unrelated changes are introduced by this subphase.

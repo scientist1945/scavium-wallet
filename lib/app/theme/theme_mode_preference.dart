@@ -12,6 +12,22 @@ enum ThemeModePreference {
 
   static const fallback = system;
 
+  String get label {
+    return switch (this) {
+      system => 'System',
+      light => 'Light',
+      dark => 'Dark',
+    };
+  }
+
+  String get description {
+    return switch (this) {
+      system => 'Match device settings',
+      light => 'Use light appearance',
+      dark => 'Use dark appearance',
+    };
+  }
+
   static ThemeModePreference fromStorageValue(String? value) {
     if (value == null) {
       return fallback;

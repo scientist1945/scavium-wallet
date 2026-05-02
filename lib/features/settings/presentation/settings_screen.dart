@@ -7,6 +7,7 @@ import 'package:scavium_wallet/features/assets/data/token_registry_repository_im
 import 'package:scavium_wallet/features/assets/data/tx_history_repository_impl.dart';
 import 'package:scavium_wallet/features/settings/presentation/export_backup_screen.dart';
 import 'package:scavium_wallet/features/settings/presentation/widgets/settings_section_card.dart';
+import 'package:scavium_wallet/features/settings/presentation/widgets/theme_mode_selector.dart';
 import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/app_snackbar.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/confirm_dialog.dart';
@@ -28,6 +29,12 @@ class SettingsScreen extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          const SettingsSectionCard(
+            title: 'Appearance',
+            subtitle: 'Choose how SCAVIUM Wallet follows your display mode.',
+            children: [ThemeModeSelector()],
+          ),
+          const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Security & recovery',
             subtitle:
