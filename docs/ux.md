@@ -298,3 +298,13 @@ The UX direction is based on the SCAVIUM Design Token System:
 - Settings/About should clearly expose application version and appearance controls.
 
 The desired user outcome is a smoother visual experience: less noise, clearer hierarchy, better contrast, and more predictable appearance across web, desktop, Android, and future supported platforms. Phase 9.1 proves the first identity slice through concrete Settings/About implementation, while later subphases must prove the broader token, theme, and appearance-selection behavior.
+
+---
+
+## 🎨 Phase 9 Visual Token UX
+
+Phase 9 moves visual maturity from a dark-only palette toward a controlled SCAVIUM token system. Phase 9.3 is the foundation step: it should normalize the vocabulary for brand, background, surface, border, text, semantic, interaction, shape, spacing, and elevation before user-facing light/dark selection is introduced.
+
+The UX intent is not to redesign the wallet in one pass. The intent is to make the existing SCAVIUM visual language calmer, more consistent, and easier to apply across mobile, desktop, and web surfaces without scattering direct color decisions through screens.
+
+During 9.3, the application should remain dark-only at runtime. Light/dark parity, persisted theme selection, and Settings appearance controls belong to later Phase 9 subphases.

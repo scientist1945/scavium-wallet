@@ -226,7 +226,7 @@ The Phase 9 baseline includes:
 - allowing runtime theme-mode selection and persistence;
 - aligning Settings/About as the application identity and appearance control surface.
 
-Phase 9 is documented in `docs/phase9_scavium_wallet.md`. Phase 9.1 is complete and Phase 9.2 — Build Version & MSIX Synchronization Hardening is active. Phase 9.2 is documented as a compact nested execution plan; 9.2.1 completed the baseline inspection, 9.2.2/9.2.3 implemented build-tool hardening and focused validation, and 9.2.4 aligns release/development documentation before closure.
+Phase 9 is documented in `docs/phase9_scavium_wallet.md`. Phase 9.1 is complete and Phase 9.2 — Build Version & MSIX Synchronization Hardening is closed. Phase 9.3 — Theme Token Normalization is now documented as the next compact nested execution plan, derived from the real Phase 9.2 ZIP and bounded to the theme-token foundation.
 
 Phase 9.1 closed the runtime version surface through the compact implementation sequence derived from the real Phase 9.0 ZIP:
 
@@ -246,4 +246,13 @@ Phase 9.2 is active as the next build-version hardening sequence derived from th
 - 9.2.close — Build Version & MSIX Synchronization Hardening Closure — closed
 
 This closed sequence remains bounded to `tool/build.dart`, project version metadata, `test/build_tool_version_test.dart`, and release/development documentation. The 9.2 baseline confirms `pubspec.yaml` currently owns `version: 0.2.2+1`, `msix_config.msix_version` mirrors it as `0.2.2.1`, and `tool/build.dart` owns build-time interpretation, mutation, tag validation, and MSIX synchronization. The final closure records that the physical `pubspec.yaml` MSIX layout was normalized and confirmed by project validation, so `identity_name` and `msix_version` are stored as separate auditable YAML lines. The sequence does not reopen runtime Settings/About version display completed in 9.1 and does not touch theme tokens, light/dark themes, wallet custody, account, asset, transaction, signing, backup, restore, diagnostics, routing, or release publication behavior.
+
+Phase 9.3 is now documented as the next visual-system foundation sequence:
+
+- 9.3.1 — Theme Token Baseline Inventory and Naming Contract
+- 9.3.2 — Core SCAVIUM Token Model Implementation
+- 9.3.3 — ThemeData and Shared Widget Token Adoption
+- 9.3.4 — Token Documentation and Implementation Closure
+
+The 9.3 plan confirms that `lib/app/theme/app_colors.dart`, `lib/app/theme/app_text_styles.dart`, `lib/app/theme/app_theme.dart`, and selected shared widgets are the expected implementation surface. A dedicated `lib/app/theme/app_theme_tokens.dart` file is permitted only if it clarifies token ownership. 9.3 must not expose light mode, change `themeMode`, add persisted appearance selection, alter Settings controls, generate `.agent/*`, or reopen wallet/release behavior.
 

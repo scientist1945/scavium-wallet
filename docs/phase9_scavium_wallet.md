@@ -912,32 +912,237 @@ Completed as a documentation-only closure after the Phase 9.2 implementation and
 
 ### Objective
 
-Introduce a normalized SCAVIUM design token layer as the foundation for coherent themes.
+Introduce a normalized SCAVIUM design token layer as the foundation for coherent light/dark themes and future visual-system maturity.
 
 ### Scope
 
-- Define token ownership in the app theme layer.
-- Reduce direct screen-level color coupling where necessary.
-- Normalize brand, background, surface, text, semantic, border, interaction, radius, and spacing tokens.
-- Preserve the existing SCAVIUM identity while reducing visual saturation.
+- Define token ownership inside the existing `lib/app/theme` boundary.
+- Preserve the current SCAVIUM visual identity while replacing ad-hoc color constants with a clearer token vocabulary.
+- Normalize brand, background, surface, border, divider, text, semantic, interaction, shape, spacing, and elevation values before broad theme changes.
+- Keep `AppTheme.darkTheme` behavior functionally stable while preparing it to consume tokenized values.
+- Avoid implementing light mode, runtime theme selection, persistence, Settings appearance controls, or a broad redesign in 9.3.
+
+### State
+
+Planned documentation-defined implementation subphase.
+
+The real Phase 9.2 ZIP confirms that 9.3 is not yet implemented in code. `lib/app/theme/app_colors.dart` still exposes a compact dark-oriented color set (`background`, `surface`, `surfaceSoft`, `card`, `primary`, `primarySoft`, `accent`, text colors, `border`, `danger`, `warning`, and `success`). `lib/app/theme/app_text_styles.dart` couples text styles directly to those colors. `lib/app/theme/app_theme.dart` exposes only `AppTheme.darkTheme`, and `lib/app/app.dart` still forces `themeMode: ThemeMode.dark` while passing only the dark theme.
+
+The current direct token consumers are intentionally narrow: `AppTheme`, `AppTextStyles`, shared SCAVIUM buttons, section titles, and a small set of shared widgets. This makes 9.3 a bounded theme-layer normalization step rather than a screen-by-screen redesign.
 
 ### Existing Files Tentatively Intervenable
 
-- `lib/app/theme/app_colors.dart`
-- `lib/app/theme/app_text_styles.dart`
-- `lib/app/theme/app_theme.dart`
-- Screens/components only where direct color usage prevents token adoption.
-- `docs/ux.md`
-- `docs/architecture.md`
-- `docs/phase9_scavium_wallet.md`
+- `lib/app/theme/app_colors.dart` — primary existing owner of visual color constants; must either become the token owner or delegate to a new token file without leaving ambiguous duplicate color vocabularies.
+- `lib/app/theme/app_text_styles.dart` — currently binds text styles directly to dark-oriented color constants; may need to consume text tokens or a token context while preserving existing typography intent.
+- `lib/app/theme/app_theme.dart` — must continue to build the current dark theme from the normalized token vocabulary and prepare the handoff to 9.4 without introducing light-mode behavior prematurely.
+- `lib/shared/widgets/scavium_primary_button.dart` — currently consumes `AppColors.primary` and must remain visually coherent if brand/action tokens are renamed or separated.
+- `lib/shared/widgets/scavium_secondary_button.dart` — currently consumes `AppColors.border` and must remain coherent if border tokens are normalized.
+- `lib/shared/widgets/section_title.dart` — currently consumes `AppTextStyles` and is indirectly affected by text-token normalization.
+- `lib/shared/widgets/scavium_card.dart` — should be inspected as a shared surface component even if no code change is ultimately required.
+- `lib/shared/widgets/scavium_text_field.dart` — should be inspected as a shared input component even if the primary input normalization remains inside `AppTheme`.
+- `test/widget_test.dart` — may need adjustment only if theme construction expectations are exposed by the smoke test.
+- Existing widget tests touching Settings, shell, buttons, or shared screens — may be extended only if token refactoring requires deterministic widget coverage.
+- `docs/phase9_scavium_wallet.md` — record the actual 9.3 token architecture, implementation result, and validation outcome when executed.
+- `docs/architecture.md` — update only if 9.3 establishes a concrete token-owner boundary that should be preserved by later phases.
+- `docs/architecture_deep.md` — update only if the implementation adds a deeper design-system structure that affects architectural guidance.
+- `docs/ux.md` — update only if token normalization creates a concrete visual-system UX rule beyond the existing Phase 9 direction.
+- `docs/features.md` — update only if the token system becomes an explicit implemented UI capability rather than a purely internal refactor.
+- `docs/development.md` — update only if new developer rules or focused validation commands are introduced for theme-token work.
+- `docs/decisions.md` — update only if the implementation locks a lasting decision about token ownership, naming, or compatibility.
 
 ### New Files Tentatively Creatable
 
-- A dedicated token file only if the existing `app/theme` structure becomes clearer with separation.
+- `lib/app/theme/app_theme_tokens.dart` — optional dedicated token model/owner if keeping all token families inside `AppColors` would make brand/background/surface/semantic/interaction/shape/spacing/elevation ownership unclear.
+- `test/app_theme_tokens_test.dart` — optional focused unit test if token invariants, mapping, or non-null light/dark preparation rules are encoded in pure Dart structures.
+
+No new screen, feature module, repository, service, route, `.agent/*` file, generated asset, release artifact, or platform-specific build file is expected for 9.3.
 
 ### Technical Justification
 
-Theme changes should not be implemented as scattered color edits. A token layer provides one controlled visual vocabulary for later light/dark parity and future brand evolution.
+Theme changes should not be implemented as scattered color edits. The current codebase has a small and centralized theme surface, but the names are still mostly dark-palette constants rather than reusable design tokens. Normalizing this layer first gives 9.4 a stable vocabulary for first-class light/dark themes and prevents later Settings/theme-mode work from depending on one-off screen color decisions.
+
+### 9.3 Subphase Determination
+
+Phase 9 already defines `9.3 — Theme Token Normalization` as the next executable implementation subphase after 9.2 closure. Because 9.3 affects the visual foundation used by all later theme work, it should be executed as a compact nested sequence rather than as a single broad edit.
+
+The following nested subphases are derived from the real Phase 9.2 ZIP and are intentionally limited to token normalization. They do not implement `AppTheme.lightTheme`, do not change `themeMode`, do not add persisted theme selection, do not restructure Settings/About controls, and do not reopen runtime version, build/MSIX, wallet custody, accounts, assets, transactions, signing, backup, restore, diagnostics, routing, release publication, or CI behavior.
+
+---
+
+### 9.3.1 — Theme Token Baseline Inventory and Naming Contract
+
+#### Objective
+
+Inventory the existing theme constants and lock the token naming contract before changing code.
+
+#### Scope
+
+- Inspect current theme ownership in `lib/app/theme/app_colors.dart`, `lib/app/theme/app_text_styles.dart`, and `lib/app/theme/app_theme.dart`.
+- Inspect direct consumers under `lib/shared/widgets` and any screen-level color usage that could conflict with token normalization.
+- Map current dark-oriented constants to the Phase 9 token families: brand, background, surface, border/divider, text, semantic, interaction, shape, spacing, and elevation.
+- Decide whether `AppColors` remains the token owner or whether a dedicated token file is required.
+- Avoid modifying screens during the inventory step unless the implementation combines inventory and refactor in a single approved code pass.
+
+#### State
+
+New planned nested subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_colors.dart` — baseline token source and likely naming-contract target.
+- `lib/app/theme/app_text_styles.dart` — text-token consumer and typography/color coupling point.
+- `lib/app/theme/app_theme.dart` — Material 3 theme consumer of token values.
+- `lib/shared/widgets/scavium_primary_button.dart` — direct brand/action color consumer.
+- `lib/shared/widgets/scavium_secondary_button.dart` — direct border/action color consumer.
+- `lib/shared/widgets/section_title.dart` — indirect text-token consumer.
+- `lib/shared/widgets/scavium_card.dart` — shared surface component to inspect for token fit.
+- `lib/shared/widgets/scavium_text_field.dart` — shared input component to inspect for token fit.
+- `docs/phase9_scavium_wallet.md` — record final inventory/naming result if this subphase is executed separately.
+
+#### New Files Tentatively Creatable
+
+None expected for inventory alone.
+
+#### Technical Justification
+
+The existing theme surface is small enough to preserve, but token naming must be locked before refactoring. This avoids renaming constants twice and prevents 9.4 from building light/dark themes on unstable vocabulary.
+
+#### Expected Validations
+
+- Confirm no broad screen redesign is introduced.
+- Confirm token naming covers all existing `AppColors` usages.
+- Confirm 9.3 remains independent from theme-mode persistence and Settings controls.
+
+---
+
+### 9.3.2 — Core SCAVIUM Token Model Implementation
+
+#### Objective
+
+Implement the normalized token vocabulary in the app theme layer while preserving the current dark visual behavior as the active runtime appearance.
+
+#### Scope
+
+- Introduce or normalize token constants for brand, background, surface, border, divider, text, semantic, interaction, shape, spacing, and elevation.
+- Keep backwards-compatible aliases only if needed to reduce churn, and document whether those aliases are transitional.
+- Preserve the existing SCAVIUM dark identity while reducing ambiguity between brand colors, semantic colors, and large-surface colors.
+- Keep implementation centralized under `lib/app/theme`.
+
+#### State
+
+New planned nested subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_colors.dart` — likely receives normalized token families or delegates to the new token owner.
+- `lib/app/theme/app_text_styles.dart` — may move from raw dark constants to text token names while retaining Inter typography.
+- `lib/app/theme/app_theme.dart` — must consume normalized tokens for the existing dark theme.
+- `lib/shared/widgets/scavium_primary_button.dart` — may need token rename alignment for primary actions.
+- `lib/shared/widgets/scavium_secondary_button.dart` — may need token rename alignment for borders/secondary action surfaces.
+
+#### New Files Tentatively Creatable
+
+- `lib/app/theme/app_theme_tokens.dart` — acceptable if the implementation benefits from separating token families from legacy color aliases and `ThemeData` construction.
+
+#### Technical Justification
+
+The project already has an app-level theme layer; 9.3 should mature that layer rather than bypass it. A token model gives later light/dark implementation a shared foundation and separates product identity colors from semantic state colors.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test` or a focused subset if only pure theme/widget coverage is affected.
+- Confirm `lib/app/app.dart` still forces dark mode after 9.3.
+- Confirm no light-mode behavior is exposed yet.
+
+---
+
+### 9.3.3 — ThemeData and Shared Widget Token Adoption
+
+#### Objective
+
+Ensure the active `AppTheme.darkTheme` and shared SCAVIUM widgets consume the normalized token vocabulary coherently.
+
+#### Scope
+
+- Rebuild `AppTheme.darkTheme` from the normalized token names without introducing `AppTheme.lightTheme`.
+- Align card, input, app bar, text, color scheme, primary/secondary buttons, section titles, and shared surface components with the token model.
+- Keep screen-level changes minimal and only where direct raw color coupling blocks token adoption.
+- Preserve current navigation, routing, Settings/About version display, signing, asset, activity, backup, and diagnostics behavior.
+
+#### State
+
+New planned nested subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_theme.dart` — primary ThemeData adoption target.
+- `lib/app/theme/app_text_styles.dart` — text hierarchy adoption target.
+- `lib/shared/widgets/scavium_card.dart` — shared surface/card alignment target if it uses hardcoded visual values or can better rely on `CardTheme`.
+- `lib/shared/widgets/scavium_text_field.dart` — shared input alignment target if it duplicates theme-owned behavior.
+- `lib/shared/widgets/scavium_primary_button.dart` — primary action alignment target.
+- `lib/shared/widgets/scavium_secondary_button.dart` — secondary action alignment target.
+- `lib/shared/widgets/feedback/app_snackbar.dart` — inspect only if snackbar semantic color usage bypasses theme tokens.
+- `lib/shared/widgets/feedback/confirm_dialog.dart` — inspect only if dialog/danger state color usage bypasses theme tokens.
+
+#### New Files Tentatively Creatable
+
+None expected by default beyond the optional token file introduced in 9.3.2.
+
+#### Technical Justification
+
+A token file alone is not enough if the active theme and shared components continue to use old dark-palette names. This subphase proves the token system is actually the app-level visual contract while keeping runtime behavior and feature flows unchanged.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Manual smoke review of shell/navigation, Settings/About, dashboard, shared cards, inputs, buttons, snackbars, and confirmation dialogs in dark mode.
+
+---
+
+### 9.3.4 — Token Documentation and Implementation Closure
+
+#### Objective
+
+Close 9.3 by documenting the actual token owner, token families, implementation boundaries, and validation result from the real executed state.
+
+#### Scope
+
+- Update `docs/phase9_scavium_wallet.md` with the final 9.3 closure result.
+- Update architecture/development/UX/feature/decision documentation only where the implemented token system creates a durable trunk rule.
+- Confirm 9.4 can begin from a stable token vocabulary.
+- Confirm no runtime theme selection, light mode, Settings appearance controls, wallet behavior, release behavior, or `.agent/*` artifacts are included in the closure deliverable unless explicitly requested by a separate agent-generation task.
+
+#### State
+
+New planned nested closure subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `docs/phase9_scavium_wallet.md` — required closure record.
+- `README.md` — update only if the Phase 9 status ledger must advance after 9.3 implementation.
+- `docs/index.md` — update only if the active Phase 9 ledger must advance after 9.3 implementation.
+- `docs/architecture.md` — update only if the concrete token owner becomes an architectural rule.
+- `docs/architecture_deep.md` — update only if a deeper token structure or mapping deserves long-form architectural treatment.
+- `docs/ux.md` — update only if visual normalization has implemented user-facing UX principles.
+- `docs/features.md` — update only if token normalization is recorded as an implemented UI maturity capability.
+- `docs/development.md` — update only if future theme development requires new commands or coding rules.
+- `docs/decisions.md` — update only if the token-owner/naming decision is finalized by implementation.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Technical Justification
+
+9.3 is a foundation subphase for 9.4 through 9.6. Its closure must preserve the actual token contract so later implementation prompts can consume the documentation without guessing file ownership or repeating baseline analysis.
+
+#### Expected Validations
+
+- Confirm all modified documentation matches the actual files changed by the implementation.
+- Confirm the deliverable contains only modified/new documentation if the task is documentation closure.
+- Confirm the next implementation phase remains `9.4 — Light/Dark Theme Implementation`.
 
 ---
 
@@ -1095,4 +1300,4 @@ Status: Active.
 
 Phase 9 is opened as the active next phase after Phase 8.6 closure. It is not a continuation of release/distribution implementation, but it depends on the Phase 8.6 versioning and release-tooling baseline.
 
-Phase 9.0 is complete as the phase definition and documentation lock. Phase 9.1 is complete as the runtime application version surface: Settings/About now displays dynamic runtime metadata through `lib/core/app_identity` instead of hardcoded UI copy. Phase 9.2 is active; 9.2.1 completed the build-version baseline inspection and contract lock, and the next executable implementation subphase is 9.2.2 — Build Tool Version and MSIX Behavior Hardening.
+Phase 9.0 is complete as the phase definition and documentation lock. Phase 9.1 is complete as the runtime application version surface: Settings/About now displays dynamic runtime metadata through `lib/core/app_identity` instead of hardcoded UI copy. Phase 9.2 is closed as the build-version and MSIX synchronization hardening sequence. Phase 9.3 is now documented as the next executable implementation sequence: 9.3.1 locks the token baseline and naming contract, 9.3.2 implements the core SCAVIUM token model, 9.3.3 adopts tokens in `ThemeData` and shared widgets, and 9.3.4 closes the token documentation and implementation record.

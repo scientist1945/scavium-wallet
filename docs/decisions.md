@@ -335,3 +335,12 @@ Hardcoded copy such as `Version 0.4.0` can diverge from `pubspec.yaml`, MSIX met
 Phase 9.0 is a documentation lock, not an implementation step. It opens the identity, versioning, and visual theme maturity phase while preserving Phase 8.6 as closed.
 
 No runtime wallet behavior, build tooling, CI workflow, theme code, Settings code, or release publication behavior changes during 9.0. This decision keeps the phase boundary auditable and ensures 9.1 can begin from an explicit contract.
+
+### 28. Phase 9.3 must normalize tokens before implementing light/dark behavior
+
+Phase 9.3 is documented as a token-normalization implementation sequence, not as a broad visual redesign. The current runtime still forces dark mode through `lib/app/app.dart`, while `lib/app/theme/app_colors.dart`, `lib/app/theme/app_text_styles.dart`, and `lib/app/theme/app_theme.dart` own the existing visual layer.
+
+The decision for 9.3 is to stabilize the SCAVIUM token vocabulary first: brand, background, surface, border/divider, text, semantic, interaction, shape, spacing, and elevation values must be owned inside the app theme layer before Phase 9.4 introduces first-class light/dark themes. A dedicated token file is allowed only if it clarifies this ownership.
+
+This prevents light mode, theme persistence, and Settings appearance controls from being built on scattered screen-level color edits.
+

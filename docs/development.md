@@ -378,7 +378,7 @@ Phase 9 development must remain bounded to application identity, versioning, and
 Expected implementation areas are:
 
 - runtime app version resolution and Settings/About display — completed in 9.1 through `lib/core/app_identity`, `package_info_plus`, and Settings provider integration;
-- build tool validation or hardening around `pubspec.yaml` and `msix_config.msix_version`;
+- build tool validation or hardening around `pubspec.yaml` and `msix_config.msix_version` — completed in 9.2;
 - SCAVIUM design token normalization inside the app theme layer;
 - light and dark theme implementation;
 - local theme-mode selection and persistence;
@@ -392,7 +392,22 @@ Development rules:
 - use focused tests for Settings/About version display and theme preference behavior where practical;
 - continue using `fvm flutter analyze` and `fvm flutter test` as the baseline validation commands.
 
-Build/version hardening in Phase 9 should document whether a command mutates `pubspec.yaml`, synchronizes MSIX metadata, or intentionally leaves version data unchanged because `--no-version-bump` was requested.
+Build/version hardening in Phase 9 should document whether a command mutates `pubspec.yaml`, synchronizes MSIX metadata, or intentionally leaves version data unchanged because `--no-version-bump` was requested. Theme-token hardening in Phase 9.3 should document whether `AppColors` remains the token owner or whether a dedicated `app_theme_tokens.dart` file becomes the canonical token boundary.
+
+### Phase 9.3 Theme Token Normalization
+
+Phase 9.3 is documented as the next executable development sequence after 9.2 closure. It is a token-first visual-system foundation step, not a light-mode implementation and not a Settings appearance-control step.
+
+The planned nested sequence is:
+
+- 9.3.1 — Theme Token Baseline Inventory and Naming Contract;
+- 9.3.2 — Core SCAVIUM Token Model Implementation;
+- 9.3.3 — ThemeData and Shared Widget Token Adoption;
+- 9.3.4 — Token Documentation and Implementation Closure.
+
+The expected implementation surface is `lib/app/theme/app_colors.dart`, `lib/app/theme/app_text_styles.dart`, `lib/app/theme/app_theme.dart`, and selected shared widgets that directly consume visual constants. `lib/app/theme/app_theme_tokens.dart` may be introduced only if it improves token-family ownership and avoids ambiguous duplicate vocabularies.
+
+Phase 9.3 must preserve the active dark runtime behavior: `lib/app/app.dart` should continue to force `ThemeMode.dark` until 9.5, and 9.3 should not expose `AppTheme.lightTheme` as a product behavior. Focused validation should include `fvm flutter analyze`, `fvm flutter test`, and a dark-mode manual smoke review of shell/navigation, Settings/About, shared cards, inputs, buttons, snackbars, and confirmation dialogs.
 
 ### Phase 9.2 Build Version & MSIX Synchronization Hardening
 

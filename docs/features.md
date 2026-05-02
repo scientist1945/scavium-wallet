@@ -395,3 +395,11 @@ Remaining planned non-user-facing capabilities include:
 - token-based theme construction for future maintainability.
 
 Phase 9 does not add WalletConnect, dApp connectivity, new transaction flows, new signing flows, analytics, telemetry, remote configuration, or white-label runtime customization.
+
+---
+
+## 🎨 Phase 9 Visual-System Maturity
+
+Phase 9 records application identity and visual-system maturity as an active product track. Runtime app version display is implemented through the app identity boundary, build/MSIX version hardening is closed through the build tool and focused tests, and Phase 9.3 is now documented as the next implementation plan for SCAVIUM theme-token normalization.
+
+The planned 9.3 capability is internal visual-system maturity: a normalized app-theme token vocabulary that prepares first-class light/dark themes without exposing light mode or user-selectable appearance behavior yet.

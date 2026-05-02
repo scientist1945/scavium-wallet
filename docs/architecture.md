@@ -475,3 +475,12 @@ Architecturally, Phase 9 should keep identity and theme ownership separated from
 - theme-mode selection should be local, persisted, reactive, and applied at the app root.
 
 The SCAVIUM Design Token System locked in Phase 9.0 establishes brand, background, surface, border, text, semantic, interaction, shape, spacing, and elevation tokens. This keeps the existing SCAVIUM identity recognizable while reducing saturation and improving hierarchy across mobile, web, and desktop surfaces. Later Phase 9 implementation must keep wallet domain ownership separate from visual identity concerns.
+
+### Phase 9.3 Theme Token Boundary
+
+Phase 9.3 is now documented as the token-foundation step for the visual architecture. The current code keeps theme ownership under `lib/app/theme`, with `AppColors`, `AppTextStyles`, and `AppTheme.darkTheme` as the active dark-only surface. The 9.3 implementation must preserve that centralized boundary while normalizing the vocabulary into SCAVIUM token families.
+
+The architectural rule for 9.3 is that token ownership belongs to the app theme layer, not to individual screens. Shared widgets may adopt renamed or normalized tokens, but wallet domain modules, repositories, controllers, routes, release tooling, and CI workflows remain outside the token-normalization boundary.
+
+Phase 9.3 may introduce `lib/app/theme/app_theme_tokens.dart` only if that file makes token-family ownership clearer than keeping the model inside `AppColors`. It must not introduce light-mode runtime behavior; that remains a Phase 9.4/9.5 responsibility.
+

@@ -262,3 +262,11 @@ The second path is appearance:
 5. Settings exposes the preference without owning global theme behavior directly.
 
 This keeps Phase 9 visually meaningful while preserving the existing controller/service/domain boundaries. Phase 9.0 documents this path only; implementation begins with the later runtime version and theme subphases.
+
+---
+
+## Phase 9.3 Theme Token Deep Boundary
+
+The Phase 9.3 plan keeps token normalization inside the existing app theme architecture. The current concrete baseline is `AppColors` plus `AppTextStyles` plus `AppTheme.darkTheme`; the planned implementation may keep those names or introduce `app_theme_tokens.dart`, but it must leave a single canonical token vocabulary for later light/dark theme construction.
+
+This boundary matters because later Phase 9 work depends on predictable token semantics. Light mode should derive from the same token language rather than from a second palette copied into screens, and theme-mode persistence should select between app-level themes rather than rewrite widget colors directly.
