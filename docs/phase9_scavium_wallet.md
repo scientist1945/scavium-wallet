@@ -1524,7 +1524,7 @@ Lock the real 9.4-completed baseline before introducing runtime theme selection,
 
 #### State
 
-New planned nested subphase.
+Closed as documentation-only baseline and runtime-boundary subphase from the real 9.5 step ZIP. No runtime code, `.agent/*`, theme-mode controller, persistence model, Settings selector, tests, token changes, or app-root wiring were introduced by 9.5.1.
 
 #### Existing Files Tentatively Intervenable
 
@@ -1538,6 +1538,34 @@ New planned nested subphase.
 #### New Files Tentatively Creatable
 
 None expected for a pure baseline step.
+
+#### Execution Record
+
+Phase 9.5.1 was executed as a documentation-only baseline from the updated 9.5 step ZIP. The inspection confirms that the 9.4 paired-theme implementation is present and centralized: `lib/app/theme/app_theme.dart` exposes both `AppTheme.darkTheme` and `AppTheme.lightTheme`, both are built through the same `_buildTheme(ScavoThemeColors colors)` path, and `lib/app/theme/tokens/scavo_theme_colors.dart` owns the mode-specific color boundary introduced by 9.4.
+
+The runtime application boundary is still intentionally dark-only before 9.5 code execution. `lib/app/app.dart` continues to configure `MaterialApp.router` with `themeMode: ThemeMode.dark` and `theme: AppTheme.darkTheme`; it does not yet pass `darkTheme: AppTheme.darkTheme`, consume a theme-mode provider, react to a persisted preference, or expose system/light/dark runtime behavior. This validates that 9.5 must start as a selection and persistence phase over the existing paired-theme contract, not as a token or theme-construction phase.
+
+The local persistence path is also confirmed from the real codebase. `lib/core/constants/storage_keys.dart` owns centralized persisted keys, `lib/core/services/local_storage_service.dart` already provides `setString` / `getString`, and `lib/core/providers/service_providers.dart` exposes `localStorageProvider`. Therefore 9.5.2 should reuse these existing boundaries for a stable local string preference instead of introducing direct `SharedPreferences` access in UI or app-root code.
+
+The runtime boundary for the next code-only subphases is locked as follows:
+
+- supported preference values are `system`, `light`, and `dark`;
+- missing or invalid stored values should fall back safely, preferably to `system` unless implementation evidence documents a deliberate product exception;
+- `AppTheme.lightTheme` and `AppTheme.darkTheme` remain the only theme definitions selected by runtime mode;
+- `MaterialApp.router` is the only correct application point for applying Flutter `ThemeMode`;
+- Settings may expose the preference, but it must not own serialization, storage, token construction, or app-root theme wiring;
+- 9.5 must not alter token values, palette ownership, shared component themes, wallet flows, signing, backup, diagnostics, routing, release tooling, CI, generated artifacts, or `.agent/*` files.
+
+This closes 9.5.1 as the documentary execution gate for runtime theme-mode selection and persistence. The next executable subphase is `9.5.2 — Theme Mode Preference Model and Local Persistence`, and it should be handled as code-only by the agent workflow.
+
+#### Documentation Validation
+
+- Confirmed 9.5.1 produced documentation only.
+- Confirmed no `.agent/*` files were generated or modified by this execution.
+- Confirmed no Dart source, test, dependency, build, release, platform, or generated artifact was modified by this execution.
+- Confirmed the app-root remains dark-only before 9.5.2 through `ThemeMode.dark`.
+- Confirmed paired theme definitions are available from 9.4 and should be consumed, not recreated, by 9.5.
+- Confirmed existing local storage boundaries are sufficient for 9.5.2 preference persistence.
 
 #### Technical Justification
 
@@ -1821,4 +1849,4 @@ Status: Active.
 
 Phase 9 is opened as the active next phase after Phase 8.6 closure. It is not a continuation of release/distribution implementation, but it depends on the Phase 8.6 versioning and release-tooling baseline.
 
-Phase 9.0 is complete as the phase definition and documentation lock. Phase 9.1 is complete as the runtime application version surface: Settings/About now displays dynamic runtime metadata through `lib/core/app_identity` instead of hardcoded UI copy. Phase 9.2 is closed as the build-version and MSIX synchronization hardening sequence. Phase 9.3 is closed as the token-first visual-system foundation. Phase 9.4 is closed as the light/dark theme implementation bridge. `lib/app/theme/tokens/` owns the SCAVIUM token namespace, `ScavoThemeColors` owns the mode-specific light/dark color boundary, `AppColors` and `AppTextStyles` remain compatibility facades, `AppTheme.darkTheme` and `AppTheme.lightTheme` are built from the same centralized theme path, shared visual widgets rely on theme-owned values, and focused token/theme coverage exists in `test/app_theme_tokens_test.dart`. The next executable implementation phase is 9.5 — Theme Mode Runtime Selection and Persistence.
+Phase 9.0 is complete as the phase definition and documentation lock. Phase 9.1 is complete as the runtime application version surface: Settings/About now displays dynamic runtime metadata through `lib/core/app_identity` instead of hardcoded UI copy. Phase 9.2 is closed as the build-version and MSIX synchronization hardening sequence. Phase 9.3 is closed as the token-first visual-system foundation. Phase 9.4 is closed as the light/dark theme implementation bridge. `lib/app/theme/tokens/` owns the SCAVIUM token namespace, `ScavoThemeColors` owns the mode-specific light/dark color boundary, `AppColors` and `AppTextStyles` remain compatibility facades, `AppTheme.darkTheme` and `AppTheme.lightTheme` are built from the same centralized theme path, shared visual widgets rely on theme-owned values, and focused token/theme coverage exists in `test/app_theme_tokens_test.dart`. 9.5.1 is closed as the documentation-only runtime-boundary baseline for theme-mode selection and persistence. The next executable implementation subphase is 9.5.2 — Theme Mode Preference Model and Local Persistence.

@@ -267,11 +267,11 @@ The closed 9.4 result adds first-class paired light/dark theme definitions from 
 
 Phase 9.5 is planned as the runtime selection and persistence sequence over the 9.4 paired-theme contract:
 
-- 9.5.1 — Theme Mode Baseline and Runtime Boundary — planned
+- 9.5.1 — Theme Mode Baseline and Runtime Boundary — closed/documentation-only
 - 9.5.2 — Theme Mode Preference Model and Local Persistence — planned
 - 9.5.3 — Reactive App Root Theme Mode Wiring — planned
 - 9.5.4 — Settings Appearance Selector and UX Integration — planned
 - 9.5.5 — Theme Mode Runtime Selection Validation and Documentation Closure — planned
 
-The 9.5 plan is intentionally bounded: it should model and persist `system`/`light`/`dark`, wire the selected mode into `MaterialApp.router`, expose a compact Settings appearance selector, and validate the flow without changing theme token ownership, wallet behavior, release tooling, or the broader Settings/About polish reserved for 9.6.
+The 9.5 plan is intentionally bounded: it should model and persist `system`/`light`/`dark`, wire the selected mode into `MaterialApp.router`, expose a compact Settings appearance selector, and validate the flow without changing theme token ownership, wallet behavior, release tooling, or the broader Settings/About polish reserved for 9.6. Phase 9.5.1 is closed as the documentation-only boundary gate from the real updated ZIP: `lib/app/app.dart` still forces `ThemeMode.dark`, `AppTheme.lightTheme` and `AppTheme.darkTheme` are available from the 9.4 paired-theme contract, and existing local storage boundaries are the confirmed handoff for 9.5.2.
 
