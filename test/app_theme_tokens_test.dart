@@ -1,10 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:scavium_wallet/app/theme/app_colors.dart';
 import 'package:scavium_wallet/app/theme/app_text_styles.dart';
+import 'package:scavium_wallet/app/theme/app_theme.dart';
 import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  GoogleFonts.config.allowRuntimeFetching = false;
 
   group('SCAVIUM theme token contract', () {
     test('preserves legacy color facade mappings', () {
@@ -71,6 +74,20 @@ void main() {
         AppTextStyles.actionLabel.color,
         ScavoTypography.actionLabel.color,
       );
+    });
+
+    test('builds dark theme from normalized token values', () {
+      final theme = AppTheme.darkTheme;
+
+      expect(theme.scaffoldBackgroundColor, ScavoColors.backgroundCanvas);
+      expect(theme.colorScheme.primary, ScavoColors.actionPrimary);
+      expect(theme.colorScheme.surface, ScavoColors.backgroundLayer);
+      expect(theme.colorScheme.error, ScavoColors.semanticDanger);
+      expect(theme.cardTheme.color, ScavoColors.surfaceBase);
+      expect(theme.cardTheme.elevation, ScavoElevation.surface);
+      expect(theme.inputDecorationTheme.fillColor, ScavoColors.surfaceRaised);
+      expect(theme.snackBarTheme.backgroundColor, ScavoColors.surfaceRaised);
+      expect(theme.dialogTheme.backgroundColor, ScavoColors.surfaceBase);
     });
   });
 }

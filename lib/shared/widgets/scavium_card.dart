@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 
 class ScaviumCard extends StatelessWidget {
   final Widget child;
@@ -10,7 +11,7 @@ class ScaviumCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: padding ?? const EdgeInsets.all(20),
+        padding: padding ?? const EdgeInsets.all(ScavoSpacing.lg),
         child: child,
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:scavium_wallet/app/theme/app_colors.dart';
 import 'package:scavium_wallet/app/theme/app_text_styles.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 
 class ScaviumPrimaryButton extends StatelessWidget {
   final String text;
@@ -17,22 +17,15 @@ class ScaviumPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 54,
+      height: ScavoSpacing.section + ScavoSpacing.sm + ScavoSpacing.xxs / 2,
       width: double.infinity,
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-        ),
         onPressed: isLoading ? null : onPressed,
         child:
             isLoading
                 ? const SizedBox(
-                  width: 22,
-                  height: 22,
+                  width: ScavoSpacing.lg - ScavoSpacing.xxs / 2,
+                  height: ScavoSpacing.lg - ScavoSpacing.xxs / 2,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
                 : Text(text, style: AppTextStyles.button),

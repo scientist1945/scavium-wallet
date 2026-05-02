@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -36,7 +37,9 @@ class ConfirmDialog extends StatelessWidget {
           child: Text(
             confirmText,
             style:
-                destructive ? const TextStyle(color: Colors.redAccent) : null,
+                destructive
+                    ? const TextStyle(color: ScavoColors.semanticDanger)
+                    : null,
           ),
         ),
       ],

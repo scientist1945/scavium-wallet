@@ -12,6 +12,8 @@ abstract final class AppTheme {
         secondary: ScavoColors.actionSecondary,
         surface: ScavoColors.backgroundLayer,
         error: ScavoColors.semanticDanger,
+        onPrimary: ScavoColors.textOnAction,
+        onSurface: ScavoColors.textPrimary,
       ),
       textTheme: TextTheme(
         displayLarge: ScavoTypography.display,
@@ -35,6 +37,35 @@ abstract final class AppTheme {
           side: const BorderSide(color: ScavoColors.borderDefault),
         ),
       ),
+      dividerTheme: const DividerThemeData(
+        color: ScavoColors.dividerDefault,
+        thickness: 1,
+        space: ScavoSpacing.standard,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ScavoColors.actionPrimary,
+          foregroundColor: ScavoColors.textOnAction,
+          disabledBackgroundColor: ScavoColors.actionDisabled,
+          disabledForegroundColor: ScavoColors.textSecondary,
+          elevation: ScavoElevation.interactive,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ScavoRadius.interactive),
+          ),
+          textStyle: ScavoTypography.actionLabel,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: ScavoColors.textOnAction,
+          disabledForegroundColor: ScavoColors.textDisabled,
+          side: const BorderSide(color: ScavoColors.borderDefault),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ScavoRadius.interactive),
+          ),
+          textStyle: ScavoTypography.actionLabel,
+        ),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: ScavoColors.surfaceRaised,
@@ -49,6 +80,25 @@ abstract final class AppTheme {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(ScavoRadius.interactive),
           borderSide: const BorderSide(color: ScavoColors.focusRing),
+        ),
+        labelStyle: ScavoTypography.label,
+        hintStyle: ScavoTypography.bodySecondary,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: ScavoColors.surfaceRaised,
+        contentTextStyle: ScavoTypography.body,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ScavoRadius.sm),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: ScavoColors.surfaceBase,
+        elevation: ScavoElevation.modal,
+        titleTextStyle: ScavoTypography.subhead,
+        contentTextStyle: ScavoTypography.bodySecondary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ScavoRadius.overlay),
         ),
       ),
     );
