@@ -65,8 +65,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('About'), findsOneWidget);
+    expect(
+      find.text('App identity and installed build information.'),
+      findsOneWidget,
+    );
     expect(find.text('SCAVIUM Wallet'), findsOneWidget);
-    expect(find.text('SCAVIUM Wallet 0.2.2 (1)'), findsOneWidget);
+    expect(
+      find.text('Installed version: SCAVIUM Wallet 0.2.2 (1)'),
+      findsOneWidget,
+    );
     expect(find.text('Version 0.4.0'), findsNothing);
   });
 
@@ -89,7 +96,7 @@ void main() {
 
     expect(find.text('About'), findsOneWidget);
     expect(find.text('SCAVIUM Wallet'), findsOneWidget);
-    expect(find.text('Version unavailable'), findsOneWidget);
+    expect(find.text('Installed version: Version unavailable'), findsOneWidget);
     expect(find.text('Version 0.4.0'), findsNothing);
   });
 
@@ -113,8 +120,52 @@ void main() {
     await tester.drag(find.byType(ListView), const Offset(0, -900));
     await tester.pumpAndSettle();
 
-    expect(find.text('SCAVIUM Wallet 7.8.9 (42)'), findsOneWidget);
-    expect(find.text('SCAVIUM Wallet 0.2.2 (1)'), findsNothing);
+    expect(
+      find.text('Installed version: SCAVIUM Wallet 7.8.9 (42)'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Installed version: SCAVIUM Wallet 0.2.2 (1)'),
+      findsNothing,
+    );
+  });
+
+  testWidgets('keeps About identity available on a wide settings surface', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appVersionInfoProvider.overrideWith(
+            (ref) async => const AppVersionInfo(
+              appName: 'SCAVIUM Wallet',
+              semanticVersion: '7.8.9',
+              buildNumber: '42',
+            ),
+          ),
+        ],
+        child: const MaterialApp(home: SettingsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(ListView), const Offset(0, -900));
+    await tester.pumpAndSettle();
+
+    expect(find.text('About'), findsOneWidget);
+    expect(
+      find.text('App identity and installed build information.'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Installed version: SCAVIUM Wallet 7.8.9 (42)'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('updates theme mode from appearance selector', (tester) async {

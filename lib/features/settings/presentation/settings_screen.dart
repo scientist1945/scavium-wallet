@@ -144,11 +144,12 @@ class SettingsScreen extends ConsumerWidget {
           SettingsSectionCard(
             title: 'About',
             icon: Icons.info_outline,
+            subtitle: 'App identity and installed build information.',
             children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: const Text('SCAVIUM Wallet'),
-                subtitle: Text(appVersionLabel),
+                subtitle: Text('Installed version: $appVersionLabel'),
               ),
             ],
           ),
