@@ -351,3 +351,9 @@ Phase 9.3.1 closes the naming-contract decision by creating a dedicated token na
 `AppColors` and `AppTextStyles` remain compatibility facades so existing consumers do not break while later 9.3 subphases adopt the token vocabulary more broadly. `AppTheme.darkTheme` consumes token names, but runtime behavior remains dark-only and `ThemeMode.dark` remains unchanged until the dedicated light/dark and persistence phases.
 
 This decision keeps visual intent semantic and app-owned: brand, surface, text, semantic state, interaction, spacing, radius, elevation, and typography values should be extended through the token namespace rather than through scattered screen-level constants.
+
+### 30. Phase 9.3 closes with app-owned tokens and compatibility facades
+
+Phase 9.3 finalizes the token-normalization decision as implemented architecture. The canonical namespace is `lib/app/theme/tokens/`, not a screen-level palette and not a feature-module concern. `ScavoColors`, `ScavoSpacing`, `ScavoRadius`, `ScavoElevation`, and `ScavoTypography` own visual intent, while `scavo_tokens.dart` exports the namespace for theme-layer consumers.
+
+`AppColors` and `AppTextStyles` remain compatibility facades so existing UI can migrate incrementally, and shared visual widgets may consume tokens directly where doing so reduces magic values without changing product behavior. This decision preserves dark-only runtime behavior until Phase 9.4/9.5 and prevents later light/dark work from creating a second visual vocabulary.

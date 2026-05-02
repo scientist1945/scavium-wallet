@@ -400,6 +400,6 @@ Phase 9 does not add WalletConnect, dApp connectivity, new transaction flows, ne
 
 ## 🎨 Phase 9 Visual-System Maturity
 
-Phase 9 records application identity and visual-system maturity as an active product track. Runtime app version display is implemented through the app identity boundary, build/MSIX version hardening is closed through the build tool and focused tests, and Phase 9.3 is now active as the SCAVIUM theme-token normalization sequence.
+Phase 9 records application identity and visual-system maturity as an active product track. Runtime app version display is implemented through the app identity boundary, build/MSIX version hardening is closed through the build tool and focused tests, and Phase 9.3 is closed as the SCAVIUM theme-token normalization sequence.
 
-The implemented 9.3.1 capability is internal visual-system maturity: a normalized app-theme token namespace under `lib/app/theme/tokens/` that prepares first-class light/dark themes without exposing light mode or user-selectable appearance behavior yet. Existing public theme consumers remain stable through `AppColors` and `AppTextStyles` compatibility facades, while `AppTheme.darkTheme` now consumes token names directly.
+The implemented 9.3 capability is internal visual-system maturity: a normalized app-theme token namespace under `lib/app/theme/tokens/` that prepares first-class light/dark themes without exposing light mode or user-selectable appearance behavior yet. Existing public theme consumers remain stable through `AppColors` and `AppTextStyles` compatibility facades, `AppTheme.darkTheme` consumes token names directly, and shared visual widgets now use token values for card, action, spacing, feedback, and dialog consistency.

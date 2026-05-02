@@ -305,8 +305,8 @@ The desired user outcome is a smoother visual experience: less noise, clearer hi
 
 Phase 9 moves visual maturity from a dark-only palette toward a controlled SCAVIUM token system. Phase 9.3 is the foundation step: it normalizes the vocabulary for brand, background, surface, border, text, semantic, interaction, shape, spacing, elevation, and typography before user-facing light/dark selection is introduced.
 
-Phase 9.3.1 closes the baseline UX contract by making the token vocabulary semantic rather than raw-value or component-specific. This means later visual polish should describe intent such as background, surface, text hierarchy, semantic state, action, radius, spacing, and elevation instead of scattering isolated color or padding fixes across screens.
+Phase 9.3 closes the baseline UX contract by making the token vocabulary semantic rather than raw-value or component-specific. This means later visual polish should describe intent such as background, surface, text hierarchy, semantic state, action, radius, spacing, and elevation instead of scattering isolated color or padding fixes across screens.
 
-The UX intent is not to redesign the wallet in one pass. The intent is to make the existing SCAVIUM visual language calmer, more consistent, and easier to apply across mobile, desktop, and web surfaces without scattering direct color decisions through screens.
+The UX intent is not to redesign the wallet in one pass. The intent is to make the existing SCAVIUM visual language calmer, more consistent, and easier to apply across mobile, desktop, and web surfaces without scattering direct color decisions through screens. The implemented shared-widget adoption proves this through cards, buttons, section titles, snackbars, and confirmation dialogs while leaving feature flows unchanged.
 
-During 9.3, the application remains dark-only at runtime. Light/dark parity, persisted theme selection, and Settings appearance controls belong to later Phase 9 subphases.
+After 9.3, the application remains dark-only at runtime. Light/dark parity, persisted theme selection, and Settings appearance controls belong to later Phase 9 subphases.

@@ -267,12 +267,12 @@ This keeps Phase 9 visually meaningful while preserving the existing controller/
 
 ## Phase 9.3 Theme Token Deep Boundary
 
-The Phase 9.3 plan keeps token normalization inside the existing app theme architecture. Phase 9.3.1 closes the concrete baseline by rooting token ownership in `lib/app/theme/tokens/` while preserving `AppColors`, `AppTextStyles`, and `AppTheme.darkTheme` as the existing app-theme entry points.
+The Phase 9.3 implementation keeps token normalization inside the existing app theme architecture. Phase 9.3 closes the concrete baseline by rooting token ownership in `lib/app/theme/tokens/` while preserving `AppColors`, `AppTextStyles`, and `AppTheme.darkTheme` as the existing app-theme entry points.
 
 This boundary matters because later Phase 9 work depends on predictable token semantics. Light mode should derive from the same token language rather than from a second palette copied into screens, and theme-mode persistence should select between app-level themes rather than rewrite widget colors directly.
 
-### Phase 9.3.1 Token Namespace Closure
+### Phase 9.3 Token Namespace Closure
 
-Phase 9.3.1 converts the visual-token plan into a concrete app-theme boundary. The token namespace is now rooted at `lib/app/theme/tokens/` and split by visual intent instead of by individual component: `scavo_colors.dart` owns semantic color intent, `scavo_spacing.dart` owns the compact layout scale, `scavo_radius.dart` owns shape scale, `scavo_elevation.dart` owns elevation scale, `scavo_typography.dart` owns Inter-backed text styles, and `scavo_tokens.dart` exports the namespace for theme-layer consumers.
+Phase 9.3 converts the visual-token plan into a concrete app-theme boundary. The token namespace is now rooted at `lib/app/theme/tokens/` and split by visual intent instead of by individual component: `scavo_colors.dart` owns semantic color intent, `scavo_spacing.dart` owns the compact layout scale, `scavo_radius.dart` owns shape scale, `scavo_elevation.dart` owns elevation scale, `scavo_typography.dart` owns Inter-backed text styles, and `scavo_tokens.dart` exports the namespace for theme-layer consumers.
 
-This boundary is intentionally conservative. `AppColors` and `AppTextStyles` remain available as compatibility facades so existing screens and shared widgets can migrate incrementally. `AppTheme.darkTheme` already consumes the token namespace, but the application still remains dark-only at runtime until the later Phase 9 light/dark and theme-mode subphases.
+This boundary is intentionally conservative. `AppColors` and `AppTextStyles` remain available as compatibility facades so existing screens and shared widgets can migrate incrementally. `AppTheme.darkTheme` consumes the token namespace, and shared widgets such as cards, buttons, section titles, snackbars, and confirmation dialogs prove token adoption at the shared-component layer. The application still remains dark-only at runtime until the later Phase 9 light/dark and theme-mode subphases.

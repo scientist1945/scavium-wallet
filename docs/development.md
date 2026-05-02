@@ -396,18 +396,18 @@ Build/version hardening in Phase 9 should document whether a command mutates `pu
 
 ### Phase 9.3 Theme Token Normalization
 
-Phase 9.3 is the active executable development sequence after 9.2 closure. It is a token-first visual-system foundation step, not a light-mode implementation and not a Settings appearance-control step. Phase 9.3.1 is closed and establishes `lib/app/theme/tokens/` as the canonical token namespace.
+Phase 9.3 is closed as the executable development sequence after 9.2 closure. It is a token-first visual-system foundation step, not a light-mode implementation and not a Settings appearance-control step. Phase 9.3 establishes `lib/app/theme/tokens/` as the canonical token namespace and validates the contract through `test/app_theme_tokens_test.dart`.
 
-The planned nested sequence is:
+Closed nested sequence:
 
 - 9.3.1 — Theme Token Baseline Inventory and Naming Contract — closed;
-- 9.3.2 — Core SCAVIUM Token Model Implementation;
-- 9.3.3 — ThemeData and Shared Widget Token Adoption;
-- 9.3.4 — Token Documentation and Implementation Closure.
+- 9.3.2 — Core SCAVIUM Token Model Implementation — closed;
+- 9.3.3 — ThemeData and Shared Widget Token Adoption — closed;
+- 9.3.4 — Token Documentation and Implementation Closure — closed.
 
-The implemented 9.3.1 surface is `lib/app/theme/tokens/` plus the compatibility facades `lib/app/theme/app_colors.dart` and `lib/app/theme/app_text_styles.dart`, the dark theme owner `lib/app/theme/app_theme.dart`, and focused coverage in `test/app_theme_tokens_test.dart`. Future 9.3 work should extend or consume `ScavoColors`, `ScavoSpacing`, `ScavoRadius`, `ScavoElevation`, and `ScavoTypography` rather than inventing a second token vocabulary.
+The implemented 9.3 surface is `lib/app/theme/tokens/` plus the compatibility facades `lib/app/theme/app_colors.dart` and `lib/app/theme/app_text_styles.dart`, the dark theme owner `lib/app/theme/app_theme.dart`, shared token-consuming visual widgets, and focused coverage in `test/app_theme_tokens_test.dart`. Future theme work should extend or consume `ScavoColors`, `ScavoSpacing`, `ScavoRadius`, `ScavoElevation`, and `ScavoTypography` rather than inventing a second token vocabulary.
 
-Phase 9.3 must preserve the active dark runtime behavior: `lib/app/app.dart` should continue to force `ThemeMode.dark` until 9.5, and 9.3 should not expose `AppTheme.lightTheme` as a product behavior. Focused validation should include `fvm flutter analyze`, `fvm flutter test`, and a dark-mode manual smoke review of shell/navigation, Settings/About, shared cards, inputs, buttons, snackbars, and confirmation dialogs.
+Phase 9.3 preserves the active dark runtime behavior: `lib/app/app.dart` continues to force `ThemeMode.dark` until 9.5, and 9.3 does not expose `AppTheme.lightTheme` as product behavior. Focused validation should include `fvm flutter analyze`, `fvm flutter test`, and a dark-mode manual smoke review of shell/navigation, Settings/About, shared cards, inputs, buttons, snackbars, and confirmation dialogs.
 
 ### Phase 9.2 Build Version & MSIX Synchronization Hardening
 
