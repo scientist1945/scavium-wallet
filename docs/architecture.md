@@ -464,7 +464,7 @@ Phase 8.5 deliberately does not add telemetry, analytics, remote diagnostics rep
 
 ## 🎨 Phase 9 Application Identity and Theme Architecture
 
-Phase 9 is planned as an application identity and visual-system maturity phase over the Phase 8.6-completed codebase.
+Phase 9 is open as an application identity and visual-system maturity phase over the Phase 8.6-completed codebase. Phase 9.0 locks the architectural boundary before runtime implementation begins.
 
 Architecturally, Phase 9 should keep identity and theme ownership separated from wallet domain logic:
 
@@ -474,4 +474,4 @@ Architecturally, Phase 9 should keep identity and theme ownership separated from
 - light and dark themes should derive from shared SCAVIUM design tokens instead of becoming separate ad-hoc palettes;
 - theme-mode selection should be local, persisted, reactive, and applied at the app root.
 
-The SCAVIUM Design Token System proposed for Phase 9 establishes brand, background, surface, border, text, semantic, interaction, shape, spacing, and elevation tokens. This keeps the existing SCAVIUM identity recognizable while reducing saturation and improving hierarchy across mobile, web, and desktop surfaces.
+The SCAVIUM Design Token System locked in Phase 9.0 establishes brand, background, surface, border, text, semantic, interaction, shape, spacing, and elevation tokens. This keeps the existing SCAVIUM identity recognizable while reducing saturation and improving hierarchy across mobile, web, and desktop surfaces. Later Phase 9 implementation must keep wallet domain ownership separate from visual identity concerns.

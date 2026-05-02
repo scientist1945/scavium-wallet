@@ -554,13 +554,13 @@ Phase 8.6 closes with a clearer release evidence chain from local build executio
 
 ## 🧭 Phase 9 Version Identity Follow-Up
 
-Phase 8.6 closed the release/distribution tooling maturity layer. Phase 9 is planned to follow that work by aligning the user-visible runtime version with the same project identity chain used by build and packaging flows.
+Phase 8.6 closed the release/distribution tooling maturity layer. Phase 9 is open to follow that work by aligning the user-visible runtime version with the same project identity chain used by build and packaging flows. Phase 9.0 documents this boundary without changing release tooling.
 
-The Phase 9 versioning follow-up is expected to validate:
+The Phase 9 versioning follow-up remains expected to validate during implementation:
 
 - whether Settings/About displays version data from runtime metadata instead of static copy;
 - whether `tool/build.dart` version bump behavior and `msix_config.msix_version` synchronization remain explicit;
 - whether `--no-version-bump` behavior is documented clearly enough that operators do not confuse intentional non-mutation with a synchronization failure;
 - whether runtime version display, `pubspec.yaml`, MSIX metadata, CI artifact naming, and release documentation remain conceptually aligned.
 
-This is not a new release publication feature. It is an identity/version consistency hardening step over the existing release tooling baseline.
+This is not a new release publication feature. It is an identity/version consistency hardening step over the existing release tooling baseline. Phase 9.0 does not change `tool/build.dart`, `.github/workflows/release.yml`, MSIX metadata, artifact naming, or publishing behavior.

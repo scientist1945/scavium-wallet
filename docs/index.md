@@ -213,11 +213,11 @@ Phase 8.6 remains bounded after closure. It did not introduce automatic Play Sto
 
 ---
 
-## Planned Phase 9 application identity and visual theme maturity
+## Active Phase 9 application identity and visual theme maturity
 
-Phase 9 is planned after Phase 8.6 closure. It does not reopen Phase 8 runtime feature domains; instead, it addresses the identity and visual-system gaps identified in the real Phase 8.6-completed codebase.
+Phase 9 is open after Phase 8.6 closure. Phase 9.0 completed the documentation definition and lock. It does not reopen Phase 8 runtime feature domains; instead, it addresses the identity and visual-system gaps identified in the real Phase 8.6-completed codebase.
 
-The planned Phase 9 baseline includes:
+The Phase 9 baseline includes:
 
 - replacing hardcoded Settings/About version copy with runtime version metadata;
 - validating and hardening build-version and MSIX synchronization behavior;
@@ -226,4 +226,4 @@ The planned Phase 9 baseline includes:
 - allowing runtime theme-mode selection and persistence;
 - aligning Settings/About as the application identity and appearance control surface.
 
-Phase 9 is documented in `docs/phase9_scavium_wallet.md`.
+Phase 9 is documented in `docs/phase9_scavium_wallet.md`. The next implementation subphase is 9.1 — Runtime App Version Surface.

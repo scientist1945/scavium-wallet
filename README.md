@@ -23,7 +23,7 @@ Current platform and release scope includes:
 - Windows MSIX packaging
 - GitHub Release automation
 
-The wallet completed Phase 7 stabilization and is now in Phase 8 product expansion and production maturity. Phase 8.5 security, reliability, and diagnostics maturity is complete and extends the expanded wallet surface with safer diagnostics, clearer signing and backup warnings, centralized lifecycle/lock reliability, and normalized invalid-state handling. Phase 8.6 release and distribution maturity is now complete, closing the release-tooling extension with clearer artifact reporting, CI release metadata, checksum boundaries, and manual distribution expectations.
+The wallet completed Phase 7 stabilization and Phase 8 product expansion and production maturity. Phase 8.5 security, reliability, and diagnostics maturity extended the expanded wallet surface with safer diagnostics, clearer signing and backup warnings, centralized lifecycle/lock reliability, and normalized invalid-state handling. Phase 8.6 release and distribution maturity closed the release-tooling extension with clearer artifact reporting, CI release metadata, checksum boundaries, and manual distribution expectations. Phase 9 is now open as the application identity, versioning, and visual theme maturity phase.
 
 Phase 8 focuses on controlled product growth from the Phase 7 release-hardened baseline, including:
 
@@ -57,7 +57,8 @@ Completed phases:
 - Phase 8.6 — Release & Distribution Maturity Extension
 
 Active Phase 9 work:
-- Phase 9.0 planned — Application Identity, Versioning, and Visual Theme Maturity documentation lock.
+- Phase 9.0 completed — Application Identity, Versioning, and Visual Theme Maturity documentation lock.
+- Phase 9.1 planned — Runtime App Version Surface.
 
 
 Current Phase 8 milestone:
@@ -142,7 +143,7 @@ Phase 8.6 completed as a release-tooling and distribution-documentation maturity
 
 Planned Phase 9 identity and visual-theme maturity work includes:
 
-- 9.0 — Phase Definition & Documentation Lock
+- 9.0 — Phase Definition & Documentation Lock (completed)
 - 9.1 — Runtime App Version Surface
 - 9.2 — Build Version & MSIX Synchronization Hardening
 - 9.3 — Theme Token Normalization
@@ -153,7 +154,7 @@ Planned Phase 9 identity and visual-theme maturity work includes:
 
 The closed Phase 8.6 state keeps release ownership concentrated in the existing surfaces: `tool/build.dart` owns local build automation, version/MSIX synchronization, artifact expectations, build summaries, and generated release reports; `.github/workflows/release.yml` owns tag/manual release validation, Android and Windows artifact jobs, versioned release assets, CI-generated release manifest, checksum generation, and draft GitHub Release publication; `pubspec.yaml` owns the project version and `msix_config.msix_version`; `docs/release.md` owns operator-facing release and distribution guidance.
 
-Phase 9 is now planned as the next product-maturity phase. It focuses on application identity and visual-system consistency: dynamic runtime version display, explicit build/MSIX version synchronization hardening, SCAVIUM design token normalization, first-class light/dark themes, persisted theme-mode selection, and Settings/About alignment.
+Phase 9 is now open as the next product-maturity phase. Phase 9.0 completed the documentation lock for application identity and visual-system consistency: dynamic runtime version display, explicit build/MSIX version synchronization hardening, SCAVIUM design token normalization, first-class light/dark themes, persisted theme-mode selection, and Settings/About alignment.
 
 
 
@@ -191,6 +192,7 @@ Important documentation includes:
 
 - `docs/phase7_scavium_wallet.md`
 - `docs/phase8_scavium_wallet.md`
+- `docs/phase9_scavium_wallet.md`
 - `docs/release.md`
 
 ---
@@ -495,6 +497,7 @@ For detailed release, stabilization, and product expansion documentation, see:
 - `docs/release.md`
 - `docs/phase7_scavium_wallet.md`
 - `docs/phase8_scavium_wallet.md`
+- `docs/phase9_scavium_wallet.md`
 
 ---
 
@@ -506,7 +509,8 @@ Deliver a stable, secure, production-oriented and operationally reproducible SCA
 - safer repeatable build workflow
 - practical self-custody recovery validation
 - controlled product expansion from the Phase 7 baseline
-- a scalable path toward accounts, assets, activity, signing, UX, security, and release maturity
+- application identity, versioning, and visual theme maturity through Phase 9
+- a scalable path toward accounts, assets, activity, signing, UX, security, release maturity, and product identity consistency
 - Windows distribution readiness
 - GitHub-based release artifact publication
 - lower operator error during release generation and distribution

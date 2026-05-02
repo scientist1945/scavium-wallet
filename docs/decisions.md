@@ -318,7 +318,7 @@ Benefits:
 
 ### 25. Phase 9 should normalize visual identity through design tokens before broad theme changes
 
-Phase 9 is planned around a token-first visual strategy. The project should not solve the current saturated/dark-only appearance by applying isolated color changes across screens.
+Phase 9 is locked around a token-first visual strategy by Phase 9.0. The project should not solve the current saturated/dark-only appearance by applying isolated color changes across screens.
 
 Instead, the app theme layer should define a SCAVIUM Design Token System covering brand, background, surface, border, text, semantic, interaction, shape, spacing, and elevation values. Light and dark themes should then derive from that shared token language.
 
@@ -328,4 +328,10 @@ This decision keeps SCAVIUM identity stable while enabling smoother visual hiera
 
 The Settings/About surface should display application version data resolved from runtime metadata or generated build metadata.
 
-Hardcoded copy such as `Version 0.4.0` can diverge from `pubspec.yaml`, MSIX metadata, CI artifacts, and release tags. Phase 9 should remove that mismatch by introducing a small application identity/version boundary instead of treating version display as static UI text.
+Hardcoded copy such as `Version 0.4.0` can diverge from `pubspec.yaml`, MSIX metadata, CI artifacts, and release tags. Phase 9 should remove that mismatch by introducing a small application identity/version boundary instead of treating version display as static UI text. Phase 9.0 documents this as an explicit product identity decision before implementation begins.
+
+### 27. Phase 9.0 opens Phase 9 without modifying runtime behavior
+
+Phase 9.0 is a documentation lock, not an implementation step. It opens the identity, versioning, and visual theme maturity phase while preserving Phase 8.6 as closed.
+
+No runtime wallet behavior, build tooling, CI workflow, theme code, Settings code, or release publication behavior changes during 9.0. This decision keeps the phase boundary auditable and ensures 9.1 can begin from an explicit contract.

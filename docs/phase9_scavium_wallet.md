@@ -231,7 +231,7 @@ Open Phase 9 from the real Phase 8.6-completed codebase and lock the application
 
 ### State
 
-Planned documentation-only phase-opening subphase.
+Completed documentation-only phase-opening subphase.
 
 ### Existing Files Tentatively Intervenable
 
@@ -254,7 +254,17 @@ Planned documentation-only phase-opening subphase.
 
 - Confirm Phase 9 is represented in documentation without modifying runtime code.
 - Confirm no non-existent project documents are referenced as required flow documents.
-- Confirm Phase 8.6 remains closed and Phase 9 is represented as the next planned phase.
+- Confirm Phase 8.6 remains closed and Phase 9 is represented as the active next phase.
+
+### 9.0 Closure Result
+
+Phase 9.0 is complete as a documentation-only phase definition and lock.
+
+This closure confirms that Phase 9 has been opened from the real Phase 8.6-completed project state and that its scope is intentionally limited to application identity, versioning, visual theme maturity, Settings/About alignment, and the SCAVIUM Design Token System foundation.
+
+No Dart code, build tooling, CI workflow, runtime wallet behavior, blockchain behavior, account model, asset model, signing flow, backup/restore behavior, diagnostics behavior, navigation contract, or release publication behavior is modified by Phase 9.0.
+
+The documentation trunk now records Phase 9 as active, with 9.1 as the next implementation subphase.
 
 ---
 
@@ -469,7 +479,7 @@ Close Phase 9 by validating that runtime identity, build-version consistency, an
 
 ## Recommended Implementation Order
 
-1. Complete 9.0 documentation lock.
+1. Phase 9.0 documentation lock is complete.
 2. Implement 9.1 runtime version surface before changing Settings broadly.
 3. Harden 9.2 build/MSIX behavior while version ownership is fresh.
 4. Normalize 9.3 design tokens before adding light mode.
@@ -502,6 +512,8 @@ Theme work can easily become a redesign. Phase 9 explicitly limits itself to ide
 
 ## Phase 9 Initial Status
 
-Status: Planned.
+Status: Active.
 
-Phase 9 is opened as the next phase after Phase 8.6 closure. It is not a continuation of release/distribution implementation, but it depends on the Phase 8.6 versioning and release-tooling baseline.
+Phase 9 is opened as the active next phase after Phase 8.6 closure. It is not a continuation of release/distribution implementation, but it depends on the Phase 8.6 versioning and release-tooling baseline.
+
+Phase 9.0 is complete as the phase definition and documentation lock. The next executable implementation subphase is 9.1 — Runtime App Version Surface.

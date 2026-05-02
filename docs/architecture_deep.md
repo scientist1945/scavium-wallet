@@ -244,7 +244,7 @@ This avoids a broad global security manager or global error subsystem. Phase 8.5
 
 ## 🎨 Phase 9 Identity and Theme Runtime Path
 
-Phase 9 should introduce two small runtime paths without changing wallet custody or blockchain behavior.
+Phase 9.0 locks two small runtime paths to be introduced by later implementation subphases without changing wallet custody or blockchain behavior.
 
 The first path is application identity:
 
@@ -261,4 +261,4 @@ The second path is appearance:
 4. the app root applies the selected `ThemeMode`;
 5. Settings exposes the preference without owning global theme behavior directly.
 
-This keeps Phase 9 visually meaningful while preserving the existing controller/service/domain boundaries.
+This keeps Phase 9 visually meaningful while preserving the existing controller/service/domain boundaries. Phase 9.0 documents this path only; implementation begins with the later runtime version and theme subphases.

@@ -359,7 +359,7 @@ Future development phases must preserve the Phase 8.6 boundary unless a later ph
 
 ## Phase 9 Development Boundary
 
-Phase 9 development must remain bounded to application identity, versioning, and visual theme maturity.
+Phase 9 development must remain bounded to application identity, versioning, and visual theme maturity. Phase 9.0 is complete as a documentation-only lock and does not modify code.
 
 Expected implementation areas are:
 
@@ -379,3 +379,13 @@ Development rules:
 - continue using `fvm flutter analyze` and `fvm flutter test` as the baseline validation commands.
 
 Build/version hardening in Phase 9 should document whether a command mutates `pubspec.yaml`, synchronizes MSIX metadata, or intentionally leaves version data unchanged because `--no-version-bump` was requested.
+
+### Phase 9.0 Documentation Lock
+
+Phase 9.0 validates the phase contract before implementation:
+
+- Phase 8.6 remains closed and is not reopened by identity/theme work.
+- Phase 9 scope is limited to runtime version identity, build/MSIX version consistency, SCAVIUM design tokens, light/dark themes, theme-mode persistence, and Settings/About alignment.
+- No code validation command is required for the documentation-only lock, but later implementation subphases must return to `fvm flutter analyze` and `fvm flutter test`.
+- Generated `.agent/*` files are not part of this closure unless a later task explicitly requests agent generation.
+

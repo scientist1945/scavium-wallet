@@ -368,9 +368,9 @@ The product now has safer diagnostics, clearer signing and backup warning surfac
 
 ---
 
-## 🎨 Phase 9 Planned Application Identity and Theme Features
+## 🎨 Phase 9 Application Identity and Theme Features
 
-Phase 9 is planned to add identity and appearance maturity rather than new wallet transaction capabilities.
+Phase 9 is open to add identity and appearance maturity rather than new wallet transaction capabilities. Phase 9.0 completed the documentation lock and keeps the following capabilities planned for implementation subphases.
 
 Planned user-visible capabilities include:
 
