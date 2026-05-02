@@ -44,7 +44,7 @@
 ## Git Rules
 
 - Use a single accumulative branch per phase.
-- Current branch: `phase-9.2-build-version-msix-sync-hardening`
+- Current branch: `phase-9.3-theme-token-normalization`
 - Commit per subphase.
 - Merge only after full phase completion.
 

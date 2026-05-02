@@ -19,7 +19,7 @@ fvm flutter analyze
 ## Scoped Test
 
 ```bash
-fvm flutter test test/build_tool_version_test.dart
+fvm flutter test test/app_theme_tokens_test.dart test/widget_test.dart
 ```
 
 ---
@@ -27,7 +27,7 @@ fvm flutter test test/build_tool_version_test.dart
 ## Optional Format
 
 ```bash
-dart format tool/build.dart test/build_tool_version_test.dart
+fvm dart format lib/app/theme lib/shared/widgets test/app_theme_tokens_test.dart
 ```
 
 ---
@@ -43,9 +43,8 @@ fvm flutter test
 ## Fallback
 
 ```bash
-dart run tool/build.dart --check-version --expected-tag v0.2.2
-fvm flutter test test/build_tool_version_test.dart
-fvm flutter analyze
+flutter analyze
+flutter test test/app_theme_tokens_test.dart test/widget_test.dart
 ```
 
 ---
@@ -55,14 +54,14 @@ fvm flutter analyze
 ```bash
 git checkout main
 git pull
-git checkout -b phase-9.2-build-version-msix-sync-hardening
+git checkout -b phase-9.3-theme-token-normalization
 
 git status
 git add <modified-files>
-git commit -m "phase 9.2 build version msix synchronization hardening"
+git commit -m "Phase 9.3 theme token normalization"
 
 git checkout main
 git pull
-git merge phase-9.2-build-version-msix-sync-hardening
-git branch -d phase-9.2-build-version-msix-sync-hardening
+git merge phase-9.3-theme-token-normalization
+git branch -d phase-9.3-theme-token-normalization
 ```
