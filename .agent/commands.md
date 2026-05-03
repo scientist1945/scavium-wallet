@@ -19,7 +19,7 @@ fvm flutter analyze
 ## Scoped Test
 
 ```bash
-fvm flutter test test/widget_test.dart
+fvm flutter test test/settings_screen_test.dart test/theme_mode_selector_test.dart test/theme_mode_preference_test.dart
 ```
 
 ---
@@ -27,7 +27,7 @@ fvm flutter test test/widget_test.dart
 ## Optional Format
 
 ```bash
-dart format <modified-dart-files>
+dart format lib/features/settings/presentation/settings_screen.dart lib/features/settings/presentation/widgets/settings_section_card.dart lib/features/settings/presentation/widgets/theme_mode_selector.dart lib/app/theme/theme_mode_preference.dart test/settings_screen_test.dart test/theme_mode_selector_test.dart test/theme_mode_preference_test.dart
 ```
 
 ---
@@ -43,11 +43,9 @@ fvm flutter test
 ## Fallback
 
 ```bash
-dart run tool/build.dart --check-version --expected-tag v0.2.1
-# Optional release-tool checks only when secrets/platform prerequisites exist:
-# dart run tool/build.dart --platform android-apk --no-version-bump
-# dart run tool/build.dart --platform android-bundle --no-version-bump
-# dart run tool/build.dart --platform windows-msix --no-version-bump
+fvm flutter test test/settings_screen_test.dart
+fvm flutter test test/theme_mode_selector_test.dart
+fvm flutter test test/theme_mode_preference_test.dart
 ```
 
 ---
@@ -57,14 +55,14 @@ dart run tool/build.dart --check-version --expected-tag v0.2.1
 ```bash
 git checkout main
 git pull
-git checkout -b phase-8.6-release-distribution-maturity-extension
+git checkout -b phase-9.6-settings-about-ux-alignment
 
 git status
 git add <modified-files>
-git commit -m "phase 8.6 release distribution maturity"
+git commit -m "Phase 9.6 settings and about UX alignment"
 
 git checkout main
 git pull
-git merge phase-8.6-release-distribution-maturity-extension
-git branch -d phase-8.6-release-distribution-maturity-extension
+git merge phase-9.6-settings-about-ux-alignment
+git branch -d phase-9.6-settings-about-ux-alignment
 ```

@@ -177,10 +177,35 @@ This mode is used by GitHub Actions to enforce semantic consistency between:
 - build number increments automatically when the base version stays the same
 - build number resets to `1` when the base version changes
 
+### Phase 9.2.1 version/MSIX baseline contract
+
+Phase 9.2.1 confirms the release-facing version contract before further build-tool hardening:
+
+- `pubspec.yaml` is the canonical committed source for `version: x.y.z+n`;
+- the current inspected baseline is `version: 0.2.2+1`;
+- `msix_config.msix_version` must mirror that value as `x.y.z.n`;
+- the current inspected MSIX baseline is `0.2.2.1`;
+- `tool/build.dart` owns build-time version interpretation, optional mutation, expected-tag validation, and Windows MSIX synchronization;
+- `--no-version-bump` is intentional non-mutation, not a synchronization failure;
+- `--check-version --expected-tag vX.Y.Z` validates the semantic version against the tag and does not mutate build metadata.
+
+This contract does not introduce a new publication target, automatic store upload, Microsoft Store submission, or runtime update mechanism. It preserves the Phase 8.6 release automation boundary while giving 9.2.2 and 9.2.3 a stable baseline for hardening and validation.
+
+Phase 9.2.2 and 9.2.3 then implemented that contract through the existing build tool instead of adding a parallel release mechanism:
+
+- normal build execution resolves the current version and may update `pubspec.yaml` by incrementing the build number;
+- `--version x.y.z` preserves the semantic version contract and resets the build number to `1` only when the semantic version changes;
+- `--no-version-bump` intentionally leaves `pubspec.yaml` unchanged and should be read as a no-mutation operator choice, not as a failed synchronization;
+- `--check-version --expected-tag vX.Y.Z` validates the Git tag against the semantic version only and does not mutate metadata;
+- Windows MSIX packaging synchronizes `msix_config.msix_version` from the resolved build version as `x.y.z.n`;
+- `test/build_tool_version_test.dart` is the focused validation surface for version parsing, tag normalization, bump/no-bump behavior, and MSIX derivation.
+
+9.2.close records that the committed `pubspec.yaml` layout has been normalized and confirmed: `identity_name` and `msix_version` appear as separate normal YAML lines while preserving the intended values `com.scavium.wallet` and `0.2.2.1`. This completes the release-facing version/MSIX synchronization contract without introducing store publication or release-upload behavior.
+
 Example:
 
     0.2.1+3 → 0.2.1+4
-    0.2.2+1
+    0.2.2+1 → 0.2.2.1 for MSIX
 
 ---
 
@@ -548,3 +573,39 @@ Before publishing outside GitHub Releases, an operator must still review the dra
 ### Closure result
 
 Phase 8.6 closes with a clearer release evidence chain from local build execution to CI draft-release publication. The build tool reports expected outputs, the workflow carries generated reports and manifest metadata into the draft release, checksums cover the release asset set, and documentation distinguishes implemented release automation from manual distribution responsibilities.
+
+
+---
+
+## 🧭 Phase 9 Version Identity Follow-Up
+
+Phase 8.6 closed the release/distribution tooling maturity layer. Phase 9 is open to follow that work by aligning the user-visible runtime version with the same project identity chain used by build and packaging flows. Phase 9.0 documented this boundary without changing release tooling, and Phase 9.1 now implements the runtime Settings/About version surface without changing release publication behavior.
+
+The Phase 9 versioning follow-up now separates completed runtime identity work from remaining build/MSIX hardening.
+
+Completed in 9.1:
+
+- Settings/About displays version data from runtime package metadata instead of static copy;
+- the stale `Version 0.4.0` UI literal is removed from the runtime Settings surface;
+- tests validate version display through deterministic provider overrides rather than release artifacts.
+
+Completed in 9.2.1:
+
+- the baseline contract confirms `pubspec.yaml` as the source of `version: 0.2.2+1`;
+- the baseline contract confirms `msix_config.msix_version: 0.2.2.1` as the aligned Windows MSIX metadata representation;
+- the baseline contract separates tag validation, version mutation, no-bump behavior, and MSIX synchronization before code hardening.
+
+Remaining for later Phase 9 implementation:
+- whether `tool/build.dart` version bump behavior and `msix_config.msix_version` synchronization logs/guardrails remain explicit enough for operators;
+- whether `--no-version-bump` behavior is documented clearly enough that operators do not confuse intentional non-mutation with a synchronization failure;
+- whether runtime version display, `pubspec.yaml`, MSIX metadata, CI artifact naming, and release documentation remain conceptually aligned.
+
+Phase 9.2 is now documented as the closed implementation sequence that handled this build/version hardening:
+
+- 9.2.1 — Build Version Baseline Inspection and Contract — completed;
+- 9.2.2 — Build Tool Version and MSIX Behavior Hardening;
+- 9.2.3 — Build Version Validation Coverage;
+- 9.2.4 — Release and Development Documentation Alignment;
+- 9.2.close — Build Version & MSIX Synchronization Hardening Closure — closed.
+
+This is not a new release publication feature. It is an identity/version consistency hardening step over the existing release tooling baseline. Phase 9.1 does not change `tool/build.dart`, `.github/workflows/release.yml`, MSIX metadata, artifact naming, or publishing behavior; those boundaries remain for 9.2 implementation.

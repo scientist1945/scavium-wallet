@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
+import 'package:scavium_wallet/core/app_identity/app_version_provider.dart';
 import 'package:scavium_wallet/features/assets/data/token_registry_repository_impl.dart';
 import 'package:scavium_wallet/features/assets/data/tx_history_repository_impl.dart';
 import 'package:scavium_wallet/features/settings/presentation/export_backup_screen.dart';
 import 'package:scavium_wallet/features/settings/presentation/widgets/settings_section_card.dart';
+import 'package:scavium_wallet/features/settings/presentation/widgets/theme_mode_selector.dart';
 import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/app_snackbar.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/confirm_dialog.dart';
@@ -16,15 +20,30 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final appVersionState = ref.watch(appVersionInfoProvider);
+    final appVersionLabel = appVersionState.maybeWhen(
+      data: (version) => version.displayLabel,
+      orElse: () => 'Version unavailable',
+    );
+
     return ScaviumScaffold(
       appBar: AppBar(title: const Text('Settings')),
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          const SettingsSectionCard(
+            title: 'Appearance',
+            icon: LucideIcons.palette,
+            subtitle: 'Choose how SCAVIUM Wallet follows your device display.',
+            children: [ThemeModeSelector()],
+          ),
+          const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Security & recovery',
+            icon: LucideIcons.shield,
             subtitle:
-                'Export recovery material only when you are ready to store it safely.',
+                'Export recovery material only when you are ready to store it securely.',
             children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -32,7 +51,10 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text(
                   'Create a password-protected backup file that can be used to restore this wallet later.',
                 ),
-                trailing: const Icon(Icons.download_outlined),
+                trailing: const Icon(
+                  LucideIcons.download,
+                  size: ScavoIconSize.section,
+                ),
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -46,6 +68,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Signing',
+            icon: LucideIcons.penTool,
             subtitle:
                 'Signing proves account control without submitting a transaction.',
             children: [
@@ -55,7 +78,10 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text(
                   'Sign a message or challenge with the active account without sending a transaction.',
                 ),
-                trailing: const Icon(Icons.draw_outlined),
+                trailing: const Icon(
+                  LucideIcons.penTool,
+                  size: ScavoIconSize.section,
+                ),
                 onTap: () => context.push(RouteNames.signing),
               ),
             ],
@@ -63,7 +89,8 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Diagnostics',
-            subtitle: 'Inspect network status without changing wallet data.',
+            icon: LucideIcons.activity,
+            subtitle: 'Inspect network health without changing wallet data.',
             children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -71,7 +98,10 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text(
                   'Inspect active RPC node, ping endpoints and switch the active node manually.',
                 ),
-                trailing: const Icon(Icons.router_outlined),
+                trailing: const Icon(
+                  LucideIcons.activity,
+                  size: ScavoIconSize.section,
+                ),
                 onTap: () => context.push(RouteNames.rpcDiagnostics),
               ),
             ],
@@ -79,6 +109,8 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           SettingsSectionCard(
             title: 'Danger zone',
+            icon: LucideIcons.alertTriangle,
+            iconColor: colorScheme.error,
             subtitle: 'Destructive actions require explicit confirmation.',
             children: [
               ListTile(
@@ -87,7 +119,10 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text(
                   'Delete locally stored wallet, token list and local transaction history.',
                 ),
-                trailing: const Icon(Icons.delete_outline),
+                trailing: const Icon(
+                  LucideIcons.trash2,
+                  size: ScavoIconSize.section,
+                ),
                 onTap: () async {
                   await showDialog<void>(
                     context: context,
@@ -122,14 +157,15 @@ class SettingsScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const SettingsSectionCard(
+          SettingsSectionCard(
             title: 'About',
+            icon: LucideIcons.info,
+            subtitle: 'App identity and installed build information.',
             children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: Icon(Icons.info_outline),
-                title: Text('SCAVIUM Wallet'),
-                subtitle: Text('Version 0.4.0'),
+                title: const Text('SCAVIUM Wallet'),
+                subtitle: Text('Installed version: $appVersionLabel'),
               ),
             ],
           ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/features/assets/application/tx_history_controller.dart';
 import 'package:scavium_wallet/features/assets/domain/tx_history_entry.dart';
 import 'package:scavium_wallet/features/assets/domain/tx_history_filter.dart';
@@ -35,7 +37,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     ref
                         .read(txHistoryControllerProvider.notifier)
                         .refreshStatuses(),
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(LucideIcons.refreshCw, size: ScavoIconSize.action),
           ),
         ],
       ),
@@ -75,7 +77,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   const Padding(
                     padding: EdgeInsets.only(top: 24),
                     child: StateMessage(
-                      icon: Icons.receipt_long,
+                      icon: LucideIcons.receipt,
                       title: 'No transactions yet',
                       subtitle:
                           'This view shows locally tracked outgoing transactions created from this wallet.',
@@ -85,7 +87,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   const Padding(
                     padding: EdgeInsets.only(top: 24),
                     child: StateMessage(
-                      icon: Icons.filter_alt_off,
+                      icon: LucideIcons.filterX,
                       title: 'No matching activity',
                       subtitle:
                           'The current filters hide all local outgoing transactions. Clear or change filters to see more.',
@@ -117,7 +119,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error:
             (e, _) => StateMessage(
-              icon: Icons.error_outline,
+              icon: LucideIcons.alertCircle,
               title: 'Error loading local outgoing history',
               subtitle:
                   'Receipt status could not be loaded right now. Existing local entries were not modified. $e',
@@ -224,15 +226,24 @@ class _HistoryEntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final statusColor = switch (item.status) {
+      TxStatus.confirmed => ScavoColors.semanticSuccess,
+      TxStatus.failed => colorScheme.error,
+      TxStatus.pending => colorScheme.primary,
+    };
+
     return ScaviumCard(
       child: ListTile(
         contentPadding: EdgeInsets.zero,
         leading: Icon(
           item.status == TxStatus.confirmed
-              ? Icons.check_circle_outline
+              ? LucideIcons.checkCircle
               : item.status == TxStatus.failed
-              ? Icons.error_outline
-              : Icons.schedule,
+              ? LucideIcons.alertCircle
+              : LucideIcons.clock,
+          color: statusColor,
+          size: ScavoIconSize.inline,
         ),
         title: Text('${item.amountDisplay} ${item.symbol}'),
         subtitle: Column(
@@ -243,7 +254,7 @@ class _HistoryEntryCard extends StatelessWidget {
             Text(item.createdAt.toLocal().toString()),
           ],
         ),
-        trailing: Text(item.status.name),
+        trailing: Text(item.status.name, style: TextStyle(color: statusColor)),
         onTap: () {
           context.push(RouteNames.transactionDetail, extra: item);
         },

@@ -1,50 +1,60 @@
-# Current Task — 8.6.5
+PROYECTO: SCAVIUM Wallet
 
-Project: SCAVIUM Wallet
-Phase: 8.6 — Release & Distribution Maturity Extension
-Subphase: 8.6.5 — Cross-Platform Packaging Consistency and Release Closure Readiness
-Type: code
+AJUSTE:
+9.6.theme-polish.2 — Minimal contrast, asset avatar and icon token polish
 
-## Goal
+OBJETIVO:
+Aplicar ajustes visuales mínimos sobre la implementación actual del SCAVIUM Design Token System y Lucide icons.
 
-Consolidate cross-platform packaging expectations before Phase 8.6 closure so Android, Web, and Windows release paths stay coherent.
+ALCANCE:
+- Code-only
+- NO modificar documentación
+- NO generar .agent
+- NO ejecutar comandos
+- NO hacer git
+- Leer archivos necesarios
+- Proponer plan antes de editar
+- Esperar aprobación
+- Reportar diff final
 
-## Scope
+ARCHIVOS A LEER:
+- lib/app/theme/**
+- lib/features/wallet/presentation/**
+- lib/features/assets/presentation/**
+- lib/features/home/presentation/**
+- lib/features/activity/presentation/**
+- lib/features/settings/presentation/**
+- lib/shared/**
 
-Apply final consistency adjustments for artifact discovery, platform build reporting, checksum expectations, and local/CI release alignment. Do not introduce new product surfaces.
+AJUSTES EXACTOS:
+1. Unlock screen light:
+   - asegurar que el título "Unlock wallet" use textPrimary/onSurface con contraste suficiente.
+   - asegurar que el subtítulo use textSecondary/onSurfaceVariant legible.
+   - no alterar layout ni comportamiento.
 
-## Allowed Files
+2. Assets token/account avatars:
+   - eliminar violeta como color visual principal.
+   - usar naranja SCAVIUM o un surface-accent naranja suave.
+   - mantener contraste correcto para la letra "S".
+   - aplicar de forma consistente en light/dark.
 
-- `tool/build.dart`
-- `.github/workflows/release.yml`
-- `pubspec.yaml`
+3. Icon color tokens:
+   - revisar icon inactive/strong/action.
+   - sidebar inactive debe verse liviano pero legible.
+   - top-right action icons deben quedar fuertes y legibles.
+   - no cambiar tamaños salvo que ya estén fuera de tokens.
 
-## Forbidden
+REGLAS VISUALES:
+- Mantener primary naranja SCAVIUM.
+- Mantener dark-first.
+- No volver a introducir azul como primary.
+- Verde solo para success/confirmed.
+- No hacer rework de cards, buttons ni navigation.
+- No cambiar textos.
+- No cambiar funcionalidad.
 
-- docs/**
-- README.md
-- .agent/**
-- Any unrelated file
-- Build/distribution outputs
-- Git operations
-
-## Implementation Requirements
-
-- Read only allowed release and metadata files before proposing edits.
-- Preserve Android APK and App Bundle behavior.
-- Preserve Windows MSIX behavior.
-- Preserve Web build support in `tool/build.dart` even if Web is not currently published as a GitHub Release asset.
-- Keep local and CI release flows consistent.
-- Touch `pubspec.yaml` only for a real packaging metadata correction.
-- Do not modify docs in this code-only flow.
-
-## Validation (manual)
-
-```bash
-fvm flutter analyze
-dart run tool/build.dart --check-version --expected-tag v0.2.1
-```
-
-## Acceptance
-
-Android, Web, and Windows packaging behavior is consistently represented in release tooling; checksums remain coherent; no runtime wallet behavior changes.
+VALIDACIÓN ESPERADA:
+- Dark debe quedar igual o mejor.
+- Light unlock debe ser legible.
+- Assets avatars deben sentirse SCAVIUM, no violeta genérico.
+- Icon system debe seguir fino y premium.

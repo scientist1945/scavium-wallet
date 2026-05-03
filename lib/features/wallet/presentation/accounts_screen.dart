@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:scavium_wallet/features/wallet/application/wallet_controller.dart';
 import 'package:scavium_wallet/features/wallet/presentation/account_switcher.dart';
 import 'package:scavium_wallet/shared/widgets/feedback/state_message.dart';
@@ -19,7 +20,7 @@ class AccountsScreen extends ConsumerWidget {
         data: (profile) {
           if (profile == null) {
             return const StateMessage(
-              icon: Icons.account_balance_wallet_outlined,
+              icon: LucideIcons.wallet,
               title: 'No wallet loaded',
               subtitle: 'Create or import a wallet before managing accounts.',
             );
@@ -44,7 +45,7 @@ class AccountsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error:
             (error, _) => StateMessage(
-              icon: Icons.error_outline,
+              icon: LucideIcons.alertCircle,
               title: 'Error loading accounts',
               subtitle: '$error',
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scavium_wallet/app/router/app_router.dart';
 import 'package:scavium_wallet/app/theme/app_theme.dart';
+import 'package:scavium_wallet/app/theme/theme_mode_controller.dart';
 import 'package:scavium_wallet/core/security/app_lifecycle_guard.dart';
 
 class ScaviumWalletApp extends ConsumerStatefulWidget {
@@ -32,12 +33,14 @@ class _ScaviumWalletAppState extends ConsumerState<ScaviumWalletApp> {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
+    final themeModePreference = ref.watch(themeModeControllerProvider);
 
     return MaterialApp.router(
       title: 'SCAVIUM Wallet',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeModePreference.themeMode,
       routerConfig: router,
     );
   }

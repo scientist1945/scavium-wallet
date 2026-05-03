@@ -205,6 +205,7 @@ class VersionInfo {
   const VersionInfo({required this.buildName, required this.buildNumber});
 
   String get fullVersion => '$buildName+$buildNumber';
+  String get msixVersion => '$buildName.$buildNumber';
 }
 
 class ArtifactExpectation {
@@ -342,6 +343,9 @@ VersionInfo resolveVersion({
   final current = readVersionInfo(pubspecFile);
 
   if (noVersionBump) {
+    warn(
+      '--no-version-bump set: leaving pubspec.yaml version unchanged at ${current.fullVersion}',
+    );
     return current;
   }
 
@@ -358,6 +362,9 @@ VersionInfo resolveVersion({
   if (overrideVersion == null || overrideVersion.isEmpty) {
     newName = current.buildName;
     newBuild = current.buildNumber + 1;
+    info(
+      'Incrementing pubspec.yaml build number: ${current.fullVersion} -> $newName+$newBuild',
+    );
   } else {
     final normalized = overrideVersion.trim();
 
@@ -369,9 +376,15 @@ VersionInfo resolveVersion({
     if (normalized == current.buildName) {
       newName = normalized;
       newBuild = current.buildNumber + 1;
+      info(
+        'Version override matches pubspec.yaml; incrementing build number: ${current.fullVersion} -> $newName+$newBuild',
+      );
     } else {
       newName = normalized;
       newBuild = 1;
+      info(
+        'Version override changes semantic version; resetting build number: ${current.fullVersion} -> $newName+$newBuild',
+      );
     }
   }
 
@@ -383,6 +396,7 @@ VersionInfo resolveVersion({
   }
 
   pubspecFile.writeAsStringSync(updatedContent);
+  success('Updated pubspec.yaml version to $newName+$newBuild');
 
   return VersionInfo(buildName: newName, buildNumber: newBuild);
 }
@@ -448,7 +462,11 @@ void syncMsixVersion({
   required VersionInfo version,
 }) {
   var content = pubspecFile.readAsStringSync();
-  final msixVersion = '${version.buildName}.${version.buildNumber}';
+  final msixVersion = version.msixVersion;
+
+  info(
+    'Synchronizing msix_config.msix_version from resolved version ${version.fullVersion} as $msixVersion',
+  );
 
   final hasMsixConfig = RegExp(
     r'^\s*msix_config\s*:\s*$',
@@ -481,8 +499,13 @@ void syncMsixVersion({
     );
   }
 
+  if (content == pubspecFile.readAsStringSync()) {
+    success('msix_config.msix_version already synchronized at $msixVersion');
+    return;
+  }
+
   pubspecFile.writeAsStringSync(content);
-  success('Updated msix_config.msix_version to $msixVersion');
+  success('Synchronized msix_config.msix_version to $msixVersion');
 }
 
 void syncMsixCiOverrides({required File pubspecFile}) {

@@ -1,21 +1,33 @@
-import 'package:flutter/material.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_colors.dart';
 
+/// Backwards-compatible color facade for the SCAVIUM theme layer.
+///
+/// New theme work should prefer the semantic token names exposed by
+/// [ScavoColors]. These aliases keep the existing app stable while Phase 9.3
+/// migrates consumers incrementally.
 abstract final class AppColors {
-  static const background = Color(0xFF0A0D14);
-  static const surface = Color(0xFF121826);
-  static const surfaceSoft = Color(0xFF182033);
-  static const card = Color(0xFF131B2E);
+  static const background = ScavoColors.backgroundPrimary;
+  static const surface = ScavoColors.backgroundSecondary;
+  static const surfaceSoft = ScavoColors.surfaceSecondary;
+  static const card = ScavoColors.surfacePrimary;
+  static const canvas = ScavoColors.backgroundCanvas;
+  static const layer = ScavoColors.backgroundLayer;
 
-  static const primary = Color(0xFF4F8CFF);
-  static const primarySoft = Color(0xFF8AB3FF);
-  static const accent = Color(0xFF19E6A7);
+  static const primary = ScavoColors.brandPrimary;
+  static const primarySoft = ScavoColors.brandPrimarySoft;
+  static const accent = ScavoColors.brandAccent;
+  static const onPrimary = ScavoColors.brandOnPrimary;
 
-  static const textPrimary = Color(0xFFF5F7FB);
-  static const textSecondary = Color(0xFF9EABC7);
-  static const textMuted = Color(0xFF6B7895);
+  static const textPrimary = ScavoColors.textPrimary;
+  static const textSecondary = ScavoColors.textSecondary;
+  static const textMuted = ScavoColors.textMuted;
+  static const textDisabled = ScavoColors.textDisabled;
 
-  static const border = Color(0xFF26314D);
-  static const danger = Color(0xFFFF5D73);
-  static const warning = Color(0xFFFFC857);
-  static const success = Color(0xFF1EDC8B);
+  static const border = ScavoColors.borderDefault;
+  static const borderSubtle = ScavoColors.borderSubtle;
+  static const divider = ScavoColors.dividerDefault;
+  static const danger = ScavoColors.semanticDanger;
+  static const warning = ScavoColors.semanticWarning;
+  static const success = ScavoColors.semanticSuccess;
+  static const info = ScavoColors.semanticInfo;
 }

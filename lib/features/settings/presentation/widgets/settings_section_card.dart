@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_card.dart';
 
 class SettingsSectionCard extends StatelessWidget {
   const SettingsSectionCard({
     required this.title,
     required this.children,
+    this.icon,
+    this.iconColor,
     this.subtitle,
     super.key,
   });
 
   final String title;
+  final IconData? icon;
+  final Color? iconColor;
   final String? subtitle;
   final List<Widget> children;
 
@@ -21,14 +26,28 @@ class SettingsSectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+          Row(
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  size: ScavoIconSize.section,
+                  color: iconColor ?? theme.colorScheme.primary,
+                ),
+                const SizedBox(width: ScavoSpacing.xs),
+              ],
+              Expanded(
+                child: Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
           if (subtitle != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: ScavoSpacing.xxs),
             Text(
               subtitle!,
               style: theme.textTheme.bodySmall?.copyWith(
@@ -36,7 +55,7 @@ class SettingsSectionCard extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: 12),
+          const SizedBox(height: ScavoSpacing.sm),
           ..._withDividers(children),
         ],
       ),
@@ -50,7 +69,7 @@ class SettingsSectionCard extends StatelessWidget {
 
     return [
       for (var index = 0; index < items.length; index++) ...[
-        if (index > 0) const Divider(height: 1),
+        if (index > 0) const Divider(height: ScavoSpacing.xxs / 4),
         items[index],
       ],
     ];

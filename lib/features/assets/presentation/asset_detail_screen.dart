@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:scavium_wallet/app/router/route_names.dart';
+import 'package:scavium_wallet/app/theme/tokens/scavo_tokens.dart';
 import 'package:scavium_wallet/features/assets/application/token_registry_controller.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_item.dart';
 import 'package:scavium_wallet/features/assets/domain/asset_kind.dart';
@@ -48,7 +50,7 @@ class AssetDetailScreen extends ConsumerWidget {
                       ),
                 );
               },
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(LucideIcons.trash2, size: ScavoIconSize.action),
             ),
         ],
       ),

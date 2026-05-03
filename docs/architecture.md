@@ -458,3 +458,49 @@ The new error-boundary helpers are intentionally small shared utilities. They no
 Diagnostics are also intentionally local. They expose useful non-sensitive runtime state, but they are not telemetry, not analytics, not remote reporting, and not a support-upload pipeline.
 
 Phase 8.5 deliberately does not add telemetry, analytics, remote diagnostics reporting, dApp connectivity, WalletConnect, background signing, automatic challenge ingestion, backup payload migrations, shell-owned security state, or release-pipeline changes.
+
+
+---
+
+## 🎨 Phase 9 Application Identity and Theme Architecture
+
+Phase 9 is open as an application identity and visual-system maturity phase over the Phase 8.6-completed codebase. Phase 9.0 locks the architectural boundary before runtime implementation begins.
+
+Architecturally, Phase 9 should keep identity and theme ownership separated from wallet domain logic:
+
+- runtime app version display should be owned by a small application identity/version boundary rather than hardcoded Settings copy;
+- build/MSIX version synchronization should remain in the build tooling layer and continue to treat `pubspec.yaml` as the project version source;
+- visual design should be normalized through the app theme layer before broad screen-level changes are made;
+- light and dark themes should derive from shared SCAVIUM design tokens instead of becoming separate ad-hoc palettes;
+- theme-mode selection should be local, persisted, reactive, and applied at the app root.
+
+The SCAVIUM Design Token System locked in Phase 9.0 establishes brand, background, surface, border, text, semantic, interaction, shape, spacing, and elevation tokens. This keeps the existing SCAVIUM identity recognizable while reducing saturation and improving hierarchy across mobile, web, and desktop surfaces. Later Phase 9 implementation must keep wallet domain ownership separate from visual identity concerns.
+
+### Phase 9.3 Theme Token Boundary
+
+Phase 9.3 is closed as the token-foundation step for the visual architecture. Theme ownership remains under `lib/app/theme`, and canonical token ownership is explicit under `lib/app/theme/tokens/`. The normalized namespace contains `ScavoColors`, `ScavoSpacing`, `ScavoRadius`, `ScavoElevation`, `ScavoTypography`, and the `scavo_tokens.dart` barrel export.
+
+The architectural rule after 9.3 is that token ownership belongs to the app theme layer, not to individual screens. `AppColors` and `AppTextStyles` are compatibility facades over the token namespace, and `AppTheme.darkTheme` consumes token names while preserving the existing dark-only runtime surface. Shared visual widgets now adopt token values for cards, primary/secondary buttons, section titles, snackbars, and confirmation dialogs, proving the contract without forcing a screen-by-screen redesign. Wallet domain modules, repositories, controllers, routes, release tooling, and CI workflows remain outside the token-normalization boundary.
+
+Phase 9.3 did not introduce light-mode runtime behavior; that remains a Phase 9.4/9.5 responsibility. Future theme work should extend the token namespace rather than reintroducing scattered screen-level colors, component-specific magic values, or parallel screen-local palettes.
+
+
+
+---
+
+## 🎨 Phase 9.5 Theme Mode Runtime Architecture
+
+Phase 9.5 closes the runtime appearance-selection boundary without moving theme ownership out of the app theme layer.
+
+The implemented ownership split is:
+
+- `AppTheme.lightTheme` and `AppTheme.darkTheme` remain the only concrete theme definitions selected at runtime;
+- `ThemeModePreference` owns the supported application preference values, storage strings, labels/descriptions, fallback behavior, and Flutter `ThemeMode` mapping;
+- `ThemeModeRepository` defines the persistence contract;
+- `LocalThemeModeRepository` persists the selected value through `LocalStorageService` and `StorageKeys.themeModePreference`;
+- `themeModeRepositoryProvider` exposes persistence through the existing provider boundary;
+- `ThemeModeController` owns reactive preference state and persistence updates;
+- `ScaviumWalletApp` is the only app-root consumer that applies the selected mode to `MaterialApp.router`;
+- Settings owns only the user interaction through `ThemeModeSelector`.
+
+This keeps the architecture layered: Settings does not serialize or read storage directly, the app root does not know storage details, token files do not know user preference state, and wallet/domain modules do not participate in appearance selection. Future theme-mode work should extend this boundary rather than introducing screen-local theme branches or direct storage calls from UI widgets.

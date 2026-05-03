@@ -143,6 +143,8 @@ class _ExportBackupScreenState extends ConsumerState<ExportBackupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return ScaviumScaffold(
       appBar: AppBar(title: const Text('Export Backup')),
       child: ListView(
@@ -189,7 +191,7 @@ class _ExportBackupScreenState extends ConsumerState<ExportBackupScreen> {
           ),
           const SizedBox(height: 20),
           if (_error != null) ...[
-            Text(_error!, style: const TextStyle(color: Colors.red)),
+            Text(_error!, style: TextStyle(color: colorScheme.error)),
             const SizedBox(height: 12),
           ],
           ElevatedButton(

@@ -280,3 +280,63 @@ Implemented UX improvements:
 The UX deliberately stays conservative. Phase 8.5 does not create automated signing prompts, dApp prompts, WalletConnect prompts, hidden challenge ingestion, or telemetry consent surfaces. Sensitive actions remain user-initiated, visible, confirmable, and cancellable.
 
 The Phase 8.5 UX remains intentionally bounded. It does not introduce telemetry, dApp prompts, WalletConnect, background signing, automatic challenge ingestion, or hidden shell-owned security behavior.
+
+
+---
+
+## 🎨 Phase 9 Application Identity and Visual Theme UX
+
+Phase 9 is open to make the wallet feel more coherent, less saturated, and more product-like without redesigning the stabilized Phase 8 surfaces. Phase 9.0 locks this UX direction before token/theme implementation begins, and Phase 9.1 completes the first Settings/About identity improvement by replacing stale version copy with runtime metadata.
+
+The UX direction is based on the SCAVIUM Design Token System:
+
+- brand colors remain recognizable but should be used with restraint;
+- large backgrounds and surfaces should be calmer than high-signal actions;
+- semantic colors must be distinct from brand colors;
+- cards, navigation, inputs, dialogs, snackbars, and list tiles should share a consistent hierarchy;
+- light and dark modes should feel like the same product, not two unrelated skins;
+- Settings/About should clearly expose application version and appearance controls.
+
+The desired user outcome is a smoother visual experience: less noise, clearer hierarchy, better contrast, and more predictable appearance across web, desktop, Android, and future supported platforms. Phase 9.1 proves the first identity slice through concrete Settings/About implementation, and Phase 9.5 now proves the appearance-selection behavior through a bounded Settings Appearance selector backed by persisted runtime theme mode.
+
+---
+
+## 🎨 Phase 9 Visual Token UX
+
+Phase 9 moves visual maturity from a dark-only palette toward a controlled SCAVIUM token system. Phase 9.3 is the foundation step: it normalizes the vocabulary for brand, background, surface, border, text, semantic, interaction, shape, spacing, elevation, and typography before user-facing light/dark selection is introduced.
+
+Phase 9.3 closes the baseline UX contract by making the token vocabulary semantic rather than raw-value or component-specific. This means later visual polish should describe intent such as background, surface, text hierarchy, semantic state, action, radius, spacing, and elevation instead of scattering isolated color or padding fixes across screens.
+
+The UX intent is not to redesign the wallet in one pass. The intent is to make the existing SCAVIUM visual language calmer, more consistent, and easier to apply across mobile, desktop, and web surfaces without scattering direct color decisions through screens. The implemented shared-widget adoption proves this through cards, buttons, section titles, snackbars, and confirmation dialogs while leaving feature flows unchanged.
+
+After 9.3, the application remained dark-only at runtime. Phase 9.4 then introduced paired light/dark themes, and Phase 9.5 now exposes persisted runtime selection through Settings while keeping broader Settings/About hierarchy polish reserved for 9.6.
+
+
+---
+
+## 🎨 Phase 9.5 Appearance Selection UX
+
+Phase 9.5 makes appearance control discoverable without turning Settings into a full redesign. The selector is intentionally compact and placed in an Appearance section before the existing security, signing, diagnostics, danger-zone, and about controls.
+
+Implemented UX behavior:
+
+- `System` communicates that SCAVIUM Wallet follows the device display mode;
+- `Light` and `Dark` provide explicit runtime choices;
+- the selected mode is visible in the segmented control;
+- changing the selection updates the app root reactively;
+- the preference survives local app restarts through local persistence;
+- existing sensitive Settings actions keep their previous copy, placement, and confirmation behavior.
+
+The UX boundary remains narrow. Phase 9.5 does not introduce account-synced preferences, remote appearance configuration, white-label controls, new onboarding decisions, or a broader Settings/About layout rewrite. That broader hierarchy and polish work is completed by Phase 9.6.
+
+---
+
+## 🎨 Phase 9.6 Settings/About and Visual Polish UX
+
+Phase 9.6 closes the Settings/About UX alignment work over the already-implemented runtime appearance selector. Settings now reads as a coherent application-control surface: Appearance remains discoverable at the top of the surface, security/recovery, signing, diagnostics, and danger-zone actions remain visually separated, and About continues to display dynamic runtime identity information from the app identity provider rather than hardcoded copy.
+
+The visual polish completed during 9.6 also turns the Phase 9 token foundation into a stronger product identity. SCAVIUM Wallet now uses orange as the primary action and selected-state color, reserves green for semantic success/confirmed states, keeps the dark-first product language as the strongest identity surface, and improves light mode so it is usable and legible rather than a separate pale skin.
+
+Iconography was normalized as part of the final 9.6 UX pass. The app now uses Lucide icons and centralized `ScavoIconSize` values for sidebar, section, action, inline, and state contexts. This reduces the heavy visual weight of the previous icon language while keeping navigation, Settings, account, asset, activity, signing, and transaction surfaces visually consistent across light and dark modes.
+
+The 9.6 UX closure is intentionally bounded. It does not add new wallet operations, account-synced preferences, remote configuration, analytics, telemetry, white-label controls, or a new onboarding decision. It closes the current Settings/About and visual-system maturity layer so later product phases can build on a stable identity surface.

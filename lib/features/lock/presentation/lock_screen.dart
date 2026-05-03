@@ -8,7 +8,6 @@ import 'package:scavium_wallet/features/lock/application/lock_controller.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_primary_button.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_scaffold.dart';
 import 'package:scavium_wallet/shared/widgets/scavium_secondary_button.dart';
-import 'package:scavium_wallet/shared/widgets/section_title.dart';
 
 class LockScreen extends ConsumerStatefulWidget {
   const LockScreen({super.key});
@@ -81,15 +80,32 @@ class _LockScreenState extends ConsumerState<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return ScaviumScaffold(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
             const Spacer(),
-            const SectionTitle(
-              title: 'Unlock wallet',
-              subtitle: 'Enter your PIN or use biometrics.',
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Unlock wallet',
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Enter your PIN or use biometrics.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             TextField(

@@ -20,6 +20,8 @@ class ConfirmDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return AlertDialog(
       title: Text(title),
       content: Text(message),
@@ -35,8 +37,7 @@ class ConfirmDialog extends StatelessWidget {
           },
           child: Text(
             confirmText,
-            style:
-                destructive ? const TextStyle(color: Colors.redAccent) : null,
+            style: destructive ? TextStyle(color: colorScheme.error) : null,
           ),
         ),
       ],

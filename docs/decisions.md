@@ -312,3 +312,64 @@ Benefits:
 - users receive clearer retry/correction copy;
 - local data such as pending transaction history is preserved when refresh fails;
 - existing feature/controller ownership remains intact.
+
+
+---
+
+### 25. Phase 9 should normalize visual identity through design tokens before broad theme changes
+
+Phase 9 is locked around a token-first visual strategy by Phase 9.0. The project should not solve the current saturated/dark-only appearance by applying isolated color changes across screens.
+
+Instead, the app theme layer should define a SCAVIUM Design Token System covering brand, background, surface, border, text, semantic, interaction, shape, spacing, and elevation values. Light and dark themes should then derive from that shared token language.
+
+This decision keeps SCAVIUM identity stable while enabling smoother visual hierarchy, lower saturation, and future maintainability.
+
+### 26. Runtime version display should not be hardcoded in Settings/About
+
+The Settings/About surface should display application version data resolved from runtime metadata or generated build metadata.
+
+Hardcoded copy such as `Version 0.4.0` can diverge from `pubspec.yaml`, MSIX metadata, CI artifacts, and release tags. Phase 9 should remove that mismatch by introducing a small application identity/version boundary instead of treating version display as static UI text. Phase 9.0 documents this as an explicit product identity decision before implementation begins.
+
+### 27. Phase 9.0 opens Phase 9 without modifying runtime behavior
+
+Phase 9.0 is a documentation lock, not an implementation step. It opens the identity, versioning, and visual theme maturity phase while preserving Phase 8.6 as closed.
+
+No runtime wallet behavior, build tooling, CI workflow, theme code, Settings code, or release publication behavior changes during 9.0. This decision keeps the phase boundary auditable and ensures 9.1 can begin from an explicit contract.
+
+### 28. Phase 9.3 must normalize tokens before implementing light/dark behavior
+
+Phase 9.3 is documented as a token-normalization implementation sequence, not as a broad visual redesign. The current runtime still forces dark mode through `lib/app/app.dart`, while `lib/app/theme/app_colors.dart`, `lib/app/theme/app_text_styles.dart`, and `lib/app/theme/app_theme.dart` own the existing visual layer.
+
+The decision for 9.3 is to stabilize the SCAVIUM token vocabulary first: brand, background, surface, border/divider, text, semantic, interaction, shape, spacing, and elevation values must be owned inside the app theme layer before Phase 9.4 introduces first-class light/dark themes. A dedicated token file is allowed only if it clarifies this ownership.
+
+This prevents light mode, theme persistence, and Settings appearance controls from being built on scattered screen-level color edits.
+
+### 29. Phase 9.3.1 token ownership lives under `lib/app/theme/tokens/`
+
+Phase 9.3.1 closes the naming-contract decision by creating a dedicated token namespace rather than expanding `AppColors` as the canonical owner. The canonical token files are `scavo_colors.dart`, `scavo_spacing.dart`, `scavo_radius.dart`, `scavo_elevation.dart`, `scavo_typography.dart`, and `scavo_tokens.dart`.
+
+`AppColors` and `AppTextStyles` remain compatibility facades so existing consumers do not break while later 9.3 subphases adopt the token vocabulary more broadly. `AppTheme.darkTheme` consumes token names, but runtime behavior remains dark-only and `ThemeMode.dark` remains unchanged until the dedicated light/dark and persistence phases.
+
+This decision keeps visual intent semantic and app-owned: brand, surface, text, semantic state, interaction, spacing, radius, elevation, and typography values should be extended through the token namespace rather than through scattered screen-level constants.
+
+### 30. Phase 9.3 closes with app-owned tokens and compatibility facades
+
+Phase 9.3 finalizes the token-normalization decision as implemented architecture. The canonical namespace is `lib/app/theme/tokens/`, not a screen-level palette and not a feature-module concern. `ScavoColors`, `ScavoSpacing`, `ScavoRadius`, `ScavoElevation`, and `ScavoTypography` own visual intent, while `scavo_tokens.dart` exports the namespace for theme-layer consumers.
+
+`AppColors` and `AppTextStyles` remain compatibility facades so existing UI can migrate incrementally, and shared visual widgets may consume tokens directly where doing so reduces magic values without changing product behavior. This decision preserves dark-only runtime behavior until Phase 9.4/9.5 and prevents later light/dark work from creating a second visual vocabulary.
+
+
+### 31. Theme mode selection is app-root state with local persistence
+
+Phase 9.5 finalizes theme-mode selection as application-level runtime state, not as Settings-only widget state and not as a token-construction concern.
+
+The decision is that `ThemeModePreference` owns the supported values `system`, `light`, and `dark`; `LocalThemeModeRepository` persists the stable string value through the existing local storage boundary; `ThemeModeController` owns reactive Riverpod state; and `ScaviumWalletApp` applies the selected Flutter `ThemeMode` at `MaterialApp.router` using the paired `AppTheme.lightTheme` and `AppTheme.darkTheme` definitions.
+
+Benefits:
+
+- Settings remains a thin interaction surface;
+- app-root wiring remains the only runtime theme application point;
+- token/theme construction remains centralized under `lib/app/theme`;
+- missing or invalid stored values have a safe fallback;
+- the preference remains local-only and privacy-preserving;
+- future Settings/About polish can refine presentation without reworking preference ownership.

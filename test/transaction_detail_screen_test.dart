@@ -40,6 +40,10 @@ void main() {
       find.textContaining('No final receipt has been found yet'),
       findsOneWidget,
     );
+
+    await tester.drag(find.byType(ListView), const Offset(0, -300));
+    await tester.pumpAndSettle();
+
     expect(find.text('Open in explorer'), findsOneWidget);
   });
 }

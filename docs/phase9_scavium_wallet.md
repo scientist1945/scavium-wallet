@@ -1,0 +1,2175 @@
+# Phase 9 — Application Identity, Versioning, and Visual Theme Maturity
+
+## Overview
+
+Phase 9 opens after the complete closure of Phase 8.6.
+
+Phase 8 matured the wallet product surface, account model, asset and portfolio model, transaction/activity behavior, signing surfaces, navigation shell, reliability posture, diagnostics safety, and release/distribution automation. Phase 9 intentionally does not reopen those runtime feature domains.
+
+The purpose of Phase 9 is to consolidate the visible identity layer of SCAVIUM Wallet: the version displayed by the application, the consistency of version propagation through release tooling, and the visual theme system that frames every product surface.
+
+This phase is required because the real Phase 8.6-completed codebase still contains three product-identity gaps:
+
+- the Settings/About surface displays a hardcoded application version (`Version 0.4.0`) instead of resolving it from project/build metadata;
+- `pubspec.yaml` remains the version and MSIX metadata owner, while release tooling already performs MSIX synchronization, but the behavior needs a dedicated hardening/validation pass so operators can distinguish normal `--no-version-bump` behavior from an actual synchronization defect;
+- the application currently runs with a forced dark theme (`ThemeMode.dark`) and a single dark theme surface, while the visual result is not yet normalized into a reusable SCAVIUM token system or paired light/dark theme contract.
+
+Phase 9 therefore moves the project from release/distribution maturity into application identity and visual-system maturity.
+
+---
+
+## Initial Context
+
+The project state used to open this phase is the Phase 8.6-completed ZIP.
+
+Relevant real baseline observations:
+
+- `pubspec.yaml` declares the application version as `version: 0.2.2+1`.
+- `pubspec.yaml` declares `msix_config.msix_version: 0.2.2.1`.
+- `lib/features/settings/presentation/settings_screen.dart` still displays `Version 0.4.0` as static copy.
+- `lib/app/app.dart` forces `themeMode: ThemeMode.dark`.
+- `lib/app/theme/app_theme.dart` exposes `AppTheme.darkTheme` only.
+- `tool/build.dart` contains version parsing, build-number bumping, and MSIX synchronization logic, including `syncMsixVersion(...)`.
+
+These observations define Phase 9 as a product identity, build-version consistency, and visual theme maturity phase.
+
+---
+
+## Problem Statement
+
+SCAVIUM Wallet has reached a mature feature and release baseline, but several identity-level details remain too static or visually under-normalized for a production-grade product:
+
+1. Runtime application version is not derived from the same version source used by packaging and release tooling.
+2. Build/version behavior is not yet documented and validated as an explicit product identity contract after Phase 8.6.
+3. The visual system is currently dark-only and too tightly coupled to saturated runtime colors instead of a normalized design token system.
+4. The Settings surface does not yet act as the user-facing identity/control surface for version and appearance.
+
+If left unresolved, these gaps create visible inconsistencies between what is built, what is distributed, and what the user sees inside the wallet.
+
+---
+
+## Phase Goals
+
+Phase 9 must:
+
+- remove hardcoded runtime application version display;
+- introduce a runtime version surface that resolves from reliable application metadata;
+- harden and document build-version/MSIX synchronization expectations;
+- define a SCAVIUM design token system before changing broad visual behavior;
+- implement coherent light and dark themes based on those tokens;
+- support runtime theme-mode selection and persistence;
+- align Settings/About so application identity and appearance controls are visible, explicit, and stable.
+
+---
+
+## Non-Goals
+
+Phase 9 must not introduce:
+
+- new blockchain transaction behavior;
+- new account, asset, activity, signing, backup, restore, diagnostics, or routing features beyond what is required to expose version/theme controls;
+- WalletConnect or dApp connectivity;
+- telemetry or analytics;
+- automatic Play Store upload;
+- automatic Microsoft Store submission;
+- runtime update delivery;
+- remote theme configuration;
+- white-labeling implementation;
+- a full visual redesign disconnected from the existing SCAVIUM brand.
+
+---
+
+## Implementation Rules
+
+Phase 9 must preserve the established project execution model:
+
+- the ZIP / working tree is the only source of truth;
+- documentation is trunk documentation and must be updated incrementally, not rewritten from scratch;
+- code implementation subphases must remain bounded and testable;
+- `.agent/*` generation/execution may be used only when explicitly requested for code-only execution;
+- documentation closure must not include `.agent/*` artifacts in the deliverable unless the requested task is agent generation itself;
+- runtime behavior changes must be covered by focused tests where practical;
+- build tooling changes must be validated without relying on generated artifacts as source-controlled evidence.
+
+---
+
+## SCAVIUM Design Token System Proposal
+
+The SCAVIUM Design Token System is the visual foundation for Phase 9. It must be defined before broad theme changes so that light and dark themes share the same language instead of diverging into separate ad-hoc palettes.
+
+### Token Families
+
+Phase 9 should introduce or normalize the following token families:
+
+#### Brand Tokens
+
+Brand tokens represent SCAVIUM identity and should remain recognizable across light and dark modes.
+
+- `brandPrimary` — primary SCAVIUM color used for main actions and high-signal highlights.
+- `brandSecondary` — secondary identity color used for supportive emphasis.
+- `brandAccent` — accent color used sparingly for confirmations, selected states, or controlled glow-like emphasis.
+
+#### Background Tokens
+
+Background tokens define visual depth without relying on excessive saturation.
+
+- `backgroundBase` — application canvas.
+- `backgroundLayer` — first elevated visual layer.
+- `backgroundLayerSoft` — softer layer for grouped controls and quiet cards.
+- `backgroundOverlay` — modal/dialog/sheet layer.
+
+#### Surface Tokens
+
+Surface tokens define component hierarchy.
+
+- `surfacePrimary` — default cards and panels.
+- `surfaceSecondary` — nested surfaces.
+- `surfaceMuted` — low-emphasis informational blocks.
+- `surfaceInteractive` — tappable/hoverable surface state.
+
+#### Border and Divider Tokens
+
+Borders should be visible enough to separate surfaces without creating visual noise.
+
+- `borderSubtle` — default card/section border.
+- `borderFocus` — focused input or selected control border.
+- `dividerSubtle` — separators inside dense surfaces.
+
+#### Text Tokens
+
+Text tokens must keep contrast and hierarchy stable in both themes.
+
+- `textPrimary` — main readable text.
+- `textSecondary` — supporting text.
+- `textMuted` — metadata and lower-emphasis labels.
+- `textOnBrand` — text over primary brand surfaces.
+- `textDanger` — destructive or critical warning text.
+
+#### Semantic Tokens
+
+Semantic tokens must be distinct from brand tokens.
+
+- `success` — completed/safe states.
+- `warning` — caution states.
+- `danger` — destructive/error states.
+- `info` — neutral informative states.
+
+#### Interaction Tokens
+
+Interaction tokens must define visible feedback without over-saturating the base UI.
+
+- `hover` — desktop/web hover affordance.
+- `pressed` — pressed/tap feedback.
+- `selected` — selected navigation/control state.
+- `disabled` — disabled foreground/background pairing.
+- `focusRing` — keyboard/accessibility focus indication.
+
+#### Shape and Spacing Tokens
+
+Shape and spacing should keep the current rounded SCAVIUM look but make it consistent.
+
+- `radiusSmall`
+- `radiusMedium`
+- `radiusLarge`
+- `radiusXL`
+- `spacingXS`
+- `spacingS`
+- `spacingM`
+- `spacingL`
+- `spacingXL`
+
+#### Elevation / Shadow Tokens
+
+Elevation should remain subtle, especially in dark mode.
+
+- `elevationNone`
+- `elevationSoft`
+- `elevationModal`
+
+### Theme Strategy
+
+Phase 9 should produce two first-class themes:
+
+- `AppTheme.lightTheme`
+- `AppTheme.darkTheme`
+
+Both themes must be derived from the same token model. Light mode should not be a simple inversion of dark mode; it should preserve SCAVIUM identity while reducing visual weight. Dark mode should keep the existing brand direction but reduce saturation and improve surface separation.
+
+### Visual Normalization Principles
+
+The token system should enforce:
+
+- fewer direct color references inside screens;
+- lower saturation on background and large surfaces;
+- stronger contrast only where interaction or hierarchy requires it;
+- consistent card, input, navigation, dialog, and list-tile behavior;
+- explicit semantic colors for danger/warning/success/info instead of reusing brand colors for meaning;
+- parity between mobile and desktop/web surfaces.
+
+### Future-Proofing
+
+This proposal intentionally prepares the codebase for future branding or white-label capability without implementing those features in Phase 9.
+
+The immediate goal is not customization. The immediate goal is a stable, internal SCAVIUM visual contract.
+
+---
+
+## Phase Structure
+
+## 9.0 — Phase Definition & Documentation Lock
+
+### Objective
+
+Open Phase 9 from the real Phase 8.6-completed codebase and lock the application identity, versioning, and visual theme maturity scope.
+
+### Scope
+
+- Document the Phase 9 problem statement, goals, non-goals, and implementation rules.
+- Record the baseline version/theme observations from the real ZIP.
+- Introduce the SCAVIUM Design Token System proposal as the visual foundation for later subphases.
+- Update trunk documentation only.
+
+### State
+
+Completed documentation-only phase-opening subphase.
+
+### Existing Files Tentatively Intervenable
+
+- `docs/phase9_scavium_wallet.md`
+- `README.md`
+- `docs/index.md`
+- `docs/architecture.md`
+- `docs/architecture_deep.md`
+- `docs/features.md`
+- `docs/ux.md`
+- `docs/development.md`
+- `docs/decisions.md`
+- `docs/release.md`
+
+### New Files Tentatively Creatable
+
+- `docs/phase9_scavium_wallet.md`
+
+### Expected Validations
+
+- Confirm Phase 9 is represented in documentation without modifying runtime code.
+- Confirm no non-existent project documents are referenced as required flow documents.
+- Confirm Phase 8.6 remains closed and Phase 9 is represented as the active next phase.
+
+### 9.0 Closure Result
+
+Phase 9.0 is complete as a documentation-only phase definition and lock.
+
+This closure confirms that Phase 9 has been opened from the real Phase 8.6-completed project state and that its scope is intentionally limited to application identity, versioning, visual theme maturity, Settings/About alignment, and the SCAVIUM Design Token System foundation.
+
+No Dart code, build tooling, CI workflow, runtime wallet behavior, blockchain behavior, account model, asset model, signing flow, backup/restore behavior, diagnostics behavior, navigation contract, or release publication behavior is modified by Phase 9.0.
+
+The documentation trunk now records Phase 9 as active, with 9.1 as the next implementation subphase.
+
+---
+
+## 9.1 — Runtime App Version Surface
+
+### Objective
+
+Remove hardcoded version display from the application and surface the real application version at runtime.
+
+### Scope
+
+- Replace static Settings/About version copy.
+- Add an application identity/version provider or equivalent service boundary.
+- Resolve version/build metadata using a Flutter-compatible package or generated build metadata approach.
+- Display version consistently in the Settings/About surface.
+- Add focused tests where practical.
+
+### State
+
+Planned implementation subphase.
+
+The real Phase 9.0 ZIP confirms that 9.1 is not yet implemented in code. `lib/features/settings/presentation/settings_screen.dart` still renders `Version 0.4.0` as static copy, while `pubspec.yaml` owns `version: 0.2.2+1` and `msix_config.msix_version: 0.2.2.1`. The current dependency set does not include a runtime application metadata package, and there is no existing `lib/core/app_identity` or equivalent version boundary.
+
+### Existing Files Tentatively Intervenable
+
+- `pubspec.yaml` — add a Flutter-compatible runtime metadata dependency only if the implementation chooses package-based version resolution instead of generated metadata.
+- `lib/features/settings/presentation/settings_screen.dart` — replace the hardcoded About subtitle with dynamic application version/build metadata.
+- `test/settings_screen_test.dart` — extend the existing Settings widget coverage so the About section remains present and can be validated with a deterministic version source.
+- `docs/phase9_scavium_wallet.md` — record the actual 9.1 implementation result and validation outcome when 9.1 is executed.
+- `README.md` — update only if the runtime version surface becomes part of the visible product summary after implementation.
+- `docs/index.md` — update only if the active Phase 9 ledger needs to advance from planning to completed 9.1 state.
+
+### New Files Tentatively Creatable
+
+- `lib/core/app_identity/app_version_info.dart` — optional value object for app name, semantic version, build number, and display label if the implementation benefits from a typed boundary.
+- `lib/core/app_identity/app_version_provider.dart` — optional Riverpod provider/service owner for resolving runtime package metadata and exposing it to Settings without coupling UI directly to platform APIs.
+- `test/app_version_info_test.dart` — optional focused unit test if formatting/version-label behavior is extracted from the Settings widget.
+
+### Technical Justification
+
+The application must not display a version that diverges from the version used to build and distribute the wallet. Runtime identity should derive from metadata, not from manually edited UI copy. A small identity boundary keeps Settings/About simple and prevents future visual or release tooling work from depending on hardcoded UI text.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Settings/About no longer contains a literal stale version string.
+- Runtime display resolves the app name/version/build number from a single metadata boundary.
+- Tests avoid depending on the developer machine or generated build artifacts.
+
+### 9.1 Subphase Determination
+
+Phase 9 already defines `9.1 — Runtime App Version Surface` as the next executable implementation subphase. Because 9.1 is small but crosses dependency metadata, application boundary, UI, and tests, it should be executed as a compact set of nested subphases rather than as one unstructured edit.
+
+The following nested subphases are derived from the real ZIP and are intentionally limited to the runtime version surface. They do not touch build/MSIX synchronization, theme tokens, light/dark behavior, theme persistence, signing, assets, transactions, routing, backup/restore, diagnostics behavior, or release publication.
+
+---
+
+### 9.1.1 — Runtime Version Metadata Boundary
+
+#### Objective
+
+Introduce the smallest stable runtime identity boundary capable of resolving the application name, semantic version, build number, and display label from project/build metadata.
+
+#### Scope
+
+- Add a runtime metadata dependency only if required by the selected implementation strategy.
+- Create a small app identity/version owner under the existing application/core layering.
+- Keep version formatting centralized so Settings does not manually compose version strings.
+- Avoid introducing release-tooling logic into runtime code.
+
+#### State
+
+Completed implementation subphase. The runtime identity boundary is owned by `lib/core/app_identity`, uses `package_info_plus` for package metadata resolution, and keeps Settings/About independent from direct platform metadata access.
+
+#### Existing Files Intervened
+
+- `pubspec.yaml` — required only if the implementation uses a package such as `package_info_plus` to resolve runtime metadata across Flutter targets.
+- `pubspec.lock` — updated automatically only if a dependency is added through `flutter pub get`.
+- `docs/phase9_scavium_wallet.md` — record whether the implementation selected package-based metadata or generated metadata.
+
+#### New Files Tentatively Creatable
+
+- `lib/core/app_identity/app_version_info.dart` — typed representation of app identity metadata and display formatting.
+- `lib/core/app_identity/app_version_provider.dart` — Riverpod provider/service wrapper that isolates platform/package metadata resolution from UI code.
+
+#### Technical Justification
+
+The real code currently has no application identity owner and no package capable of reading runtime package metadata. Introducing a narrow boundary prevents `SettingsScreen` from depending directly on platform package APIs and gives tests a stable override point.
+
+#### Expected Validations
+
+- Metadata boundary exposes deterministic display data.
+- No Settings UI behavior is changed yet except through later subphases.
+- Added dependency, if any, is limited to runtime package metadata and does not alter wallet/domain behavior.
+
+---
+
+### 9.1.2 — Settings/About Runtime Version Integration
+
+#### Objective
+
+Replace the hardcoded About version text in Settings with data from the runtime version metadata boundary.
+
+#### Scope
+
+- Convert the About tile from static version copy to provider-backed version display.
+- Preserve the existing Settings section structure introduced during Phase 8.4.
+- Keep loading/error fallback behavior quiet and product-safe.
+- Avoid broad Settings redesign; appearance controls belong to later Phase 9 subphases.
+
+#### State
+
+Completed implementation subphase. Settings/About now consumes the runtime identity boundary and no longer carries stale hardcoded version copy.
+
+#### Existing Files Intervened
+
+- `lib/features/settings/presentation/settings_screen.dart` — replace `Version 0.4.0` with runtime identity display while preserving the existing Settings sections.
+- `test/settings_screen_test.dart` — keep existing Settings section assertions valid after the About tile becomes dynamic.
+- `docs/phase9_scavium_wallet.md` — record the actual UI integration result.
+
+#### New Files Tentatively Creatable
+
+None expected by default. A small Settings-specific widget may be created only if the About row becomes complex enough to justify reuse.
+
+#### Technical Justification
+
+The exact inconsistency identified by Phase 9.0 lives in `SettingsScreen`: the UI says `Version 0.4.0` while `pubspec.yaml` owns `0.2.2+1`. 9.1.2 closes that visible product inconsistency without touching build tooling or theme work.
+
+#### Expected Validations
+
+- Settings/About still renders `SCAVIUM Wallet`.
+- The stale literal `Version 0.4.0` is removed from runtime UI code.
+- The displayed version derives from the metadata boundary.
+- Settings layout remains responsive and sectioned as before.
+
+---
+
+### 9.1.3 — Runtime Version Surface Test Coverage
+
+#### Objective
+
+Add focused tests that prove the About surface remains stable while the version value is dynamic and overrideable.
+
+#### Scope
+
+- Extend existing Settings widget tests or add a focused identity/version test.
+- Prefer provider overrides or metadata mocks over environment-dependent assertions.
+- Validate the display label format without relying on local release artifacts.
+
+#### State
+
+Completed implementation subphase. Focused tests validate deterministic version display and provider override behavior without depending on local release artifacts.
+
+#### Existing Files Intervened
+
+- `test/settings_screen_test.dart` — extend the existing Settings coverage to assert dynamic About behavior under a deterministic test value.
+- `pubspec.yaml` — only if test support requires a metadata package already introduced by 9.1.1.
+- `docs/phase9_scavium_wallet.md` — record the executed validation strategy.
+
+#### New Files Tentatively Creatable
+
+- `test/app_version_info_test.dart` — optional unit test for display-label formatting if formatting is extracted into `AppVersionInfo`.
+
+#### Technical Justification
+
+Runtime metadata can vary by platform, test runner, and generated build state. Tests must validate the application contract through a controlled boundary, not by assuming a particular machine-local package result.
+
+#### Expected Validations
+
+- `fvm flutter test test/settings_screen_test.dart`
+- Optional focused unit test for version label formatting if a value object is introduced.
+- Existing Settings section test intent remains intact.
+
+---
+
+### 9.1.close — Runtime App Version Surface Closure
+
+#### Objective
+
+Close 9.1 by confirming that the stale hardcoded version was removed, runtime metadata is surfaced through a controlled boundary, and documentation reflects the implemented state.
+
+#### Scope
+
+- Record actual files intervened by 9.1 implementation.
+- Record validation commands and outcomes.
+- Confirm 9.2 remains the next Phase 9 implementation subphase after 9.1 closure.
+- Update trunk documentation only from the real implemented state.
+
+#### State
+
+Completed documentation closure for 9.1 after implementation of 9.1.1 through 9.1.3.
+
+#### Implementation Validation Result
+
+Phase 9.1 is complete and coherent with the Phase 9.0 contract. The implementation closes the visible mismatch recorded at phase opening: `SettingsScreen` no longer renders the stale hardcoded `Version 0.4.0` copy while `pubspec.yaml` owns `version: 0.2.2+1`.
+
+The implemented runtime version surface is intentionally small and bounded:
+
+- `package_info_plus` was added as the runtime package metadata dependency in `pubspec.yaml`, with the resolved lock entry recorded in `pubspec.lock`.
+- `lib/core/app_identity/app_version_info.dart` now owns the typed application identity value used by the UI.
+- `lib/core/app_identity/app_version_provider.dart` now owns the metadata reader boundary and Riverpod providers, keeping package/platform metadata resolution outside the Settings widget.
+- `lib/features/settings/presentation/settings_screen.dart` now watches `appVersionInfoProvider` and displays the resolved `AppVersionInfo.displayLabel` inside the About section.
+- `test/app_version_info_test.dart` validates display-label formatting, build-number handling, trimming, and separation between semantic version and build number.
+- `test/settings_screen_test.dart` validates the Settings/About surface through deterministic provider overrides, confirms the stale literal is absent, and verifies the loading fallback remains product-safe.
+
+This result preserves the Phase 8.4 Settings organization and does not introduce new navigation, theme, release tooling, wallet state, signing, asset, activity, backup, restore, diagnostics, or blockchain behavior.
+
+#### 9.1.1 Closure Result — Runtime Version Metadata Boundary
+
+9.1.1 introduced the runtime metadata boundary under `lib/core/app_identity/`. The boundary is deliberately narrow: `PackageInfoAppVersionReader` reads platform package metadata through `PackageInfo.fromPlatform()`, converts it into `AppVersionInfo`, and exposes it through Riverpod providers.
+
+The value object keeps formatting centralized through `displayLabel`, preventing Settings/About from manually composing application version strings. The display format keeps the semantic version and build number visibly distinct as `SCAVIUM Wallet 0.2.2 (1)` rather than embedding the build number into a raw `+` suffixed pubspec string.
+
+#### 9.1.2 Closure Result — Settings/About Runtime Version Integration
+
+9.1.2 replaced the static About subtitle with provider-backed runtime identity. The Settings screen remains a `ConsumerWidget`, now reading `appVersionInfoProvider` near the top of `build()` and resolving a quiet fallback of `Version unavailable` while metadata is loading or unavailable.
+
+The About card remains in the same Settings surface and continues to identify `SCAVIUM Wallet`, but the subtitle now comes from the metadata boundary. This directly resolves the Phase 9.0 product-identity gap without widening the scope into Settings redesign or theme-mode controls, which remain later Phase 9 work.
+
+#### 9.1.3 Closure Result — Runtime Version Surface Test Coverage
+
+9.1.3 added focused test coverage for both the identity value object and the Settings/About surface. The tests avoid machine-local package metadata assumptions by overriding `appVersionInfoProvider` with deterministic values. This keeps the test contract stable across developer machines, CI, and platform-specific package metadata behavior.
+
+The coverage confirms:
+
+- labels include build numbers when present;
+- build suffixes are omitted when the build number is empty;
+- whitespace is normalized before display;
+- semantic version and build number remain separate fields;
+- Settings/About renders the overridden dynamic label;
+- the stale `Version 0.4.0` literal is absent;
+- the loading fallback is deterministic and safe.
+
+#### Actual Files Intervened by 9.1 Implementation
+
+Code and dependency files already changed by the executed implementation subphases:
+
+- `pubspec.yaml`
+- `pubspec.lock`
+- `lib/core/app_identity/app_version_info.dart`
+- `lib/core/app_identity/app_version_provider.dart`
+- `lib/features/settings/presentation/settings_screen.dart`
+- `test/app_version_info_test.dart`
+- `test/settings_screen_test.dart`
+
+Documentation files updated by this closure:
+
+- `docs/phase9_scavium_wallet.md`
+- `docs/index.md`
+- `README.md`
+- `docs/development.md`
+- `docs/features.md`
+- `docs/release.md`
+- `docs/ux.md`
+
+#### Validation Notes
+
+The closure validation is based on inspection of the real ZIP after execution of 9.1.1 through 9.1.3. The implementation contains the expected dependency, boundary files, Settings integration, and focused tests. The documentation closure does not modify runtime code and does not include `.agent/*` artifacts in the deliverable.
+
+Expected command validation for the implemented code remains:
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- `fvm flutter test test/app_version_info_test.dart`
+- `fvm flutter test test/settings_screen_test.dart`
+
+#### Technical Justification
+
+9.1 closes a visible application identity gap but does not harden build/MSIX synchronization. The closure therefore avoids claiming 9.2 outcomes while clearly advancing Phase 9 from runtime version display into build-version hardening.
+
+The user-visible runtime app version now follows an application identity boundary instead of static UI copy. That boundary is reusable by later Settings/About polish without coupling future theme or release work to package APIs.
+
+#### Expected Validations
+
+- Confirm no `.agent/*` artifacts are part of documentation delivery.
+- Confirm no theme, build-tool, release workflow, wallet runtime, signing, asset, backup, restore, diagnostics, or routing behavior is documented as changed by 9.1.
+- Confirm the next implementation subphase remains `9.2 — Build Version & MSIX Synchronization Hardening`.
+
+---
+
+## 9.2 — Build Version & MSIX Synchronization Hardening
+
+### Objective
+
+Clarify and harden the relationship between `pubspec.yaml`, build-number mutation, and `msix_config.msix_version`.
+
+### Scope
+
+- Validate the current `tool/build.dart` version/MSIX synchronization behavior.
+- Ensure `--no-version-bump` behavior is explicit and not confused with a sync failure.
+- Add focused tests or script-level validation if the project structure supports it.
+- Update release/development documentation with exact command expectations.
+
+### State
+
+Closed implementation subphase. 9.2.1 completed the baseline inspection and contract lock, 9.2.2 and 9.2.3 added build-tool hardening and focused validation coverage, 9.2.4 aligned release/development documentation, and 9.2.close records final coherence after the `pubspec.yaml` MSIX layout normalization was confirmed.
+
+The real Phase 9.2 implementation confirms that 9.2 moved beyond the Phase 8.6 release-tooling baseline without becoming a new publication feature. `tool/build.dart` remains the build identity executor and now exposes testable version/MSIX helpers without invoking platform builds. `test/build_tool_version_test.dart` adds focused coverage for strict pubspec parsing, Git tag normalization, version bumping, `--no-version-bump`, and MSIX version derivation. `pubspec.yaml` owns `version: 0.2.2+1`, `msix_config.msix_version: 0.2.2.1`, and the final closure confirms the physical MSIX metadata layout has been normalized so `identity_name` and `msix_version` are separate auditable YAML lines.
+
+The 9.2.1 inspection locked the baseline contract before code hardening. The 9.2.2 and 9.2.3 implementation keeps that ownership model: `pubspec.yaml` remains the canonical source of semantic version and build number; `tool/build.dart` remains the executor for local/CI build orchestration, tag validation, version mutation, and MSIX synchronization; `.github/workflows/release.yml` remains unchanged; generated build reports and release manifests remain evidence outputs rather than committed source of truth.
+
+### Existing Files Tentatively Intervenable
+
+- `tool/build.dart` — validate or harden version bump, `--version`, `--no-version-bump`, expected-tag validation, and MSIX synchronization behavior without changing release publication semantics.
+- `pubspec.yaml` — may be touched only as part of real build-tool behavior during implementation or command validation; source-controlled metadata must remain coherent after the subphase.
+- `docs/release.md` — document operator-facing command expectations, mutation boundaries, no-bump semantics, and MSIX synchronization evidence.
+- `docs/development.md` — document developer-facing validation expectations for build/version hardening.
+- `docs/phase9_scavium_wallet.md` — record the executed 9.2 implementation result and validation outcome when 9.2 is executed.
+
+### New Files Tentatively Creatable
+
+- `test/build_tool_version_test.dart` — optional focused Dart test for pure version parsing, version bump/no-bump semantics, tag normalization, and MSIX version-line synchronization if `tool/build.dart` can be safely structured for testability without broad tooling churn.
+- `tool/build_version_validation.dart` — optional helper only if script-level validation cannot be cleanly covered through tests and the helper remains strictly local to build/version consistency.
+
+### Technical Justification
+
+Phase 8.6 matured release tooling, and 9.1 aligned the user-visible runtime version with package metadata. Phase 9.2 must now harden the adjacent build identity chain so operators can distinguish intended version mutation, intended no-mutation behavior, tag/pubspec validation, and Windows MSIX metadata synchronization. This closes the identity gap between the runtime surface, project metadata, and release packaging without introducing a new release publication feature.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- `dart run tool/build.dart --check-version --expected-tag v0.2.2`
+- Script-level validation for `--no-version-bump` and Windows MSIX synchronization if implementation adds a safe non-publishing validation path.
+- Confirm no Play Store upload, Microsoft Store submission, release publication, wallet runtime, signing, asset, backup, restore, diagnostics, routing, or theme behavior is changed by 9.2.
+
+### 9.2 Subphase Determination
+
+Phase 9 already defines `9.2 — Build Version & MSIX Synchronization Hardening` as the next executable implementation subphase after 9.1. Because the current build tool already performs several responsibilities, 9.2 should be executed as a compact set of nested subphases that separate inspection, behavior hardening, validation coverage, and documentation closure.
+
+The following nested subphases are derived from the real ZIP and are intentionally limited to build-version and MSIX synchronization maturity. They do not touch runtime Settings/About version display already completed in 9.1, SCAVIUM design tokens, light/dark themes, theme preference persistence, signing, assets, transactions, routing, backup/restore, diagnostics behavior, or release publication.
+
+---
+
+### 9.2.1 — Build Version Baseline Inspection and Contract
+
+#### Objective
+
+Lock the current version ownership contract before modifying build tooling.
+
+#### Scope
+
+- Inspect `tool/build.dart` version parsing, bumping, override, no-bump, tag-validation, MSIX synchronization, and release-report behavior.
+- Confirm `pubspec.yaml` remains the source of semantic version/build number and MSIX metadata.
+- Identify which behavior is already correct, which behavior is ambiguous, and which behavior needs validation or hardening.
+- Avoid changing runtime code during the inspection step.
+
+#### State
+
+Completed documentation/baseline subphase.
+
+9.2.1 was executed from the real Phase 9.2 step ZIP as a documentation-only baseline lock. No runtime code, build script, dependency file, workflow, generated release artifact, or `.agent/*` file was modified.
+
+#### Existing Files Tentatively Intervenable
+
+- `docs/phase9_scavium_wallet.md` — record the baseline inspection result and confirm the exact 9.2 execution contract.
+- `docs/release.md` — may receive a small baseline note only if the inspection discovers operator-facing ambiguity that must be documented before code work.
+- `docs/development.md` — may receive a small baseline note only if developer validation commands need to be clarified before code work.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Baseline Inspection Result
+
+The current source-controlled metadata is internally aligned:
+
+- `pubspec.yaml` declares `version: 0.2.2+1`;
+- `pubspec.yaml` declares `msix_config.msix_version: 0.2.2.1`;
+- the MSIX value follows the existing build-tool mapping from `x.y.z+n` to `x.y.z.n`;
+- `tool/build.dart` reads `version: x.y.z+n` through `readVersionInfo`;
+- `resolveVersion` increments the build number when the semantic version is unchanged;
+- `resolveVersion` resets the build number to `1` when `--version x.y.z` changes the semantic version;
+- `--no-version-bump` returns the currently recorded version without mutating `pubspec.yaml`;
+- `validateExpectedTagAgainstPubspec` accepts tags shaped as `vX.Y.Z` or `refs/tags/vX.Y.Z` and compares them against the semantic version only;
+- `buildWindowsMsix` synchronizes `msix_config.msix_version` from the resolved build version before invoking Windows/MSIX packaging;
+- CI MSIX overrides remain environment-variable based and do not redefine version ownership.
+
+The inspection also identifies the precise ambiguity left for 9.2.2 and 9.2.3: the behavior exists, but the script does not yet expose a dedicated low-cost validation surface for no-bump/MSIX synchronization semantics, and operator logs can still be improved so intentional non-mutation is visibly different from a failed synchronization.
+
+#### Version Ownership Contract Locked by 9.2.1
+
+- `pubspec.yaml` is the canonical source for the project semantic version and Flutter build number.
+- `msix_config.msix_version` must remain derivable from `pubspec.yaml` as `semanticVersion.buildNumber`.
+- `tool/build.dart` owns build-time interpretation, optional mutation, tag validation, and MSIX metadata synchronization.
+- `--no-version-bump` means the build uses the current `pubspec.yaml` version intentionally; it is not a request to resynchronize or increment metadata.
+- `--check-version --expected-tag vX.Y.Z` validates the Git tag against the semantic version only; it does not validate or mutate the build number.
+- `.github/workflows/release.yml` remains outside the default 9.2 implementation scope unless a later code inspection proves the workflow contradicts this contract.
+- Generated files under `build/release/`, CI release manifests, checksums, and draft-release assets remain evidence outputs and must not be treated as committed source of truth.
+
+#### Technical Justification
+
+The build tool is already mature enough that uncontrolled edits could regress Phase 8.6 behavior. 9.2.1 creates a narrow contract around existing behavior before hardening anything. The locked contract gives 9.2.2 permission to improve clarity and guardrails without changing release publication semantics, and gives 9.2.3 a stable target for deterministic validation coverage.
+
+#### Expected Validations
+
+- Confirm current `pubspec.yaml` version and `msix_config.msix_version` alignment.
+- Confirm 9.2 does not require `.github/workflows/release.yml` changes unless code inspection proves a real CI inconsistency.
+- Confirm no `.agent/*` artifacts are part of the documentation deliverable for this planning task.
+
+#### 9.2.1 Validation Result
+
+Completed by documentation and source inspection from the real ZIP:
+
+- current version alignment confirmed as `version: 0.2.2+1` and `msix_config.msix_version: 0.2.2.1`;
+- no code-level implementation was performed;
+- no `.github/workflows/release.yml` intervention is justified for 9.2.1;
+- no `.agent/*` artifact is part of the deliverable;
+- 9.2.2 remains the next executable implementation subphase.
+
+---
+
+### 9.2.2 — Build Tool Version and MSIX Behavior Hardening
+
+#### Objective
+
+Harden `tool/build.dart` so version mutation, no-bump behavior, and MSIX synchronization are explicit and difficult to misinterpret.
+
+#### Scope
+
+- Keep `pubspec.yaml` version parsing strict and predictable.
+- Preserve build-number increment behavior when no semantic version override is provided.
+- Preserve build-number reset behavior when semantic version changes through `--version`.
+- Make `--no-version-bump` semantics explicit in logs and behavior.
+- Ensure Windows MSIX synchronization remains tied to the resolved build version when MSIX packaging is requested.
+- Avoid changing artifact publication, signing policy, CI release ownership, or platform build commands unless required by the hardening.
+
+#### State
+
+Implemented by agent in the real 9.2.2-to-9.2.3 ZIP and validated statically during 9.2.4. The implementation remained centered on `tool/build.dart`, preserved the Phase 8.6 release boundary, and did not modify `.github/workflows/release.yml` or release publication behavior.
+
+#### Existing Files Intervened
+
+- `tool/build.dart` — implementation target for behavior clarification, strict version parsing, no-bump semantics, tag normalization/validation, and MSIX synchronization helpers.
+- `pubspec.yaml` — retains the intended version/MSIX values and, by final closure, stores `identity_name` and `msix_version` as separate auditable YAML lines.
+- `docs/phase9_scavium_wallet.md` — records actual implementation decisions and validation outcome.
+
+#### New Files Tentatively Creatable
+
+None expected by default. A small extracted build-version helper file is acceptable only if testing pure version behavior from `tool/build.dart` would otherwise require invoking full Flutter builds.
+
+#### Technical Justification
+
+The real script already performs version and MSIX work, but 9.2 exists because operators need an unambiguous identity chain. Hardening should improve clarity and safety without converting the build script into a new release system.
+
+#### Expected Validations
+
+- `dart run tool/build.dart --check-version --expected-tag v0.2.2`
+- A safe command or test proving no-bump behavior does not mutate `pubspec.yaml` unexpectedly.
+- A safe command or test proving MSIX version synchronization produces `x.y.z.n` from `version: x.y.z+n`.
+
+---
+
+### 9.2.3 — Build Version Validation Coverage
+
+#### Objective
+
+Add focused validation so version parsing, tag normalization, version bumping, no-bump behavior, and MSIX synchronization can be checked without relying on full release builds.
+
+#### Scope
+
+- Add a focused test or script-level validation path if the current project structure supports it cleanly.
+- Prefer pure Dart validation of version/MSIX behavior over invoking platform builds.
+- Keep tests deterministic and independent from generated release artifacts.
+- Avoid broad refactors of `tool/build.dart` solely for test aesthetics.
+
+#### State
+
+Implemented by agent in the real 9.2.2-to-9.2.3 ZIP and validated statically during 9.2.4. The implementation added focused coverage through `test/build_tool_version_test.dart` rather than introducing a release helper script or invoking platform builds for every identity assertion.
+
+#### Existing Files Intervened
+
+- `tool/build.dart` — exposed and preserved testable version/MSIX behavior without broad release-tool refactoring.
+- `docs/phase9_scavium_wallet.md` — records the validation strategy and commands used.
+
+#### New Files Created
+
+- `test/build_tool_version_test.dart` — focused deterministic coverage for build-version parsing, tag normalization, bump/no-bump behavior, and MSIX version derivation without triggering Flutter platform builds.
+
+#### Technical Justification
+
+Full Android, web, and Windows builds are too expensive and environment-dependent for every version-behavior assertion. 9.2.3 should validate the identity logic directly so future release-tool changes do not silently break version/MSIX synchronization.
+
+#### Expected Validations
+
+- `fvm flutter test test/build_tool_version_test.dart` if a Flutter/Dart test is added.
+- Or a documented `dart run tool/...` validation command if a script-level helper is added.
+- Existing `fvm flutter test` remains green.
+
+---
+
+#### 9.2.2 Implementation Validation Result
+
+Static validation of the real 9.2.2-to-9.2.3 ZIP confirms that the build-tool hardening stayed within the intended boundary:
+
+- `tool/build.dart` still owns version parsing, version mutation, tag validation, MSIX synchronization, CI MSIX overrides, artifact expectation reporting, and release-report generation.
+- `VersionInfo.msixVersion` derives the Windows MSIX value as `buildName.buildNumber`, preserving the locked `x.y.z+n` to `x.y.z.n` contract.
+- `resolveVersion` preserves automatic build-number increment when no semantic override is provided.
+- `resolveVersion` preserves build-number reset to `1` when `--version x.y.z` changes the semantic version.
+- `resolveVersion` keeps `--no-version-bump` as intentional non-mutation and returns the current `pubspec.yaml` version instead of mutating metadata.
+- `validateExpectedTagAgainstPubspec` continues to normalize `vX.Y.Z` and `refs/tags/vX.Y.Z` tags and compare only the semantic version.
+- `syncMsixVersion` remains tied to the resolved build version and reports whether the MSIX value was already synchronized or updated.
+- `.github/workflows/release.yml` was not modified by 9.2.2, preserving the Phase 8.6 CI release boundary.
+
+The implementation does not add store upload, Microsoft Store submission, runtime update delivery, wallet runtime behavior, Settings/About version display changes, theme token work, signing changes, asset changes, transaction changes, backup/restore changes, diagnostics changes, or routing changes.
+
+---
+
+#### 9.2.3 Validation Coverage Result
+
+Static validation of the real ZIP confirms that 9.2.3 added the expected focused validation surface:
+
+- `test/build_tool_version_test.dart` exists and imports `tool/build.dart` directly for low-cost behavior coverage.
+- The test covers strict `version: x.y.z+n` parsing.
+- The test covers simple and `refs/tags/` Git tag normalization.
+- The test rejects tags without the `v` prefix and tags that are not semantic `x.y.z`.
+- The test covers automatic build-number increment without override.
+- The test covers build-number increment when the override matches the current semantic version.
+- The test covers build-number reset when the semantic version changes.
+- The test covers `--no-version-bump` as non-mutating behavior even if an override is provided.
+- The test covers MSIX version derivation from a resolved `VersionInfo`.
+
+The validation strategy is coherent with the 9.2 plan because it tests the identity logic directly without invoking Android, web, Windows, MSIX packaging, signing, CI release upload, generated release reports, or generated artifact discovery.
+
+#### 9.2.3 Static Finding for Closure
+
+The code-level intent is coherent and the final closure records the required `pubspec.yaml` layout normalization: the `identity_name` and `msix_version` values remain `com.scavium.wallet` and `0.2.2.1`, and they are stored as separate normal YAML lines. 9.2.4 documented the final operator/developer contract, and 9.2.close now declares the phase closed from that corrected state.
+
+---
+
+### 9.2.4 — Release and Development Documentation Alignment
+
+#### Objective
+
+Align trunk documentation with the final 9.2 behavior so operators and developers know exactly which commands mutate version metadata, which commands validate tags, and which commands synchronize MSIX metadata.
+
+#### Scope
+
+- Update release documentation with the operator-facing version/MSIX behavior.
+- Update development documentation with the developer-facing validation commands and boundaries.
+- Confirm 9.2 did not alter runtime identity from 9.1 or theme work planned for 9.3 onward.
+- Keep documentation incremental and consistent with Phase 8.6 release narrative.
+
+#### State
+
+Completed documentation alignment subphase from the real 9.2.2-to-9.2.3 implementation ZIP. This step records the implemented build-tool behavior, the focused validation surface, and the operator/developer command contract that 9.2.close now closes after `pubspec.yaml` MSIX layout normalization was confirmed.
+
+#### Existing Files Intervened
+
+- `docs/phase9_scavium_wallet.md` — records the implemented 9.2.2/9.2.3 behavior, the 9.2.4 alignment result, and the remaining closure check.
+- `docs/release.md` — records operator-facing command expectations, mutation boundaries, no-bump behavior, tag validation, and MSIX synchronization evidence.
+- `docs/development.md` — records developer-facing focused validation expectations and the final normalized `pubspec.yaml` MSIX metadata contract.
+- `README.md` — updates project status from active 9.2 to closed 9.2.
+- `docs/index.md` — updates the Phase 9 ledger to reflect implemented 9.2.2/9.2.3 and active 9.2.4/9.2.close.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Technical Justification
+
+Version tooling is operationally sensitive. The implementation is incomplete unless the release/development documentation explains the mutation and validation boundaries clearly enough for future operators to reproduce them.
+
+#### Expected Validations
+
+- Documentation states whether `--no-version-bump` intentionally preserves `pubspec.yaml`.
+- Documentation states when `msix_config.msix_version` is synchronized.
+- Documentation states that `test/build_tool_version_test.dart` is the focused validation surface for 9.2 behavior.
+- Documentation records the normalized `pubspec.yaml` physical-layout requirement that 9.2.close confirms.
+- Documentation does not claim automatic store upload, Microsoft Store submission, or runtime update delivery.
+
+#### 9.2.4 Documentation Alignment Result
+
+Completed as a documentation-only subphase over the real 9.2.2-to-9.2.3 ZIP. The release and development documents now explain that normal build execution may mutate `pubspec.yaml`, `--no-version-bump` intentionally does not mutate it, expected-tag validation compares the Git tag against the semantic version only, and Windows MSIX synchronization derives `msix_config.msix_version` from the resolved build identity as `x.y.z.n`.
+
+The alignment also records the practical validation boundary introduced by 9.2.3: `test/build_tool_version_test.dart` is the low-cost coverage surface for version parsing, tag normalization, bump/no-bump behavior, and MSIX derivation. Full platform builds remain release validation, not the only way to verify build identity rules.
+
+9.2.4 does not modify code, `.agent/*`, generated release artifacts, CI release workflow, wallet runtime, Settings/About runtime version display, theme work, signing, assets, transactions, backup/restore, diagnostics, or routing.
+
+The only closure blocker identified during 9.2.4 validation was physical YAML layout. That blocker is resolved for 9.2.close: `pubspec.yaml` preserves the intended `identity_name` and `msix_version` values on separate auditable lines, so the phase can close as fully coherent.
+
+---
+
+### 9.2.close — Build Version & MSIX Synchronization Hardening Closure
+
+#### Objective
+
+Close 9.2 by confirming that build-version mutation, no-bump behavior, tag validation, MSIX synchronization, focused validation coverage, and normalized source-controlled MSIX metadata layout are implemented, validated, and documented coherently.
+
+#### Scope
+
+- Record the actual files changed by 9.2 implementation.
+- Record the confirmed `pubspec.yaml` physical layout with `identity_name` and `msix_version` on separate normal YAML lines.
+- Record the exact validation commands and outcomes.
+- Confirm runtime version display from 9.1 remains intact.
+- Confirm 9.3 remains the next executable implementation subphase.
+
+#### State
+
+Closed documentation/validation subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `docs/phase9_scavium_wallet.md` — close 9.2 from the real implemented state.
+- `docs/release.md` — final release documentation alignment if not completed in 9.2.4.
+- `docs/development.md` — final development documentation alignment if not completed in 9.2.4.
+- `README.md` — update project status after closure if applicable.
+- `docs/index.md` — update Phase 9 ledger after closure if applicable.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Technical Justification
+
+9.2 must close as a build/version hardening phase, not as a release publication phase. Closure prevents later theme work from carrying unresolved version-tooling ambiguity.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Focused build-version validation command or test introduced by 9.2.
+- Confirm `pubspec.yaml` keeps `version: 0.2.2+1` and `msix_config.msix_version: 0.2.2.1` on normal auditable lines, unless the closure intentionally bumps version metadata.
+- Confirm the next executable implementation subphase is `9.3 — Theme Token Normalization`.
+
+#### 9.2.close Final Closure Result
+
+Completed as a documentation-only closure after the Phase 9.2 implementation and the follow-up `pubspec.yaml` MSIX layout normalization were confirmed. Phase 9.2 is now closed from the following coherent state:
+
+- `pubspec.yaml` remains the canonical source for `version: 0.2.2+1`;
+- `msix_config.msix_version` remains aligned as `0.2.2.1`;
+- `identity_name: com.scavium.wallet` and `msix_version: 0.2.2.1` are stored on separate normal YAML lines;
+- `tool/build.dart` owns strict version parsing, optional build-number mutation, explicit `--no-version-bump` behavior, expected-tag validation, and Windows MSIX synchronization;
+- `test/build_tool_version_test.dart` is the focused low-cost validation surface for version parsing, tag normalization, bump/no-bump behavior, and MSIX derivation;
+- `.github/workflows/release.yml` remains unchanged because 9.2 did not expand release publication semantics;
+- runtime Settings/About version display from 9.1 remains intact and is not reopened by 9.2;
+- theme tokens, light/dark theme work, theme persistence, wallet custody, accounts, assets, transactions, signing, backup/restore, diagnostics, routing, Play Store upload, Microsoft Store submission, and GitHub Release publication behavior remain out of scope.
+
+9.2 therefore closes the build identity gap between package metadata, build-tool behavior, and Windows MSIX metadata. The next executable implementation subphase remains `9.3 — Theme Token Normalization`.
+
+---
+
+## 9.3 — Theme Token Normalization
+
+### Objective
+
+Introduce a normalized SCAVIUM design token layer as the foundation for coherent light/dark themes and future visual-system maturity.
+
+### Scope
+
+- Define token ownership inside the existing `lib/app/theme` boundary.
+- Preserve the current SCAVIUM visual identity while replacing ad-hoc color constants with a clearer token vocabulary.
+- Normalize brand, background, surface, border, divider, text, semantic, interaction, shape, spacing, and elevation values before broad theme changes.
+- Keep `AppTheme.darkTheme` behavior functionally stable while preparing it to consume tokenized values.
+- Avoid implementing light mode, runtime theme selection, persistence, Settings appearance controls, or a broad redesign in 9.3.
+
+### State
+
+Closed implementation subphase.
+
+The real Phase 9.3 implementation is now complete across 9.3.1, 9.3.2, and 9.3.3, with 9.3.4 closing the documentation record from the implemented state. The original Phase 9.2 baseline confirmed that 9.3 was not yet implemented in code. `lib/app/theme/app_colors.dart` still exposes a compact dark-oriented color set (`background`, `surface`, `surfaceSoft`, `card`, `primary`, `primarySoft`, `accent`, text colors, `border`, `danger`, `warning`, and `success`). `lib/app/theme/app_text_styles.dart` couples text styles directly to those colors. `lib/app/theme/app_theme.dart` exposes only `AppTheme.darkTheme`, and `lib/app/app.dart` still forces `themeMode: ThemeMode.dark` while passing only the dark theme.
+
+The final direct token consumers remain intentionally bounded: `AppTheme`, `AppTextStyles`, shared SCAVIUM buttons, section titles, cards, snackbars, confirmation dialogs, and the focused token tests. This keeps 9.3 a bounded theme-layer normalization step rather than a screen-by-screen redesign.
+
+### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_colors.dart` — primary existing owner of visual color constants; must either become the token owner or delegate to a new token file without leaving ambiguous duplicate color vocabularies.
+- `lib/app/theme/app_text_styles.dart` — currently binds text styles directly to dark-oriented color constants; may need to consume text tokens or a token context while preserving existing typography intent.
+- `lib/app/theme/app_theme.dart` — must continue to build the current dark theme from the normalized token vocabulary and prepare the handoff to 9.4 without introducing light-mode behavior prematurely.
+- `lib/shared/widgets/scavium_primary_button.dart` — currently consumes `AppColors.primary` and must remain visually coherent if brand/action tokens are renamed or separated.
+- `lib/shared/widgets/scavium_secondary_button.dart` — currently consumes `AppColors.border` and must remain coherent if border tokens are normalized.
+- `lib/shared/widgets/section_title.dart` — currently consumes `AppTextStyles` and is indirectly affected by text-token normalization.
+- `lib/shared/widgets/scavium_card.dart` — should be inspected as a shared surface component even if no code change is ultimately required.
+- `lib/shared/widgets/scavium_text_field.dart` — should be inspected as a shared input component even if the primary input normalization remains inside `AppTheme`.
+- `test/widget_test.dart` — may need adjustment only if theme construction expectations are exposed by the smoke test.
+- Existing widget tests touching Settings, shell, buttons, or shared screens — may be extended only if token refactoring requires deterministic widget coverage.
+- `docs/phase9_scavium_wallet.md` — record the actual 9.3 token architecture, implementation result, and validation outcome when executed.
+- `docs/architecture.md` — update only if 9.3 establishes a concrete token-owner boundary that should be preserved by later phases.
+- `docs/architecture_deep.md` — update only if the implementation adds a deeper design-system structure that affects architectural guidance.
+- `docs/ux.md` — update only if token normalization creates a concrete visual-system UX rule beyond the existing Phase 9 direction.
+- `docs/features.md` — update only if the token system becomes an explicit implemented UI capability rather than a purely internal refactor.
+- `docs/development.md` — update only if new developer rules or focused validation commands are introduced for theme-token work.
+- `docs/decisions.md` — update only if the implementation locks a lasting decision about token ownership, naming, or compatibility.
+
+### New Files Tentatively Creatable
+
+- `lib/app/theme/app_theme_tokens.dart` — optional dedicated token model/owner if keeping all token families inside `AppColors` would make brand/background/surface/semantic/interaction/shape/spacing/elevation ownership unclear.
+- `test/app_theme_tokens_test.dart` — optional focused unit test if token invariants, mapping, or non-null light/dark preparation rules are encoded in pure Dart structures.
+
+No new screen, feature module, repository, service, route, `.agent/*` file, generated asset, release artifact, or platform-specific build file is expected for 9.3.
+
+### Technical Justification
+
+Theme changes should not be implemented as scattered color edits. The current codebase has a small and centralized theme surface, but the names are still mostly dark-palette constants rather than reusable design tokens. Normalizing this layer first gives 9.4 a stable vocabulary for first-class light/dark themes and prevents later Settings/theme-mode work from depending on one-off screen color decisions.
+
+### 9.3 Subphase Determination
+
+Phase 9 defines `9.3 — Theme Token Normalization` as the executable visual-foundation sequence after 9.2 closure. Because 9.3 affects the visual foundation used by all later theme work, it was executed as a compact nested sequence rather than as a single broad edit.
+
+The following nested subphases were derived from the real Phase 9.2 ZIP and remained intentionally limited to token normalization. They do not implement `AppTheme.lightTheme`, do not change `themeMode`, do not add persisted theme selection, do not restructure Settings/About controls, and do not reopen runtime version, build/MSIX, wallet custody, accounts, assets, transactions, signing, backup, restore, diagnostics, routing, release publication, or CI behavior.
+
+---
+
+### 9.3.1 — Theme Token Baseline Inventory and Naming Contract
+
+#### Objective
+
+Inventory the existing theme constants and lock the token naming contract before changing broad visual behavior.
+
+#### Scope
+
+- Inspect current theme ownership in `lib/app/theme/app_colors.dart`, `lib/app/theme/app_text_styles.dart`, and `lib/app/theme/app_theme.dart`.
+- Inspect direct consumers under `lib/shared/widgets` and any screen-level color usage that could conflict with token normalization.
+- Map current dark-oriented constants to the Phase 9 token families: brand, background, surface, border/divider, text, semantic, interaction, shape, spacing, and elevation.
+- Establish the concrete token namespace required by 9.3.2, 9.3.3, and the later light/dark work.
+- Preserve existing screen behavior and avoid broad per-screen refactors during the baseline step.
+
+#### State
+
+Closed implementation subphase.
+
+The real Phase 9.3.1 implementation introduces the baseline SCAVIUM token namespace under `lib/app/theme/tokens/` and keeps the existing public app-theme facade compatible. The subphase creates semantic token owners for colors, spacing, radius, elevation, and typography, exports them through `scavo_tokens.dart`, rewires `AppColors`, `AppTextStyles`, and `AppTheme.darkTheme` to consume those token names, and adds focused token-contract coverage in `test/app_theme_tokens_test.dart`.
+
+9.3.1 deliberately remains a foundation step. It does not expose light mode, does not change `themeMode`, does not persist appearance preferences, does not alter Settings controls, and does not perform a screen-by-screen visual redesign.
+
+#### Existing Files Intervened
+
+- `lib/app/theme/app_colors.dart` — converted into a backwards-compatible color facade over `ScavoColors` so existing consumers remain stable while new work can use semantic token names.
+- `lib/app/theme/app_text_styles.dart` — converted into a backwards-compatible typography facade over `ScavoTypography` so existing text consumers keep their current API.
+- `lib/app/theme/app_theme.dart` — rewired the current dark `ThemeData` to consume token names for scaffold, color scheme, text theme, app bar, card, and input decoration values while preserving dark-only runtime behavior.
+
+#### New Files Created
+
+- `lib/app/theme/tokens/scavo_colors.dart` — semantic color token owner for brand, background, surface, text, border/divider, semantic state, interaction, overlay, and transparent values.
+- `lib/app/theme/tokens/scavo_spacing.dart` — compact non-component spacing scale used as the layout baseline for later adoption.
+- `lib/app/theme/tokens/scavo_radius.dart` — shape radius scale for SCAVIUM surfaces and controls.
+- `lib/app/theme/tokens/scavo_elevation.dart` — elevation scale documenting the current mostly-flat SCAVIUM visual posture.
+- `lib/app/theme/tokens/scavo_typography.dart` — typography token owner backed by Inter and semantic text-color intent.
+- `lib/app/theme/tokens/scavo_tokens.dart` — barrel export for the token namespace.
+- `test/app_theme_tokens_test.dart` — focused contract test that validates legacy facade mappings and non-component token scale ordering.
+
+#### Technical Justification
+
+The existing theme surface was small enough to preserve, but token naming needed to be locked before deeper refactoring. The implemented structure avoids renaming constants twice, prevents 9.4 from building light/dark themes on unstable vocabulary, and gives the rest of Phase 9 a concrete owner for visual intent.
+
+The naming contract is intentionally semantic and medium-high in granularity. Tokens describe UI intent rather than raw color names or component-specific values: brand colors remain distinct from semantic state colors, surfaces are separated from backgrounds, text colors are named by hierarchy, and spacing/radius/elevation scales stay compact enough to avoid a new token for every component.
+
+#### Validations Performed
+
+- Confirmed token naming is semantic rather than raw color-name driven.
+- Confirmed 9.3.1 did not perform screen-level visual refactor work.
+- Confirmed 9.3.1 remains independent from theme-mode persistence and Settings controls.
+- Confirmed the token owner is compatible with `AppTheme.darkTheme` and later light/dark theme work.
+- Confirmed the implementation preserves existing `AppColors` and `AppTextStyles` facade names for incremental adoption.
+- Added focused token contract coverage in `test/app_theme_tokens_test.dart`.
+- `dart`, `flutter`, and `fvm` were not available in the closure environment, so `fvm flutter analyze` and `fvm flutter test` must be executed in the project development environment before merging if they were not already executed by the implementation agent.
+
+#### 9.3.1 Closure Result
+
+Phase 9.3.1 is closed as the token baseline and naming-contract implementation.
+
+The closed state establishes `lib/app/theme/tokens/` as the concrete SCAVIUM token namespace for the rest of Phase 9. `AppColors` and `AppTextStyles` now act as compatibility facades over the token model, while `AppTheme.darkTheme` consumes tokens directly. This allows 9.3.2 and 9.3.3 to continue hardening token usage without breaking existing screens or forcing a broad visual rewrite.
+
+No light theme, runtime theme selector, persisted preference, Settings appearance control, release behavior, version behavior, wallet custody flow, signing flow, backup/restore behavior, diagnostics behavior, routing behavior, CI workflow, generated artifact, or `.agent/*` artifact is introduced by 9.3.1.close.
+
+---
+
+### 9.3.2 — Core SCAVIUM Token Model Implementation
+
+#### Objective
+
+Implement the normalized token vocabulary in the app theme layer while preserving the current dark visual behavior as the active runtime appearance.
+
+#### Scope
+
+- Introduce or normalize token constants for brand, background, surface, border, divider, text, semantic, interaction, shape, spacing, and elevation.
+- Keep backwards-compatible aliases only if needed to reduce churn, and document whether those aliases are transitional.
+- Preserve the existing SCAVIUM dark identity while reducing ambiguity between brand colors, semantic colors, and large-surface colors.
+- Keep implementation centralized under `lib/app/theme`.
+
+#### State
+
+Closed as code-only implementation. `AppTheme.lightTheme` now exists beside `AppTheme.darkTheme`, both are built through the centralized `_buildTheme(ScavoThemeColors colors)` helper, and the mode-aware color boundary is owned by `lib/app/theme/tokens/scavo_theme_colors.dart`. Runtime theme selection remains intentionally deferred.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_colors.dart` — likely receives normalized token families or delegates to the new token owner.
+- `lib/app/theme/app_text_styles.dart` — may move from raw dark constants to text token names while retaining Inter typography.
+- `lib/app/theme/app_theme.dart` — must consume normalized tokens for the existing dark theme.
+- `lib/shared/widgets/scavium_primary_button.dart` — may need token rename alignment for primary actions.
+- `lib/shared/widgets/scavium_secondary_button.dart` — may need token rename alignment for borders/secondary action surfaces.
+
+#### New Files Tentatively Creatable
+
+- `lib/app/theme/app_theme_tokens.dart` — acceptable if the implementation benefits from separating token families from legacy color aliases and `ThemeData` construction.
+
+#### Technical Justification
+
+The project already has an app-level theme layer; 9.3 should mature that layer rather than bypass it. A token model gives later light/dark implementation a shared foundation and separates product identity colors from semantic state colors.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test` or a focused subset if only pure theme/widget coverage is affected.
+- Confirm `lib/app/app.dart` still forces dark mode after 9.3.
+- Confirm no light-mode behavior is exposed yet.
+
+---
+
+### 9.3.3 — ThemeData and Shared Widget Token Adoption
+
+#### Objective
+
+Ensure the active `AppTheme.darkTheme` and shared SCAVIUM widgets consume the normalized token vocabulary coherently.
+
+#### Scope
+
+- Rebuild `AppTheme.darkTheme` from the normalized token names without introducing `AppTheme.lightTheme`.
+- Align card, input, app bar, text, color scheme, primary/secondary buttons, section titles, and shared surface components with the token model.
+- Keep screen-level changes minimal and only where direct raw color coupling blocks token adoption.
+- Preserve current navigation, routing, Settings/About version display, signing, asset, activity, backup, and diagnostics behavior.
+
+#### State
+
+Closed as code-only implementation. Shared cards, buttons, snackbars, dialogs, Settings section cards, and navigation surfaces were validated against the paired `ThemeData` contract so color ownership remains centralized in theme/tokens instead of screen-local light/dark branches.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_theme.dart` — primary ThemeData adoption target.
+- `lib/app/theme/app_text_styles.dart` — text hierarchy adoption target.
+- `lib/shared/widgets/scavium_card.dart` — shared surface/card alignment target if it uses hardcoded visual values or can better rely on `CardTheme`.
+- `lib/shared/widgets/scavium_text_field.dart` — shared input alignment target if it duplicates theme-owned behavior.
+- `lib/shared/widgets/scavium_primary_button.dart` — primary action alignment target.
+- `lib/shared/widgets/scavium_secondary_button.dart` — secondary action alignment target.
+- `lib/shared/widgets/feedback/app_snackbar.dart` — inspect only if snackbar semantic color usage bypasses theme tokens.
+- `lib/shared/widgets/feedback/confirm_dialog.dart` — inspect only if dialog/danger state color usage bypasses theme tokens.
+
+#### New Files Tentatively Creatable
+
+None expected by default beyond the optional token file introduced in 9.3.2.
+
+#### Technical Justification
+
+A token file alone is not enough if the active theme and shared components continue to use old dark-palette names. This subphase proves the token system is actually the app-level visual contract while keeping runtime behavior and feature flows unchanged.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Manual smoke review of shell/navigation, Settings/About, dashboard, shared cards, inputs, buttons, snackbars, and confirmation dialogs in dark mode.
+
+---
+
+### 9.3.4 — Token Documentation and Implementation Closure
+
+#### Objective
+
+Close 9.3 by documenting the actual token owner, token families, implementation boundaries, and validation result from the real executed state.
+
+#### Scope
+
+- Update `docs/phase9_scavium_wallet.md` with the final 9.3 closure result.
+- Update architecture/development/UX/feature/decision documentation only where the implemented token system creates a durable trunk rule.
+- Confirm 9.4 can begin from a stable token vocabulary.
+- Confirm no runtime theme selection, light mode, Settings appearance controls, wallet behavior, release behavior, or `.agent/*` artifacts are included in the closure deliverable unless explicitly requested by a separate agent-generation task.
+
+#### State
+
+Closed documentation-only nested subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `docs/phase9_scavium_wallet.md` — required closure record.
+- `README.md` — update only if the Phase 9 status ledger must advance after 9.3 implementation.
+- `docs/index.md` — update only if the active Phase 9 ledger must advance after 9.3 implementation.
+- `docs/architecture.md` — update only if the concrete token owner becomes an architectural rule.
+- `docs/architecture_deep.md` — update only if a deeper token structure or mapping deserves long-form architectural treatment.
+- `docs/ux.md` — update only if visual normalization has implemented user-facing UX principles.
+- `docs/features.md` — update only if token normalization is recorded as an implemented UI maturity capability.
+- `docs/development.md` — update only if future theme development requires new commands or coding rules.
+- `docs/decisions.md` — update only if the token-owner/naming decision is finalized by implementation.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Technical Justification
+
+9.3 is a foundation subphase for 9.4 through 9.6. Its closure must preserve the actual token contract so later implementation prompts can consume the documentation without guessing file ownership or repeating baseline analysis.
+
+#### Expected Validations
+
+- Confirm all modified documentation matches the actual files changed by the implementation.
+- Confirm the deliverable contains only modified/new documentation if the task is documentation closure.
+- Confirm the next implementation phase remains `9.4 — Light/Dark Theme Implementation`.
+
+#### 9.3.4 Closure Result
+
+Phase 9.3.4 closes the Theme Token Normalization sequence as a documentation-only subphase. The executed 9.3 implementation establishes `lib/app/theme/tokens/` as the canonical SCAVIUM visual-token namespace, keeps `AppColors` and `AppTextStyles` as compatibility facades, and confirms `AppTheme.darkTheme` is now built from normalized token values rather than from scattered raw visual constants.
+
+The final implemented token families are:
+
+- `ScavoColors` for brand, background, surface, text, border/divider, semantic state, interaction, overlay, and transparency intent.
+- `ScavoSpacing` for the compact non-component layout scale used by shared widgets and future screen adoption.
+- `ScavoRadius` for shape scale across controls, cards, overlays, and pill-like surfaces.
+- `ScavoElevation` for the mostly-flat SCAVIUM elevation posture, including floating and modal levels.
+- `ScavoTypography` for Inter-backed text styles and semantic typography aliases.
+- `scavo_tokens.dart` as the theme-layer barrel export.
+
+The final 9.3 adoption remains deliberately bounded. Shared visual components now consume token values where the phase intended to prove the contract: `ScaviumCard`, `ScaviumPrimaryButton`, `ScaviumSecondaryButton`, `SectionTitle`, `AppSnackbar`, and `ConfirmDialog` participate in token usage, while the application root still remains dark-only. No `AppTheme.lightTheme`, runtime theme selector, persisted appearance preference, Settings appearance control, wallet behavior, release behavior, routing behavior, CI workflow, generated artifact, or `.agent/*` artifact is introduced by 9.3.
+
+Focused coverage remains in `test/app_theme_tokens_test.dart`, validating facade mappings, expanded token aliases, compact token scales, typography facade behavior, and dark-theme construction from normalized token values. Manual validation for 9.3 should continue to include dark-mode smoke review of shell/navigation, Settings/About, dashboard, shared cards, inputs, buttons, snackbars, and confirmation dialogs.
+
+Phase 9.3 is therefore closed as the visual-system foundation required by Phase 9.4. The next executable implementation phase is `9.4 — Light/Dark Theme Implementation`, which should extend this token vocabulary into first-class light/dark theme definitions rather than reintroducing screen-local palettes.
+
+---
+
+## 9.4 — Light/Dark Theme Implementation
+
+### Objective
+
+Implement first-class light and dark SCAVIUM themes using the normalized token system produced by 9.3, while keeping runtime theme selection outside this phase.
+
+### Scope
+
+- Add `AppTheme.lightTheme` as a complete Material 3 theme definition.
+- Preserve and refine `AppTheme.darkTheme` from the same normalized token vocabulary.
+- Introduce a light/dark token boundary only where the current dark-only `ScavoColors` model cannot represent both appearances safely.
+- Ensure Material 3 `ColorScheme`, scaffold, card, input, app bar, navigation, dialog, list, snackbar, and button behavior remain coherent in both themes.
+- Validate core screens visually and through focused theme/widget tests where practical.
+- Keep `MaterialApp.router` forced to dark mode until 9.5 introduces runtime theme-mode selection and persistence.
+
+### State
+
+Closed. 9.4.1 was executed as the documentation-only baseline gate, 9.4.2 introduced paired light/dark theme construction, 9.4.3 consolidated shared component and navigation theme coherence, and 9.4.4 closes the implementation with the final validation and documentation record from the real 9.4 completed ZIP.
+
+### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_theme.dart` — current owner of `AppTheme.darkTheme`; must become the owner of both dark and light `ThemeData` definitions.
+- `lib/app/theme/tokens/scavo_colors.dart` — current semantic color-token owner; may need mode-specific semantic values or a structured palette boundary to avoid forcing dark constants into the light theme.
+- `lib/app/theme/tokens/scavo_tokens.dart` — barrel export to update only if 9.4 introduces a new token/palette file under the existing token namespace.
+- `lib/app/theme/app_colors.dart` — compatibility facade to inspect if new token names require stable aliases without breaking existing imports.
+- `lib/app/theme/app_text_styles.dart` — compatibility facade to inspect if typography color ownership must remain valid across both themes.
+- `lib/app/shell/responsive_navigation.dart` — navigation rail/bar surface to inspect because light/dark `NavigationBarThemeData` and `NavigationRailThemeData` should be centralized instead of screen-local.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — shared Settings card surface to inspect because it relies on theme text and surface colors and is a high-signal visual review target.
+- `lib/shared/widgets/scavium_card.dart` — shared surface/card component that must remain coherent under both theme definitions.
+- `lib/shared/widgets/scavium_primary_button.dart` — shared primary action component to validate against theme-owned button styles.
+- `lib/shared/widgets/scavium_secondary_button.dart` — shared secondary action component to validate border/foreground behavior across both themes.
+- `lib/shared/widgets/scavium_text_field.dart` — shared input component to validate fill, border, focus, label, and hint behavior across both themes.
+- `lib/shared/widgets/feedback/app_snackbar.dart` — feedback surface to validate snackbar color and contrast behavior across both themes.
+- `lib/shared/widgets/feedback/confirm_dialog.dart` — confirmation and destructive-action dialog surface to validate dialog and danger-state behavior across both themes.
+- `test/app_theme_tokens_test.dart` — existing token/theme contract coverage; should be expanded or complemented to prove both themes are built from the intended token contract.
+- Existing widget tests for shell, Settings, cards, inputs, dialogs, and shared visual surfaces if the implementation changes theme-owned behavior that they cover.
+
+### New Files Tentatively Creatable
+
+- `lib/app/theme/tokens/scavo_theme_colors.dart` — optional token-layer file if the implementation needs explicit mode-aware color groups while preserving `ScavoColors` compatibility.
+- `test/app_theme_light_dark_test.dart` — optional focused test file if keeping light/dark theme assertions separate from the existing token-normalization tests improves readability.
+
+### Technical Justification
+
+The real baseline still has `MaterialApp.router` hardcoded to `ThemeMode.dark`, `theme: AppTheme.darkTheme`, and no `AppTheme.lightTheme`. The 9.3 implementation successfully centralized token ownership under `lib/app/theme/tokens/`, but the concrete `ScavoColors` values are still dark appearance values. 9.4 must therefore implement light/dark themes as an app-level theme contract, not by scattering conditional colors through screens. Runtime selection, persistence, and Settings controls remain deferred to 9.5 and 9.6.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Focused theme assertions proving `AppTheme.lightTheme` and `AppTheme.darkTheme` expose coherent Material 3 color schemes and component themes.
+- Manual visual smoke review of shell/navigation, Settings/About, dashboard, cards, inputs, buttons, snackbars, and confirmation dialogs in both theme definitions where practical.
+- Confirm `lib/app/app.dart` still does not expose runtime theme switching during 9.4.
+
+---
+
+### 9.4.1 — Light/Dark Theme Baseline and Token Boundary
+
+#### Objective
+
+Establish the exact token and theme boundary required to support both SCAVIUM light and dark appearances without destabilizing the 9.3 token contract.
+
+#### Scope
+
+- Inspect the current dark-only `ScavoColors` values and identify which semantic tokens need mode-specific values.
+- Confirm which visual responsibilities belong in `ThemeData` versus shared widgets.
+- Preserve the existing dark visual identity as the compatibility baseline.
+- Document that 9.4 does not introduce runtime theme selection, persistence, or Settings controls.
+
+#### State
+
+Closed as documentation-only baseline and token-boundary execution from the real 9.4 step ZIP. No runtime code, `.agent/*`, light theme implementation, theme selector, persistence, or Settings appearance control was introduced by 9.4.1.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/tokens/scavo_colors.dart` — baseline token owner; must be inspected before deciding whether mode-aware values are needed.
+- `lib/app/theme/tokens/scavo_tokens.dart` — barrel export to update only if a new token file is introduced.
+- `lib/app/theme/app_theme.dart` — current theme owner; must be inspected to map existing component-theme coverage before adding light mode.
+- `lib/app/theme/app_colors.dart` — compatibility facade to inspect before renaming or moving token values.
+- `test/app_theme_tokens_test.dart` — current token contract test; must remain compatible with 9.3 expectations.
+
+#### New Files Tentatively Creatable
+
+- `lib/app/theme/tokens/scavo_theme_colors.dart` — optional, only if the implementation needs a clean mode-aware color object instead of overloading `ScavoColors` with paired constants.
+
+#### Technical Justification
+
+9.3 normalized token names but intentionally kept runtime behavior dark-only. Before adding a light theme, 9.4 must avoid treating the dark token values as universal values. This baseline subphase protects the token namespace and prevents later implementation from solving light mode through ad hoc screen overrides.
+
+#### Expected Validations
+
+- Confirm all proposed files exist before intervention except explicitly optional new files.
+- Confirm no `.agent/*` file, code execution prompt, runtime selector, or persisted preference is generated by this documentation phase.
+- Confirm 9.4 remains bounded to theme implementation and visual validation.
+
+#### 9.4.1 Execution Record
+
+Phase 9.4.1 was executed as a documentation-only baseline from the updated 9.4 ZIP. The real application state remains intentionally dark-only: `lib/app/app.dart` still sets `themeMode: ThemeMode.dark` and passes `theme: AppTheme.darkTheme`; `lib/app/theme/app_theme.dart` exposes only `AppTheme.darkTheme`; and `test/app_theme_tokens_test.dart` validates the 9.3 token contract plus dark-theme construction from normalized token values.
+
+The inspection confirms that 9.3 produced the correct foundation but did not solve light/dark pairing yet. `lib/app/theme/tokens/scavo_colors.dart` owns semantic color tokens with values calibrated for the existing dark SCAVIUM appearance, `lib/app/theme/tokens/scavo_tokens.dart` exports the token namespace, `lib/app/theme/app_colors.dart` and `lib/app/theme/app_text_styles.dart` remain compatibility facades, and `AppTheme.darkTheme` centralizes Material 3 theme construction from tokens.
+
+The durable boundary for the next code-only work is therefore explicit:
+
+- 9.4.2 may introduce `AppTheme.lightTheme` and may refine `AppTheme.darkTheme`, but both themes must remain centralized under `lib/app/theme/app_theme.dart`.
+- If the current dark `ScavoColors` values cannot safely represent both appearances, 9.4.2 may introduce a mode-aware token-layer owner such as `lib/app/theme/tokens/scavo_theme_colors.dart` instead of scattering conditional colors through widgets.
+- Existing compatibility facades must remain stable unless a real implementation need proves otherwise.
+- `MaterialApp.router` must remain forced to dark mode through 9.4; user-facing theme selection, persisted preferences, system-mode handling, and Settings controls remain explicitly deferred to 9.5 and 9.6.
+- 9.4.3 should validate shared components and navigation surfaces against the paired theme contract, not implement screen-local light/dark branches.
+
+This closes 9.4.1 as the documentary execution gate for the light/dark implementation phase. The next executable subphase is `9.4.2 — AppTheme Light and Dark ThemeData Construction`, and it should be handled as code-only by the agent workflow.
+
+#### 9.4.1 Documentation Validation
+
+- Verified the real theme root in `lib/app/app.dart`.
+- Verified the current theme owner in `lib/app/theme/app_theme.dart`.
+- Verified token ownership in `lib/app/theme/tokens/scavo_colors.dart` and `lib/app/theme/tokens/scavo_tokens.dart`.
+- Verified compatibility facades in `lib/app/theme/app_colors.dart` and `lib/app/theme/app_text_styles.dart`.
+- Verified existing token/theme test coverage in `test/app_theme_tokens_test.dart`.
+- Confirmed this subphase did not modify runtime code, tests, generated artifacts, release tooling, `.agent/*`, wallet behavior, routing, Settings controls, or persistence behavior.
+
+---
+
+### 9.4.2 — AppTheme Light and Dark ThemeData Construction
+
+#### Objective
+
+Implement `AppTheme.lightTheme` and refine `AppTheme.darkTheme` as paired Material 3 theme definitions built from the SCAVIUM token vocabulary.
+
+#### Scope
+
+- Add `AppTheme.lightTheme` beside the existing `AppTheme.darkTheme`.
+- Keep `AppTheme.darkTheme` visually compatible with the 9.3 result.
+- Ensure both themes define coherent `ColorScheme` values, scaffold backgrounds, text themes, card themes, app bars, dividers, inputs, buttons, dialogs, and snackbars.
+- Centralize theme construction helpers where needed inside the theme layer.
+- Avoid changing `lib/app/app.dart` theme mode behavior until 9.5.
+
+#### State
+
+Closed as validation and documentation closure. Focused token/theme assertions now cover both `AppTheme.darkTheme` and `AppTheme.lightTheme`, while `lib/app/app.dart` remains forced to dark runtime behavior for the future 9.5 preference work.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_theme.dart` — primary implementation target for paired `ThemeData` definitions.
+- `lib/app/theme/tokens/scavo_colors.dart` — may receive mode-aware values required by the paired themes.
+- `lib/app/theme/tokens/scavo_tokens.dart` — update only if new token files are added.
+- `lib/app/theme/app_text_styles.dart` — inspect if text style colors need theme-safe ownership rather than dark-only static colors.
+- `lib/app/theme/app_colors.dart` — inspect if compatibility aliases need to remain stable after the light/dark split.
+
+#### New Files Tentatively Creatable
+
+- `lib/app/theme/tokens/scavo_theme_colors.dart` — optional owner for paired theme color sets if this keeps `AppTheme` readable and preserves the compatibility facade.
+
+#### Technical Justification
+
+The current app root can only reference `AppTheme.darkTheme`. Adding a first-class light theme at the same ownership level is the minimum product-level step required before runtime theme selection can be introduced safely in 9.5.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- Focused test or assertion coverage confirming `AppTheme.lightTheme.brightness == Brightness.light` and `AppTheme.darkTheme.brightness == Brightness.dark` through their color schemes.
+- Confirm dark theme token expectations from 9.3 remain valid.
+
+---
+
+### 9.4.3 — Component and Navigation Theme Coherence
+
+#### Objective
+
+Ensure shared components and shell/navigation surfaces consume the paired theme definitions coherently without duplicating light/dark logic inside screens.
+
+#### Scope
+
+- Inspect shared cards, inputs, primary/secondary buttons, snackbars, confirmation dialogs, section cards, and shell navigation against the new theme definitions.
+- Move reusable component colors into `ThemeData` where appropriate.
+- Keep local widget styling only where it expresses component structure, spacing, radius, or semantic intent not already owned by the theme.
+- Preserve wallet, asset, transaction, signing, backup, diagnostics, routing, and release behavior.
+
+#### State
+
+New planned nested subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/theme/app_theme.dart` — likely receives navigation, list, icon, button, dialog, snackbar, and component-theme refinements.
+- `lib/app/shell/responsive_navigation.dart` — inspect for navigation rail/bar reliance on default colors that may need centralized theme definitions.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — inspect Settings card readability and divider behavior in both themes.
+- `lib/shared/widgets/scavium_card.dart` — inspect shared surface behavior under light and dark themes.
+- `lib/shared/widgets/scavium_primary_button.dart` — inspect action foreground/background behavior under both themes.
+- `lib/shared/widgets/scavium_secondary_button.dart` — inspect secondary action border/foreground behavior under both themes.
+- `lib/shared/widgets/scavium_text_field.dart` — inspect input border/fill/focus behavior under both themes.
+- `lib/shared/widgets/feedback/app_snackbar.dart` — inspect feedback surface contrast under both themes.
+- `lib/shared/widgets/feedback/confirm_dialog.dart` — inspect dialog and destructive action contrast under both themes.
+
+#### New Files Tentatively Creatable
+
+None expected by default.
+
+#### Technical Justification
+
+Light/dark support is only credible if common surfaces render coherently without each screen carrying its own color branch. The current codebase already has shared widgets and a centralized shell, so 9.4 should reinforce those owners instead of broadening visual responsibility into feature screens.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test` or focused widget tests touching the changed shared components.
+- Manual smoke review of navigation rail/bar, Settings sections, cards, inputs, buttons, snackbars, and confirmation dialogs in both theme definitions.
+
+---
+
+### 9.4.4 — Light/Dark Theme Validation and Documentation Closure
+
+#### Objective
+
+Close 9.4 by validating the paired theme contract and documenting the final implementation boundary for later 9.5 runtime selection.
+
+#### Scope
+
+- Add or expand focused tests for the paired light/dark theme contract.
+- Confirm `AppTheme.lightTheme` exists and `AppTheme.darkTheme` remains compatible with 9.3 expectations.
+- Confirm `MaterialApp.router` still does not expose runtime switching until 9.5.
+- Update Phase 9 documentation from the real implemented state after code execution.
+- Update README/index only if 9.4 has been actually implemented and the Phase 9 ledger needs to advance.
+
+#### State
+
+New planned nested subphase.
+
+#### Existing Files Tentatively Intervenable
+
+- `test/app_theme_tokens_test.dart` — expand if paired-theme assertions belong with token contract coverage.
+- `docs/phase9_scavium_wallet.md` — required closure record after 9.4 implementation.
+- `README.md` — update only after implementation if the Phase 9 status ledger should record 9.4 as implemented/closed.
+- `docs/index.md` — update only after implementation if the active Phase 9 narrative should advance beyond 9.3.
+- `docs/architecture.md`, `docs/architecture_deep.md`, `docs/ux.md`, `docs/features.md`, `docs/development.md`, and `docs/decisions.md` — inspect only after implementation and update only where paired light/dark theme ownership becomes a durable trunk rule.
+
+#### New Files Tentatively Creatable
+
+- `test/app_theme_light_dark_test.dart` — optional focused test owner if introduced by the implementation.
+
+#### Technical Justification
+
+9.4 is the bridge between token normalization and user-selectable appearance. Its closure must make the paired theme contract explicit so 9.5 can wire runtime selection and persistence without rediscovering theme ownership.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Confirm modified documentation matches the real files changed by the implementation.
+- Confirm the next implementation phase remains `9.5 — Theme Mode Runtime Selection and Persistence`.
+
+#### 9.4.4 Execution Record
+
+Phase 9.4.4 was executed after the agent-completed 9.4.2 and 9.4.3 implementation sequence and closes 9.4 from the real updated ZIP. The completed implementation now establishes a paired theme contract without exposing runtime selection: `lib/app/theme/app_theme.dart` exposes both `AppTheme.darkTheme` and `AppTheme.lightTheme`, both themes are produced through the same `_buildTheme(ScavoThemeColors colors)` path, and `lib/app/theme/tokens/scavo_theme_colors.dart` owns the mode-specific color sets required to preserve the 9.3 dark token contract while adding a first-class light appearance.
+
+The dark theme remains compatible with the existing SCAVIUM visual identity by mapping `ScavoThemeColors.dark` back to the normalized `ScavoColors` semantic tokens introduced in 9.3. The light theme uses a separate `ScavoThemeColors.light` palette for canvas, layer, surface, border, divider, text, action, semantic, and focus values, avoiding the earlier risk of treating dark calibrated constants as universal values. `lib/app/theme/tokens/scavo_tokens.dart` now exports the mode-aware color owner so later phases can consume the paired theme boundary through the same token namespace.
+
+The shared component and navigation review confirms that the implementation stayed centralized. `ScaviumCard`, `ScaviumPrimaryButton`, `ScaviumSecondaryButton`, `SettingsSectionCard`, `AppSnackbar`, `ConfirmDialog`, and `ResponsiveNavigation` rely on `ThemeData`, `ColorScheme`, component themes, and normalized spacing/radius tokens instead of adding local light/dark conditionals. `AppTheme` now owns the relevant Material 3 theme surfaces for scaffold background, color scheme, text theme, app bar, cards, dividers, buttons, navigation bar/rail, inputs, snackbars, dialogs, and text selection.
+
+The runtime boundary remains deliberately unchanged. `lib/app/app.dart` still forces dark behavior through `themeMode: ThemeMode.dark` and does not introduce a user-facing selector, persisted preference, system-mode handling, Settings appearance control, or app-root reactive theme provider. That makes 9.4 a pure paired-theme implementation layer and leaves theme-mode selection and persistence to 9.5.
+
+Focused validation coverage is now carried by `test/app_theme_tokens_test.dart`. The test file preserves the 9.3 facade and token-scale assertions, verifies dark-theme construction from normalized dark tokens, and adds light-theme assertions against `ScavoThemeColors.light` for brightness, scaffold background, color scheme, card, input, snackbar, dialog, navigation bar/rail, and action text-button behavior.
+
+#### 9.4.4 Documentation Validation
+
+- Verified `lib/app/theme/app_theme.dart` exposes both `AppTheme.darkTheme` and `AppTheme.lightTheme`.
+- Verified `lib/app/theme/tokens/scavo_theme_colors.dart` owns the mode-specific light/dark color boundary.
+- Verified `lib/app/theme/tokens/scavo_tokens.dart` exports the mode-aware theme color owner.
+- Verified `test/app_theme_tokens_test.dart` covers both dark and light theme construction while preserving token/facade contract tests.
+- Verified `lib/app/app.dart` still does not expose runtime theme switching, persisted preferences, Settings controls, or system theme handling.
+- Verified shared components and navigation surfaces rely on theme-owned values instead of screen-local light/dark branches.
+
+This closes Phase 9.4 as the light/dark theme implementation bridge. The next executable implementation phase remains `9.5 — Theme Mode Runtime Selection and Persistence`, where the already-defined `AppTheme.lightTheme` / `AppTheme.darkTheme` pair can be selected reactively and persisted without rediscovering token or component ownership.
+
+---
+
+## 9.5 — Theme Mode Runtime Selection and Persistence
+
+### Objective
+
+Allow the user to select theme behavior and persist the selection locally, using the paired `AppTheme.darkTheme` / `AppTheme.lightTheme` contract delivered by 9.4.
+
+### Scope
+
+- Support `system`, `light`, and `dark` theme modes as a runtime application preference.
+- Persist the selected theme mode locally through the existing local storage boundary.
+- Apply the selected mode reactively through the app root.
+- Keep the implementation local-only and privacy-preserving.
+- Preserve 9.4 theme ownership: 9.5 selects between existing themes; it does not redesign tokens, palettes, components, navigation, wallet flows, signing, backup, diagnostics, routing, release tooling, CI, or generated artifacts.
+
+### State
+
+Closed. Phase 9.5 is implemented and documented as the runtime theme-mode selection and persistence bridge over the 9.4 paired-theme contract. The real 9.5.2–9.5.4 implementation introduces a bounded `system` / `light` / `dark` preference model, local persistence through the existing storage boundary, a Riverpod controller, reactive app-root wiring through `MaterialApp.router`, and a compact Settings Appearance selector. The implementation does not redesign tokens, palettes, component themes, wallet flows, signing, backup, diagnostics, routing, build tooling, release tooling, CI, or generated artifacts.
+
+### Existing Files Tentatively Intervenable
+
+- `lib/app/app.dart` — current app-root owner of `MaterialApp.router`; must become the reactive consumer of persisted theme mode and pass both `theme: AppTheme.lightTheme` and `darkTheme: AppTheme.darkTheme`.
+- `lib/core/constants/storage_keys.dart` — existing central storage-key owner; should receive the persisted theme-mode key if no more specific key namespace exists.
+- `lib/core/services/local_storage_service.dart` — existing `SharedPreferences` wrapper; should be reused for local string persistence instead of introducing direct `SharedPreferences` calls in feature UI.
+- `lib/core/providers/service_providers.dart` — existing service-provider boundary; should expose or reuse the local storage provider required by the theme preference repository/controller.
+- `lib/features/settings/presentation/settings_screen.dart` — current Settings/About surface; may receive the first Appearance section or a compact selector only if 9.5 includes user-facing preference control.
+- `test/settings_screen_test.dart` — existing Settings behavior coverage; should be expanded if the Settings selector is added in this phase.
+- `test/widget_test.dart` and app-root tests if they currently validate `ScaviumWalletApp` construction or theme behavior.
+- `test/app_theme_tokens_test.dart` — inspect only to ensure 9.4 theme contract remains valid; 9.5 should not weaken paired-theme assertions.
+
+### New Files Tentatively Creatable
+
+- `lib/app/theme/theme_mode_preference.dart` — optional domain value owner for supported modes (`system`, `light`, `dark`) if keeping parsing/serialization out of UI and app-root code improves clarity.
+- `lib/app/theme/theme_mode_controller.dart` — optional Riverpod controller/provider owner for loading, exposing, changing, and persisting the selected theme mode.
+- `lib/app/theme/theme_mode_repository.dart` or `lib/app/theme/theme_mode_repository_impl.dart` — optional persistence boundary if separating storage from controller state keeps the architecture aligned with existing controller/repository patterns.
+- `test/theme_mode_preference_test.dart` — optional focused tests for serialization, fallback behavior, invalid stored values, and Flutter `ThemeMode` mapping.
+- `test/theme_mode_controller_test.dart` — optional focused tests for initial load, persistence, update behavior, and invalid-value recovery.
+
+### Technical Justification
+
+9.4 made light and dark themes available but intentionally left runtime behavior dark-only. 9.5 must therefore be a wiring and persistence phase: the application root should consume a small local preference boundary, not make direct storage decisions, and Settings should mutate that boundary without knowing how preferences are serialized. Reusing `LocalStorageService` keeps the feature local-only and privacy-preserving while avoiding a second preferences mechanism. Keeping the selector bounded to `system`, `light`, and `dark` also allows desktop/web/mobile runtime behavior to use Flutter's standard `ThemeMode` semantics without expanding into branding, white-labeling, or a broader Settings redesign.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Focused tests proving default mode behavior, invalid stored value fallback, persistence of `system`/`light`/`dark`, app-root selection of both light and dark themes, and Settings selector state changes if introduced.
+- Manual smoke review of Settings/About and core shell surfaces with each theme mode.
+
+---
+
+### 9.5.1 — Theme Mode Baseline and Runtime Boundary
+
+#### Objective
+
+Lock the real 9.4-completed baseline before introducing runtime theme selection, and define the narrow boundary between theme construction and theme-mode preference state.
+
+#### Scope
+
+- Confirm `AppTheme.lightTheme` and `AppTheme.darkTheme` exist and remain the only theme definitions selected by runtime mode.
+- Confirm `lib/app/app.dart` is still dark-only before 9.5 implementation.
+- Confirm local persistence should reuse the existing storage/service/provider boundaries.
+- Define the supported values: `system`, `light`, and `dark`.
+- Avoid UI, persistence, and app-root behavior changes in this baseline step unless the executing agent intentionally merges baseline inspection with the first implementation edit.
+
+#### State
+
+Closed as documentation-only baseline and runtime-boundary subphase from the real 9.5 step ZIP. No runtime code, `.agent/*`, theme-mode controller, persistence model, Settings selector, tests, token changes, or app-root wiring were introduced by 9.5.1.
+
+#### Existing Files Tentatively Intervenable
+
+- `docs/phase9_scavium_wallet.md` — records the 9.5 baseline and confirms the handoff from 9.4.
+- `lib/app/app.dart` — inspect only during baseline to confirm hardcoded `ThemeMode.dark`.
+- `lib/app/theme/app_theme.dart` — inspect only to confirm paired theme ownership remains centralized.
+- `lib/app/theme/tokens/scavo_theme_colors.dart` — inspect only to confirm 9.5 does not need new palette work.
+- `lib/core/constants/storage_keys.dart` — inspect to determine the correct persisted key location.
+- `lib/core/services/local_storage_service.dart` and `lib/core/providers/service_providers.dart` — inspect to determine the correct local storage provider path.
+
+#### New Files Tentatively Creatable
+
+None expected for a pure baseline step.
+
+#### Execution Record
+
+Phase 9.5.1 was executed as a documentation-only baseline from the updated 9.5 step ZIP. The inspection confirms that the 9.4 paired-theme implementation is present and centralized: `lib/app/theme/app_theme.dart` exposes both `AppTheme.darkTheme` and `AppTheme.lightTheme`, both are built through the same `_buildTheme(ScavoThemeColors colors)` path, and `lib/app/theme/tokens/scavo_theme_colors.dart` owns the mode-specific color boundary introduced by 9.4.
+
+The runtime application boundary is still intentionally dark-only before 9.5 code execution. `lib/app/app.dart` continues to configure `MaterialApp.router` with `themeMode: ThemeMode.dark` and `theme: AppTheme.darkTheme`; it does not yet pass `darkTheme: AppTheme.darkTheme`, consume a theme-mode provider, react to a persisted preference, or expose system/light/dark runtime behavior. This validates that 9.5 must start as a selection and persistence phase over the existing paired-theme contract, not as a token or theme-construction phase.
+
+The local persistence path is also confirmed from the real codebase. `lib/core/constants/storage_keys.dart` owns centralized persisted keys, `lib/core/services/local_storage_service.dart` already provides `setString` / `getString`, and `lib/core/providers/service_providers.dart` exposes `localStorageProvider`. Therefore 9.5.2 should reuse these existing boundaries for a stable local string preference instead of introducing direct `SharedPreferences` access in UI or app-root code.
+
+The runtime boundary for the next code-only subphases is locked as follows:
+
+- supported preference values are `system`, `light`, and `dark`;
+- missing or invalid stored values should fall back safely, preferably to `system` unless implementation evidence documents a deliberate product exception;
+- `AppTheme.lightTheme` and `AppTheme.darkTheme` remain the only theme definitions selected by runtime mode;
+- `MaterialApp.router` is the only correct application point for applying Flutter `ThemeMode`;
+- Settings may expose the preference, but it must not own serialization, storage, token construction, or app-root theme wiring;
+- 9.5 must not alter token values, palette ownership, shared component themes, wallet flows, signing, backup, diagnostics, routing, release tooling, CI, generated artifacts, or `.agent/*` files.
+
+This closes 9.5.1 as the documentary execution gate for runtime theme-mode selection and persistence. The next executable subphase is `9.5.2 — Theme Mode Preference Model and Local Persistence`, and it should be handled as code-only by the agent workflow.
+
+#### Documentation Validation
+
+- Confirmed 9.5.1 produced documentation only.
+- Confirmed no `.agent/*` files were generated or modified by this execution.
+- Confirmed no Dart source, test, dependency, build, release, platform, or generated artifact was modified by this execution.
+- Confirmed the app-root remains dark-only before 9.5.2 through `ThemeMode.dark`.
+- Confirmed paired theme definitions are available from 9.4 and should be consumed, not recreated, by 9.5.
+- Confirmed existing local storage boundaries are sufficient for 9.5.2 preference persistence.
+
+#### Technical Justification
+
+The 9.5 implementation should not rediscover or rewrite theme construction. This baseline protects the 9.4 contract and narrows 9.5 to selection, persistence, and app-root wiring.
+
+#### Expected Validations
+
+- Confirm no `.agent/*` or runtime code is produced by documentation-only execution.
+- Confirm 9.5 starts from a dark-only app-root state with paired theme definitions available.
+- Confirm the next nested subphase can implement preference modeling without changing component themes.
+
+---
+
+### 9.5.2 — Theme Mode Preference Model and Local Persistence
+
+#### Objective
+
+Introduce the local preference model and persistence boundary for `system`, `light`, and `dark` theme modes.
+
+#### Scope
+
+- Add a small theme-mode preference value model or enum-like owner.
+- Map preference values to Flutter `ThemeMode.system`, `ThemeMode.light`, and `ThemeMode.dark`.
+- Persist the selected value as a stable local string.
+- Treat missing or invalid stored values as a safe default, preferably `system` unless implementation chooses a different documented default for product reasons.
+- Keep persistence local-only and independent from wallet, account, blockchain, backup, diagnostics, release, and CI behavior.
+
+#### State
+
+Closed as code-only implementation by the agent workflow. The real 9.5.2 implementation added the theme-mode preference model, centralized storage key, repository abstraction, repository implementation, provider wiring, and focused preference/repository tests without changing theme tokens or product flows.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/core/constants/storage_keys.dart` — add the theme-mode preference key.
+- `lib/core/services/local_storage_service.dart` — reuse existing string getter/setter behavior; modify only if the implementation needs a small helper that remains generic.
+- `lib/core/providers/service_providers.dart` — expose/reuse the local storage service provider required by the persistence owner.
+- `lib/app/theme/app_theme.dart` — inspect only; do not move theme construction into persistence code.
+
+#### New Files Tentatively Creatable
+
+- `lib/app/theme/theme_mode_preference.dart` — owns supported values, labels if appropriate, serialization, fallback, and `ThemeMode` mapping.
+- `lib/app/theme/theme_mode_repository.dart` — optional abstraction for reading/writing the preference.
+- `lib/app/theme/theme_mode_repository_impl.dart` — optional implementation backed by `LocalStorageService`.
+- `test/theme_mode_preference_test.dart` — validates parsing, serialization, fallback, and `ThemeMode` mapping.
+
+#### Technical Justification
+
+A persisted appearance choice is application-level state, not Settings widget state. A small model keeps storage strings stable and testable, prevents scattered literal values, and gives the app root a clean bridge to Flutter's `ThemeMode`.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- Focused tests for supported values, serialized names, invalid-value fallback, and Flutter `ThemeMode` mapping.
+- Confirm no token, palette, component-theme, wallet, or release behavior changes are introduced.
+
+---
+
+### 9.5.3 — Reactive App Root Theme Mode Wiring
+
+#### Objective
+
+Wire the persisted theme-mode preference into `ScaviumWalletApp` so runtime selection becomes reactive at the application root.
+
+#### Scope
+
+- Add a Riverpod controller/provider that loads the persisted preference and exposes the selected mode.
+- Update `ScaviumWalletApp` to watch the selected mode.
+- Pass `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, and the selected `themeMode` into `MaterialApp.router`.
+- Preserve router, lifecycle guard, lock behavior, wallet behavior, onboarding behavior, release tooling, and diagnostics behavior.
+- Keep loading behavior deterministic; the app should have a safe theme-mode fallback while preference loading completes.
+
+#### State
+
+Closed as code-only implementation by the agent workflow. The real 9.5.3 implementation added the Riverpod `ThemeModeController` boundary and changed the app root from forced dark behavior to provider-driven runtime selection using `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, and the selected Flutter `ThemeMode`.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/app/app.dart` — replace hardcoded dark-only runtime configuration with provider-driven theme mode and paired theme references.
+- `lib/core/providers/service_providers.dart` — add/reuse providers needed by the controller/repository.
+- `test/widget_test.dart` — update if app-root construction expectations are affected.
+- Existing app/root tests if present in future ZIPs.
+
+#### New Files Tentatively Creatable
+
+- `lib/app/theme/theme_mode_controller.dart` — owns async load, exposed state, and update/persist operations through Riverpod.
+- `test/theme_mode_controller_test.dart` — validates initial state, persisted load, updates, and failure/fallback behavior.
+
+#### Technical Justification
+
+The app root is the only correct place to apply Flutter `ThemeMode`. Wiring the provider there avoids per-screen theme branching and consumes the 9.4 paired-theme contract exactly as intended.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- Focused controller/app-root tests.
+- Confirm `MaterialApp.router` references both light and dark themes.
+- Confirm app routing and lifecycle guard behavior remain unchanged.
+
+---
+
+### 9.5.4 — Settings Appearance Selector and UX Integration
+
+#### Objective
+
+Expose the runtime theme-mode preference through Settings without turning 9.5 into a broader Settings/About redesign.
+
+#### Scope
+
+- Add an Appearance section or compact selector to Settings.
+- Present clear labels for system, light, and dark modes.
+- Update the controller when the user selects a mode.
+- Reflect the currently selected mode in the UI.
+- Preserve existing Settings sections for Security & recovery, Signing, Diagnostics, Danger zone, and About.
+- Defer broader Settings/About layout polish to 9.6.
+
+#### State
+
+Closed as code-only implementation by the agent workflow. The real 9.5.4 implementation added a bounded Settings Appearance section and extracted `ThemeModeSelector` as a compact widget, preserving the existing Security & recovery, Signing, Diagnostics, Danger zone, and About surfaces.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/features/settings/presentation/settings_screen.dart` — add the Appearance selector while preserving existing section order and behavior unless the implementation documents a minor placement adjustment.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — inspect only; update only if the selector needs a reusable section-card behavior already owned by Settings.
+- `test/settings_screen_test.dart` — expand to validate selector labels, current selection, and update behavior through provider overrides.
+
+#### New Files Tentatively Creatable
+
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` — optional small widget if keeping Settings readable requires extracting the selector.
+- `test/theme_mode_selector_test.dart` — optional focused widget test if selector behavior is complex enough to deserve isolated coverage.
+
+#### Technical Justification
+
+Settings already owns secondary application controls and About identity. Adding a bounded Appearance selector there makes the preference discoverable without introducing a separate screen or mixing appearance choices into wallet-domain surfaces.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test test/settings_screen_test.dart` or equivalent focused widget coverage.
+- Manual smoke review of Settings in system/light/dark modes.
+- Confirm destructive/security/diagnostics controls remain unchanged.
+
+---
+
+### 9.5.5 — Theme Mode Runtime Selection Validation and Documentation Closure
+
+#### Objective
+
+Close 9.5 by validating the implemented preference flow and documenting the final runtime selection contract for Phase 9.6.
+
+#### Scope
+
+- Confirm default, persisted, and changed theme-mode behavior.
+- Confirm Settings exposes the appearance preference coherently.
+- Confirm app-root theme selection uses the 9.4 paired themes without changing token ownership.
+- Update Phase 9 documentation from the real implemented state after code execution.
+- Update README/index and other trunk docs only where the implemented 9.5 result changes durable project status or development rules.
+
+#### State
+
+Closed as documentation-only validation and documentation closure from the real 9.5.1–9.5.4 updated ZIP.
+
+#### Existing Files Tentatively Intervenable
+
+- `docs/phase9_scavium_wallet.md` — required closure record after 9.5 implementation.
+- `README.md` — update only if the Phase 9 status ledger should record 9.5 as implemented/closed.
+- `docs/index.md` — update only if the active Phase 9 narrative should advance beyond 9.4.
+- `docs/architecture.md` — update only if the final implementation introduces a durable app-root preference boundary worth recording.
+- `docs/development.md` — update only if future contributors need a durable rule for theme-mode preference tests or storage boundaries.
+- `docs/ux.md` and `docs/features.md` — update only if the implemented Settings Appearance selector becomes a durable user-facing capability.
+- `docs/decisions.md` — update only if the implementation finalizes a new architectural decision about theme-mode preference ownership.
+
+#### New Files Tentatively Creatable
+
+None expected for documentation closure.
+
+
+#### Execution Record
+
+Phase 9.5.5 was executed as the documentation-only closure after the real 9.5.2–9.5.4 code-only agent implementation. The implementation was validated from the updated ZIP before this documentation pass. The resulting runtime appearance boundary is now complete for Phase 9.5:
+
+- `lib/app/theme/theme_mode_preference.dart` owns the supported preference values `system`, `light`, and `dark`, their stable storage strings, user-facing labels/descriptions, safe fallback behavior, and mapping to Flutter `ThemeMode`.
+- `lib/core/constants/storage_keys.dart` owns the persisted `theme_mode_preference` key alongside the existing centralized local-storage keys.
+- `lib/app/theme/theme_mode_repository.dart` defines the preference persistence contract, while `lib/app/theme/theme_mode_repository_impl.dart` implements it through `LocalStorageService` rather than direct UI/app-root storage access.
+- `lib/core/providers/service_providers.dart` exposes `themeModeRepositoryProvider` through the existing provider boundary.
+- `lib/app/theme/theme_mode_controller.dart` owns the Riverpod state boundary for loading, exposing, updating, and persisting the selected preference with a safe fallback while local storage resolves.
+- `lib/app/app.dart` now consumes `themeModeControllerProvider` and applies `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, and the selected `themeMode` at `MaterialApp.router`.
+- `lib/features/settings/presentation/settings_screen.dart` exposes an Appearance section before the existing security, signing, diagnostics, danger-zone, and about sections.
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` owns the compact `SegmentedButton<ThemeModePreference>` UI for the appearance preference.
+- `test/theme_mode_preference_test.dart`, `test/theme_mode_controller_test.dart`, `test/theme_mode_selector_test.dart`, and the updated `test/settings_screen_test.dart` provide focused coverage for serialization, fallback behavior, persistence, controller state, selector state, and Settings integration.
+
+The final 9.5 implementation preserves the 9.4 theme-construction contract. It selects between `AppTheme.lightTheme` and `AppTheme.darkTheme`; it does not rewrite `ScavoThemeColors`, token values, component themes, shared visual widgets, route ownership, wallet state, signing flows, backup/restore flows, diagnostics, lifecycle/lock behavior, build tooling, release tooling, CI, or generated artifacts.
+
+The theme-mode preference is intentionally local-only. It is stored on the device through the existing local storage abstraction, is not synced remotely, and does not introduce analytics, telemetry, remote configuration, account metadata, or white-label customization. Settings owns only the user interaction; serialization and persistence remain below the app theme boundary, and app-root wiring remains the single place where Flutter theme mode is applied.
+
+This closes 9.5 as the runtime selection and persistence bridge between the 9.4 paired-theme implementation and the later `9.6 — Settings and About UX Alignment` polish phase. Phase 9.6 can now improve Settings/About hierarchy around an already-implemented appearance preference rather than reworking theme-mode ownership.
+
+#### Documentation Validation
+
+- Read all non-agent Markdown trunk documents in the ZIP before intervention: `README.md`, `privacy.md`, `tyc.md`, `docs/*.md`, and `ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md`.
+- Validated the real code implementation for 9.5.2–9.5.4 before documenting closure.
+- Confirmed `MaterialApp.router` no longer hardcodes dark-only runtime behavior and now receives both paired themes plus the selected `ThemeMode`.
+- Confirmed the preference model supports `system`, `light`, and `dark` with safe fallback behavior.
+- Confirmed persistence reuses `LocalStorageService` and centralized `StorageKeys` rather than introducing direct `SharedPreferences` access in UI.
+- Confirmed Settings exposes Appearance through a bounded selector without altering unrelated Settings actions.
+- Confirmed no token, palette, component-theme, wallet, signing, backup, diagnostics, routing, build, release, CI, generated-artifact, or `.agent/*` ownership was changed by this documentation closure.
+
+#### Technical Justification
+
+9.5 is the bridge from theme availability to user-selectable appearance. Its closure must preserve the exact ownership split so 9.6 can polish Settings/About without reworking persistence or app-root theme wiring.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Focused tests for preference model/controller, app-root wiring, and Settings selector behavior.
+- Manual smoke review of Settings/About, shell/navigation, dashboard, asset/activity surfaces, dialogs, inputs, snackbars, and danger-zone actions in system/light/dark modes.
+- Confirm modified documentation matches the real files changed by the implementation.
+- Confirm the next implementation phase remains `9.6 — Settings and About UX Alignment`.
+
+---
+
+## 9.6 — Settings and About UX Alignment
+
+### Objective
+
+Align Settings/About as the stable application identity and appearance-control surface now that the real post-9.5 codebase already includes runtime theme-mode selection, local persistence, app-root reactive wiring, and a Settings Appearance selector.
+
+### Scope
+
+- Reconcile the 9.6 plan with the actual post-9.5 implementation present in the ZIP.
+- Preserve the completed app-root theme-mode bridge: `ScaviumWalletApp` consumes `themeModeControllerProvider` and applies `AppTheme.lightTheme`, `AppTheme.darkTheme`, and the selected `ThemeMode` through `MaterialApp.router`.
+- Preserve the completed Settings Appearance surface: Settings exposes `ThemeModeSelector` with `system`, `light`, and `dark` options.
+- Display app name and dynamic version clearly, using the existing `lib/core/app_identity` boundary.
+- Keep destructive actions, security/recovery actions, diagnostics, signing, appearance, and about information visually separated.
+- Improve Settings readability, grouping, hierarchy, accessibility, and responsive behavior across mobile and desktop/web.
+- Preserve wallet, account, asset, transaction, signing, backup, diagnostics, routing, release, CI, token, theme-construction, and persistence ownership boundaries.
+
+### State
+
+Open as a reconciliation-first UX alignment phase from the real updated ZIP. The phase starts with 9.6.1 as a documentation-only baseline correction because the previous 9.6 planning text described an obsolete physical baseline. The current ZIP already contains the runtime appearance bridge and Settings Appearance selector, so 9.6 must not re-plan those pieces as missing implementation. The remaining implementation work is Settings/About UX alignment and polish around the completed Phase 9.5 runtime preference boundary.
+
+### Real Baseline Validation
+
+The real ZIP confirms that Phase 9.4 theme construction is present: `lib/app/theme/app_theme.dart` exposes `AppTheme.darkTheme` and `AppTheme.lightTheme`, both built through the centralized theme path and the mode-specific `ScavoThemeColors` boundary.
+
+The real ZIP also confirms that Phase 9.5 runtime selection and persistence are physically present in code:
+
+- `lib/app/theme/theme_mode_preference.dart` owns the supported `system`, `light`, and `dark` preference values, labels/descriptions, serialization, fallback behavior, and Flutter `ThemeMode` mapping.
+- `lib/app/theme/theme_mode_repository.dart` and `lib/app/theme/theme_mode_repository_impl.dart` own local persistence through the existing storage abstraction.
+- `lib/app/theme/theme_mode_controller.dart` owns the Riverpod runtime state boundary.
+- `lib/core/constants/storage_keys.dart` owns `StorageKeys.themeModePreference`.
+- `lib/core/providers/service_providers.dart` exposes the theme-mode repository provider.
+- `lib/app/app.dart` watches `themeModeControllerProvider` and configures `MaterialApp.router` with `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, and `themeMode: themeModePreference.themeMode`.
+- `lib/features/settings/presentation/settings_screen.dart` contains the `Appearance` section before the existing Settings sections and imports `theme_mode_selector.dart`.
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` owns the compact appearance selector used by Settings.
+
+Therefore 9.6 is not a bridge-completion phase. It is a Settings/About alignment phase over an already-working runtime appearance preference. Any agent generated from this documentation must not recreate `ThemeModeController`, duplicate persistence, or move theme-mode ownership into Settings.
+
+### Existing Files Tentatively Intervenable
+
+- `lib/features/settings/presentation/settings_screen.dart` — refine Settings/About section ordering, hierarchy, responsive layout, copy, and visual grouping while preserving existing actions and the existing Appearance selector.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — refine reusable section spacing, header hierarchy, divider behavior, and responsive readability if needed.
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` — polish labels, descriptions, layout density, accessibility semantics, or narrow/wide behavior only; do not move persistence or app-root theme selection here.
+- `lib/core/app_identity/app_version_provider.dart` — consume only; do not duplicate version resolution in Settings.
+- `lib/app/theme/theme_mode_preference.dart` — consume existing labels/descriptions; update only if a presentation label correction is required and covered by tests.
+- `test/settings_screen_test.dart` — validate Settings section hierarchy, About/version display, Appearance visibility, and existing actions.
+- `test/theme_mode_selector_test.dart` — extend only if selector layout/semantics change.
+- `test/theme_mode_preference_test.dart` — extend only if preference labels/descriptions change.
+
+### New Files Tentatively Creatable
+
+None expected by default. A small Settings-specific presentation widget may be introduced under `lib/features/settings/presentation/widgets/` only if it materially improves readability or testability and does not duplicate theme-mode ownership.
+
+### Technical Justification
+
+Phase 9.5 completed the runtime preference bridge. Phase 9.6 should now improve the user-facing Settings/About experience without re-opening architecture that is already correctly layered: app identity remains under `lib/core/app_identity`, appearance state remains under `lib/app/theme`, local persistence remains below the provider/repository boundary, and Settings remains a presentation surface.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Focused tests for Settings section hierarchy, dynamic About/version display, Appearance selector visibility, selector state if polished, and route/action availability.
+- Manual smoke review of Settings/About in mobile width and desktop/web width.
+- Manual smoke review of Settings/About in system, light, and dark modes.
+- Confirm destructive reset, backup export, signing navigation, diagnostics navigation, appearance selection, and About/version display remain available after the Settings layout changes.
+- Confirm no token, palette, wallet, account, asset, transaction, signing, backup payload, diagnostics behavior, routing contract, release tooling, CI workflow, generated artifact, or `.agent/*` file is modified unless explicitly required by the executing implementation phase.
+
+---
+
+### 9.6.1 — Settings/About Baseline Reconciliation
+
+#### Objective
+
+Lock the real post-9.5 Settings/About and theme-mode baseline before any 9.6 UX polish, and correct the obsolete 9.6 planning text that treated the runtime bridge and Settings selector as missing.
+
+#### Scope
+
+- Confirm the physical state of `lib/app/app.dart`, `lib/app/theme/theme_mode_controller.dart`, `lib/features/settings/presentation/settings_screen.dart`, and `lib/features/settings/presentation/widgets/theme_mode_selector.dart`.
+- Confirm the existing theme-mode preference model, repository, storage key, provider wiring, app-root reactive wiring, and Settings Appearance selector are present and reusable.
+- Record the exact implementation baseline for the next 9.6 subphases.
+- Avoid code, test, `.agent/*`, generated-artifact, build, release, platform, and operational changes.
+
+#### State
+
+Closed as documentation-only baseline reconciliation from the real 9.6 step ZIP. No Dart source, test, `.agent/*`, build, release, platform, generated artifact, or operational file was modified by this subphase.
+
+#### Existing Files Intervened
+
+- `docs/phase9_scavium_wallet.md` — corrected the 9.6 phase baseline and subphase plan so it reflects the real post-9.5 implementation instead of the obsolete dark-only/no-selector baseline.
+- `README.md` — corrected the Phase 9 summary so it no longer says the app root still appears dark-only or that Settings lacks a physical Appearance selector.
+- `docs/index.md` — corrected the Phase 9 active narrative and next-step framing so 9.6 is documented as UX polish over the completed 9.5 runtime preference bridge.
+- `docs/architecture_deep.md` — corrected the historical theme-boundary note so it no longer implies the app remains dark-only at runtime after the later Phase 9 work.
+
+#### New Files Created
+
+None.
+
+#### Execution Record
+
+Phase 9.6.1 was executed as a documentation-only reconciliation pass from the corrected 9.6 step ZIP. The ZIP confirms that the runtime appearance bridge is already implemented:
+
+- `lib/app/app.dart` imports `theme_mode_controller.dart`, watches `themeModeControllerProvider`, and passes `AppTheme.lightTheme`, `AppTheme.darkTheme`, and `themeModePreference.themeMode` to `MaterialApp.router`.
+- `lib/app/theme/theme_mode_controller.dart` exists as the Riverpod state boundary for runtime theme-mode preference.
+- `lib/app/theme/theme_mode_preference.dart` exists as the supported-value and Flutter `ThemeMode` mapping boundary.
+- `lib/app/theme/theme_mode_repository.dart` and `lib/app/theme/theme_mode_repository_impl.dart` exist as the persistence boundary.
+- `lib/core/constants/storage_keys.dart` includes the theme-mode preference key.
+- `lib/features/settings/presentation/settings_screen.dart` contains an `Appearance` section before the existing Security & recovery, Signing, Diagnostics, Danger zone, and About sections.
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` exists and is consumed by Settings.
+
+This reconciles the documentary record with the real codebase. The next 9.6 subphases must treat app-root theme selection and the Settings Appearance selector as completed baseline, not as missing work.
+
+#### Documentation Validation
+
+- Confirmed this subphase modified documentation only.
+- Confirmed no `.agent/*` files were generated or modified.
+- Confirmed no Dart source, test, dependency, build, release, platform, generated artifact, or operational file was modified.
+- Confirmed the 9.5 runtime theme-mode implementation is physically present in the ZIP.
+- Confirmed Settings already exposes the Appearance selector and preserves Security & recovery, Signing, Diagnostics, Danger zone, and About sections.
+- Confirmed the next executable 9.6 work is Settings/About UX polish, not runtime bridge reconstruction.
+
+#### Technical Justification
+
+The documentation must remain grounded in the real ZIP. Because the corrected ZIP already contains the runtime preference bridge and Settings selector, 9.6.1 closes as a baseline correction that prevents later agent prompts from duplicating existing architecture or planning obsolete bridge-completion work.
+
+#### Expected Validations
+
+- Confirm the real baseline without modifying `.agent/*`.
+- Confirm no runtime code is changed by this documentation-only baseline execution.
+- Confirm the next implementation subphase can safely focus on Settings/About polish.
+
+---
+
+### 9.6.2 — Settings/About Information Architecture Polish
+
+#### Objective
+
+Refine Settings/About section hierarchy now that Appearance, app identity, security/recovery, signing, diagnostics, and destructive actions all coexist in one Settings surface.
+
+#### Scope
+
+- Improve Settings section order, spacing, copy, and grouping without changing behavior.
+- Keep Appearance visible and understandable as a local preference control.
+- Keep About/version information clear and dynamic through the existing app identity boundary.
+- Keep destructive actions visually separated from ordinary controls.
+- Preserve existing routes and actions for backup export, signing, diagnostics, and reset.
+
+#### State
+
+New code-only implementation-planning subphase generated from the real post-9.5 ZIP.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/features/settings/presentation/settings_screen.dart` — refine section ordering, copy, layout, and hierarchy while preserving current actions.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — refine reusable card/header/spacing behavior if needed.
+- `test/settings_screen_test.dart` — validate the visible section model and route/action availability.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Technical Justification
+
+The runtime appearance preference is already implemented. The remaining product work is to make Settings read as a coherent identity/control surface rather than a growing list of independent cards.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Focused Settings widget tests for section visibility and preserved actions.
+- Manual review at narrow and wide widths.
+
+---
+
+### 9.6.3 — Appearance Selector UX and Accessibility Polish
+
+#### Objective
+
+Polish the existing Settings Appearance selector for clarity, accessibility, and responsive behavior without changing persistence ownership.
+
+#### Scope
+
+- Review labels, descriptions, selected-state feedback, tap targets, and narrow/wide layout.
+- Keep `ThemeModeSelector` as a presentation widget over `themeModeControllerProvider`.
+- Keep serialization, storage, fallback, and app-root theme application outside Settings widgets.
+
+#### State
+
+New code-only implementation-planning subphase generated from the real post-9.5 ZIP.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/features/settings/presentation/widgets/theme_mode_selector.dart` — refine selector UI/semantics only.
+- `lib/app/theme/theme_mode_preference.dart` — adjust labels/descriptions only if required by UX and covered by tests.
+- `test/theme_mode_selector_test.dart` — validate selector rendering and selection behavior.
+- `test/theme_mode_preference_test.dart` — validate label/description changes if any.
+
+#### New Files Tentatively Creatable
+
+None expected.
+
+#### Technical Justification
+
+Appearance selection is already correctly wired. 9.6.3 should improve the user interaction and accessibility of that selector while preserving the architectural boundary established by 9.5.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Focused selector tests and manual smoke review in system, light, and dark modes.
+
+---
+
+### 9.6.4 — About Identity and Responsive Settings Review
+
+#### Objective
+
+Ensure the About identity surface remains clear, dynamic, and responsive after Settings polish.
+
+#### Scope
+
+- Keep About display tied to `appVersionInfoProvider`.
+- Improve About copy or placement only if it strengthens the Settings hierarchy.
+- Validate Settings remains usable on mobile, desktop, and web widths.
+- Avoid creating a separate About route unless the implementation evidence clearly justifies it.
+
+#### State
+
+New code-only implementation-planning subphase generated from the real post-9.5 ZIP.
+
+#### Existing Files Tentatively Intervenable
+
+- `lib/features/settings/presentation/settings_screen.dart` — refine About placement/copy and responsive layout.
+- `lib/features/settings/presentation/widgets/settings_section_card.dart` — refine section behavior if needed for responsive readability.
+- `test/settings_screen_test.dart` — validate dynamic version display and Settings sections.
+
+#### New Files Tentatively Creatable
+
+None expected by default.
+
+#### Technical Justification
+
+Phase 9.1 already moved About version data to the app identity boundary. Phase 9.6 should preserve that boundary while making the final Settings/About surface easier to scan.
+
+#### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Manual Settings/About review at narrow and wide widths.
+
+---
+
+### 9.6.5 — Settings/About UX Validation and Documentation Closure
+
+#### Objective
+
+Close 9.6 by validating the implemented Settings/About alignment and final SCAVIUM visual polish against the real code, then update the documentation from evidence without changing source code.
+
+#### Scope
+
+- Validate that app-root theme-mode behavior remains intact after the 9.6 Settings/About and theme-polish sequence.
+- Validate that the Settings Appearance selector still exposes `system`, `light`, and `dark` and remains backed by the existing 9.5 preference boundary.
+- Validate that About version display still consumes the dynamic runtime identity boundary.
+- Validate that the final SCAVIUM visual system uses the orange primary, dark-first palette, paired light/dark surfaces, Lucide iconography, and centralized icon-size tokens introduced during the 9.6 adjustment sequence.
+- Validate that security/recovery, signing, diagnostics, danger-zone, account, asset, activity, unlock, navigation, and Settings surfaces remain available and visually coherent.
+- Update trunk documentation from the implemented state without rewriting or summarizing prior history.
+
+#### State
+
+Closed as documentation-only closure from the real final 9.6 adjustment ZIP. No Dart source, test, `.agent/*`, build, release, platform, generated artifact, dependency, or operational file was modified by this closure subphase.
+
+#### Existing Files Intervened
+
+- `docs/phase9_scavium_wallet.md` — records the implemented 9.6 result, the final Settings/About validation evidence, the SCAVIUM design-token and Lucide iconography adjustments, and the closure boundary for 9.6.
+- `README.md` — updates the active Phase 9 summary and phase ledger so 9.6 is no longer described as open/pending and the final visual-system result is visible from the project entry point.
+- `docs/index.md` — extends the Phase 9 narrative with the closed 9.6 sequence and its real implementation result.
+- `docs/ux.md` — documents the final Settings/About, appearance, light/dark, and Lucide icon UX outcome from the implemented state.
+- `docs/features.md` — updates the Phase 9 user-facing and non-user-facing feature record to include the completed 9.6 Settings/About and visual-system polish.
+- `docs/architecture_deep.md` — records the final Phase 9 visual-runtime boundary, including centralized iconography tokens and the dark-first SCAVIUM theme contract.
+
+#### New Files Created
+
+None.
+
+#### Execution Record
+
+Phase 9.6.5 was executed after the code-only 9.6.2–9.6.4 implementation sequence and the subsequent visual-polish adjustments were completed. The final ZIP confirms that 9.6 closed over the real implemented state rather than over the obsolete dark-only baseline corrected by 9.6.1.
+
+The final implementation preserves the Phase 9.5 runtime appearance ownership:
+
+- `lib/app/app.dart` still watches `themeModeControllerProvider` and applies `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, and `themeMode: themeModePreference.themeMode` through `MaterialApp.router`.
+- `lib/app/theme/theme_mode_preference.dart`, `theme_mode_repository.dart`, `theme_mode_repository_impl.dart`, and `theme_mode_controller.dart` remain the preference, persistence, and runtime-state boundary.
+- `lib/features/settings/presentation/settings_screen.dart` still exposes `Appearance` through `ThemeModeSelector` before the security/recovery, signing, diagnostics, danger-zone, and about surfaces.
+- `test/settings_screen_test.dart` validates the organized Settings sections, dynamic About version display, wide-surface availability, and selector-driven theme-mode update.
+- `test/theme_mode_selector_test.dart` validates the selector options, selected value, accessibility semantics, and Lucide theme-mode icons.
+
+The final implementation also confirms the visual polish completed during 9.6:
+
+- `lib/app/theme/tokens/scavo_colors.dart` defines the SCAVIUM orange brand primary (`0xFFF97316`) and keeps green constrained to semantic success instead of general selection/branding.
+- `lib/app/theme/tokens/scavo_theme_colors.dart` owns the dark-first and light theme-specific surface, text, icon, action, semantic, and focus values.
+- `lib/app/theme/tokens/scavo_iconography.dart` centralizes icon sizes for sidebar, section, action, inline, and state contexts.
+- `pubspec.yaml` includes `lucide_icons`, and the app shell, Settings, Home, Assets, Activity/History, Wallet/Accounts, Signing, and transaction-detail surfaces now use Lucide iconography rather than the heavier default visual language.
+- Assets avatars now use a primary-tinted SCAVIUM surface instead of the previous generic violet treatment.
+- Unlock and light-mode text surfaces use theme-owned `onSurface` / `onSurfaceVariant` values, improving legibility without changing unlock behavior.
+
+This closes 9.6 as a Settings/About and visual-coherence phase, not as a wallet-domain expansion. It does not change wallet custody, account derivation, asset metadata semantics, transaction history semantics, signing behavior, backup/restore payloads, diagnostics behavior, routing contracts, release tooling, CI workflows, generated artifacts, remote configuration, analytics, telemetry, or `.agent/*` workflow files.
+
+#### Documentation Validation
+
+- Confirmed this closure modified documentation only.
+- Confirmed no `.agent/*` file was generated or modified.
+- Confirmed no Dart source, test, platform, build, release, generated, dependency, or operational file is included in the closure deliverable.
+- Confirmed the 9.6 closure narrative is based on the real final ZIP evidence: app-root runtime theme selection, Settings Appearance selector, dynamic About identity, SCAVIUM orange primary, dark-first paired themes, Lucide iconography, icon-size tokens, light-mode contrast polish, and asset-avatar polish.
+- Confirmed the next Phase 9 step is `9.close — Application Identity, Versioning, and Visual Theme Maturity Closure`.
+
+---
+
+#### Phase 9.6 Closure Summary
+
+Phase 9.6 closes the Settings/About UX alignment sequence. The phase began by correcting the documentation baseline in 9.6.1: runtime theme-mode selection, local persistence, app-root reactive wiring, and the Settings Appearance selector were already present after 9.5 and therefore were not reimplemented in 9.6. The code-only 9.6 sequence then polished the Settings/About surface around that existing boundary and the subsequent visual adjustment passes aligned the application with the SCAVIUM brand identity.
+
+The final state is a dark-first SCAVIUM Wallet visual system with first-class light-mode support, orange primary actions and selected states, green reserved for semantic success, centralized theme and icon tokens, Lucide icons for a lighter premium visual weight, and a Settings/About surface that clearly groups Appearance, security/recovery, signing, diagnostics, danger-zone, and dynamic app identity information. 9.6 therefore completes the UX bridge between the Phase 9 identity/version work and the final Phase 9 closure.
+
+---
+
+## 9.close — Application Identity, Versioning, and Visual Theme Maturity Closure
+
+### Objective
+
+Close Phase 9 by validating that runtime identity, build-version consistency, and visual theme maturity are implemented and documented coherently.
+
+### Scope
+
+- Confirm runtime version display is dynamic.
+- Confirm build/MSIX version behavior is documented and validated.
+- Confirm light/dark themes are token-based and visually coherent.
+- Confirm theme preference selection/persistence works as intended.
+- Update trunk documentation from the real implemented state.
+
+### Expected Validations
+
+- `fvm flutter analyze`
+- `fvm flutter test`
+- Build-tool validation commands relevant to version/MSIX behavior.
+- Manual visual review of light/dark Settings, shell, dashboard, asset/activity surfaces, dialogs, inputs, snackbars, and danger-zone actions.
+
+---
+
+## Recommended Implementation Order
+
+1. Phase 9.0 documentation lock is complete.
+2. Implement 9.1 runtime version surface before changing Settings broadly.
+3. Harden 9.2 build/MSIX behavior while version ownership is fresh.
+4. Normalize 9.3 design tokens before adding light mode.
+5. Phase 9.4 light/dark theme implementation is complete.
+6. Phase 9.5 theme selection and persistence is complete.
+7. Polish 9.6 Settings/About UX alignment.
+8. Close with 9.close documentation and validation.
+
+---
+
+## Risk Register
+
+### Visual Regression Risk
+
+Theme changes affect the entire application. Phase 9 mitigates this risk by introducing tokens first and changing surfaces incrementally.
+
+### Over-Saturation Risk
+
+The existing visual language can feel heavy when saturated colors are used on large surfaces. Phase 9 mitigates this by reserving strong brand colors for high-signal elements and using calmer background/surface tokens.
+
+### Version Source Confusion Risk
+
+Runtime display, `pubspec.yaml`, MSIX metadata, generated artifacts, and release tags can diverge if not explicitly owned. Phase 9 mitigates this by treating runtime version display and build/MSIX synchronization as adjacent subphases.
+
+### Scope Creep Risk
+
+Theme work can easily become a redesign. Phase 9 explicitly limits itself to identity/version/theme maturity and Settings/About alignment.
+
+---
+
+## Phase 9 Initial Status
+
+Status: Active.
+
+Phase 9 is opened as the active next phase after Phase 8.6 closure. It is not a continuation of release/distribution implementation, but it depends on the Phase 8.6 versioning and release-tooling baseline.
+
+Phase 9.0 is complete as the phase definition and documentation lock. Phase 9.1 is complete as the runtime application version surface: Settings/About now displays dynamic runtime metadata through `lib/core/app_identity` instead of hardcoded UI copy. Phase 9.2 is closed as the build-version and MSIX synchronization hardening sequence. Phase 9.3 is closed as the token-first visual-system foundation. Phase 9.4 is closed as the light/dark theme implementation bridge. Phase 9.5 is closed as the runtime theme-mode selection and persistence bridge. `lib/app/theme/tokens/` owns the SCAVIUM token namespace, `ScavoThemeColors` owns the mode-specific light/dark color boundary, `AppColors` and `AppTextStyles` remain compatibility facades, `AppTheme.darkTheme` and `AppTheme.lightTheme` are built from the same centralized theme path, shared visual widgets rely on theme-owned values, `ThemeModePreference` owns `system`/`light`/`dark` preference semantics, `ThemeModeController` owns runtime preference state, `LocalThemeModeRepository` persists the selection locally, `MaterialApp.router` applies the selected mode reactively, and Settings exposes the bounded Appearance selector. The next Phase 9 step is 9.close — Application Identity, Versioning, and Visual Theme Maturity Closure.
