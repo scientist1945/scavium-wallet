@@ -10,6 +10,7 @@ set "ETAPA=%~1"
 set "CURRENT_DIR=%cd%"
 set "PARENT_DIR=%CURRENT_DIR%\.."
 
+set "SCAVIUM_NETGEN_DIR=%PARENT_DIR%\scavium-netgen"
 set "BACKEND_DIR=%PARENT_DIR%\scavo.exchange-backend"
 set "FRONTEND_DIR=%PARENT_DIR%\scavo.exchange-frontend"
 set "SCAVIUM_WALLET_DIR=%PARENT_DIR%\scavium-wallet"
@@ -21,7 +22,19 @@ set "TEMP_ROOT=%TEMP_DIR%\bundle-wallet"
 echo.
 echo Verificando carpetas origen...
 
+if not exist "%SCAVIUM_NETGEN_DIR%" (
+    echo ERROR: no existe la carpeta scavium-netgen:
+    echo %SCAVIUM_NETGEN_DIR%
+    exit /b 1
+)
+
 if not exist "%BACKEND_DIR%" (
+    echo ERROR: no existe la carpeta backend:
+    echo %BACKEND_DIR%
+    exit /b 1
+)
+
+if not exist "%FRONTEND_DIR%" (
     echo ERROR: no existe la carpeta backend:
     echo %BACKEND_DIR%
     exit /b 1
@@ -46,6 +59,16 @@ mkdir "%TEMP_ROOT%"
 @REM mkdir "%TEMP_ROOT%\scavo.exchange-backend"
 @REM mkdir "%TEMP_ROOT%\scavo.exchange-frontend"
 mkdir "%TEMP_ROOT%\scavium-wallet"
+
+echo.
+echo Copiando scavium-netgen...
+robocopy "%SCAVIUM_NETGEN_DIR%" "%TEMP_ROOT%\scavium-netgen" /E /XD .fvm .git .idea .vscode dist build .dart_tool distribution\submissions >nul
+
+if errorlevel 8 (
+    echo ERROR: fallo robocopy al copiar scavium-netgen.
+    rmdir /s /q "%TEMP_DIR%"
+    exit /b 1
+)
 
 @REM echo.
 @REM echo Copiando backend...
